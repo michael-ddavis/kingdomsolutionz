@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("KingdomSolutionz.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ba0cfebdb3591915a1f491d5c3788beb9046fa3f")]
 [assembly: System.Reflection.AssemblyProductAttribute("KingdomSolutionz.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("KingdomSolutionz.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

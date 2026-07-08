@@ -1,26 +1,23 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddRazorPages();
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseExceptionHandler("/error");
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 
-app.UseRouting();
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
-app.UseAuthorization();
+app.MapControllers();
 
-app.MapStaticAssets();
-app.MapRazorPages()
-   .WithStaticAssets();
+// This lets Angular handle routes like /pricing, /portfolio, /admin, etc.
+app.MapFallbackToFile("index.html");
 
 app.Run();
