@@ -1,0 +1,17 @@
+# .NET
+**/bin/
+**/obj/
+
+# Angular / Node
+**/node_modules/
+**/dist/
+.angular/
+
+# Local environment
+.vscode/
+*.user
+*.suo
+
+# Build output
+**/wwwroot/*
+!**/wwwroot/.gitkeep
