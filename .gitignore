@@ -15,3 +15,6 @@
 # Build output
 **/wwwroot/*
 !**/wwwroot/.gitkeep
+
+# Generated production frontend files
+KingdomSolutionz.Web/wwwroot/
