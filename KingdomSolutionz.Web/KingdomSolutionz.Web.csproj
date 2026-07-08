@@ -8,25 +8,17 @@
 
   <PropertyGroup>
   <SpaRoot>ClientApp\</SpaRoot>
-  </PropertyGroup>
+</PropertyGroup>
 
-  <Target Name="BuildAngularForPublish" AfterTargets="ComputeFilesToPublish">
-    <Message Importance="high" Text="Building Angular app for Azure publish..." />
+<Target Name="BuildAngularForPublish" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
+  <Message Importance="high" Text="Building Angular app before .NET publish..." />
 
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm ci" />
+  <Exec WorkingDirectory="$(SpaRoot)" Command="npm ci" />
 
-    <RemoveDir Directories="$(MSBuildProjectDirectory)\wwwroot" />
+  <RemoveDir Directories="$(MSBuildProjectDirectory)\wwwroot" />
+  <MakeDir Directories="$(MSBuildProjectDirectory)\wwwroot" />
 
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build -- --configuration production --output-path ../wwwroot" />
-
-    <ItemGroup>
-      <AngularFiles Include="$(MSBuildProjectDirectory)\wwwroot\**\*" />
-
-      <ResolvedFileToPublish Include="@(AngularFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
-        <RelativePath>wwwroot\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      </ResolvedFileToPublish>
-    </ItemGroup>
-  </Target>
+  <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build -- --configuration production --output-path ../wwwroot" />
+</Target>
 
 </Project>
