@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { LeadService } from 'src/app/services/lead.service';
 
 interface FeatureOption {
   value: string;
@@ -27,6 +28,9 @@ interface PackageRecommendation {
 })
 export class StartProjectComponent {
   submitted = false;
+  submitting = false;
+  submitError = '';
+  leadResponseMessage = '';
 
   featureGroups: FeatureGroup[] = [
     {
@@ -128,7 +132,7 @@ export class StartProjectComponent {
     message: ['']
   });
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(private formBuilder: FormBuilder, private leadService: LeadService) { }
 
   get selectedFeatures(): FormArray {
     return this.projectForm.get('features') as FormArray;
@@ -232,19 +236,44 @@ export class StartProjectComponent {
 
   onSubmit(): void {
     this.projectForm.markAllAsTouched();
+    this.submitError = '';
+    this.leadResponseMessage = '';
 
     if (this.projectForm.invalid) {
+      this.submitError = 'Please fill out the required fields before submitting.';
       return;
     }
 
+    const formValue = this.projectForm.value;
+
     const request = {
-      ...this.projectForm.value,
+      fullName: formValue.fullName ?? '',
+      email: formValue.email ?? '',
+      phone: formValue.phone ?? '',
+      businessName: formValue.businessName ?? '',
+      currentWebsiteUrl: formValue.currentWebsiteUrl ?? '',
+      projectType: formValue.projectType ?? '',
+      timeline: formValue.timeline ?? '',
+      budgetRange: formValue.budgetRange ?? '',
+      features: this.selectedFeatureValues,
+      message: formValue.message ?? '',
       recommendedPackage: this.recommendedPackage.name
     };
 
-    console.log('Project intake request:', request);
+    this.submitting = true;
 
-    this.submitted = true;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.leadService.createLead(request).subscribe({
+      next: (response) => {
+        this.submitting = false;
+        this.submitted = true;
+        this.leadResponseMessage = response.message;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      },
+      error: (error) => {
+        console.error('Lead submission failed:', error);
+        this.submitting = false;
+        this.submitError = 'Something went wrong while submitting your request. Please try again.';
+      }
+    });
   }
 }

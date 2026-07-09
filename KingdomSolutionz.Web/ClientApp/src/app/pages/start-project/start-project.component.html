@@ -8,12 +8,13 @@
     </p>
   </div>
 
-  <div class="success-panel" *ngIf="submitted">
+   <div class="success-panel" *ngIf="submitted">
     <p class="eyebrow">Request Received</p>
-    <h2>Your project request is ready.</h2>
+
+    <h2>Your project request has been submitted.</h2>
+
     <p>
-      For now, this submission is showing in the browser console. Next, we’ll connect this
-      form to your .NET API so every request is saved as a lead.
+      {{ leadResponseMessage || 'Thank you for reaching out to KingdomSolutionz. I’ll review your request and follow up with the best next step.' }}
     </p>
 
     <div class="recommendation">
@@ -115,16 +116,10 @@
           </div>
 
           <div class="feature-picker">
-            <label
-              class="feature-card"
-              *ngFor="let feature of group.options"
-              [class.selected]="isFeatureSelected(feature.value)"
-            >
-              <input
-                type="checkbox"
-                [checked]="isFeatureSelected(feature.value)"
-                (change)="toggleFeature(feature.value, $event)"
-              />
+            <label class="feature-card" *ngFor="let feature of group.options"
+              [class.selected]="isFeatureSelected(feature.value)">
+              <input type="checkbox" [checked]="isFeatureSelected(feature.value)"
+                (change)="toggleFeature(feature.value, $event)" />
 
               <span>
                 <strong>{{ feature.title }}</strong>
@@ -155,14 +150,14 @@
 
       <label>
         Project Notes
-        <textarea
-          formControlName="message"
-          rows="6"
-          placeholder="Tell me about your goals, what you like, what you do not like, examples, or any technical needs."
-        ></textarea>
+        <textarea formControlName="message" rows="6"
+          placeholder="Tell me about your goals, what you like, what you do not like, examples, or any technical needs."></textarea>
       </label>
     </div>
 
+    <p class="form-error" *ngIf="submitError">
+      {{ submitError }}
+    </p>
     <div class="form-actions">
       <div>
         <p class="form-actions-title">Ready to submit your request?</p>
@@ -171,8 +166,8 @@
         </p>
       </div>
 
-      <button type="submit" class="btn btn-primary">
-        Submit Project Request
+      <button type="submit" class="btn btn-primary" [disabled]="submitting">
+        {{ submitting ? 'Submitting...' : 'Submit Project Request' }}
       </button>
     </div>
   </form>
