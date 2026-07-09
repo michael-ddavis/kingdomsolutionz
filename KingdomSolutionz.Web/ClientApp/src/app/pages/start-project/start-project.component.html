@@ -1,8 +1,179 @@
-<section class="page-section">
-  <p class="eyebrow">Start a Project</p>
-  <h1>Tell me what you want to build.</h1>
-  <p>
-    The full intake form is coming next. This page will collect project details,
-    selected features, timeline, budget, and contact information.
-  </p>
+<section class="intake-page">
+  <div class="intake-header">
+    <p class="eyebrow">Start a Project</p>
+    <h1>Tell me what you want to build.</h1>
+    <p>
+      Share a few details about your website, ecommerce needs, or digital system.
+      I’ll review your request and recommend the best next step.
+    </p>
+  </div>
+
+  <div class="success-panel" *ngIf="submitted">
+    <p class="eyebrow">Request Received</p>
+    <h2>Your project request is ready.</h2>
+    <p>
+      For now, this submission is showing in the browser console. Next, we’ll connect this
+      form to your .NET API so every request is saved as a lead.
+    </p>
+
+    <div class="recommendation">
+      Suggested package:
+      <strong>{{ recommendedPackage.name }}</strong>
+    </div>
+  </div>
+
+  <form class="intake-form" [formGroup]="projectForm" (ngSubmit)="onSubmit()">
+    <div class="form-section">
+      <h2>Contact Information</h2>
+
+      <div class="form-grid">
+        <label>
+          Full Name
+          <input type="text" formControlName="fullName" placeholder="Your name" />
+        </label>
+
+        <label>
+          Email
+          <input type="email" formControlName="email" placeholder="you@example.com" />
+        </label>
+
+        <label>
+          Phone
+          <input type="tel" formControlName="phone" placeholder="(555) 555-5555" />
+        </label>
+
+        <label>
+          Business / Ministry Name
+          <input type="text" formControlName="businessName" placeholder="Organization name" />
+        </label>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2>Project Details</h2>
+
+      <div class="form-grid">
+        <label>
+          Current Website URL
+          <input type="url" formControlName="currentWebsiteUrl" placeholder="https://example.com" />
+        </label>
+
+        <label>
+          Project Type
+          <select formControlName="projectType">
+            <option value="">Select one</option>
+            <option>New website</option>
+            <option>Website redesign</option>
+            <option>Ecommerce integration</option>
+            <option>Landing page</option>
+            <option>Custom system / dashboard</option>
+            <option>Not sure yet</option>
+          </select>
+        </label>
+
+        <label>
+          Desired Timeline
+          <select formControlName="timeline">
+            <option value="">Select one</option>
+            <option>As soon as possible</option>
+            <option>Within 2–4 weeks</option>
+            <option>Within 1–2 months</option>
+            <option>2+ months from now</option>
+            <option>Just exploring</option>
+          </select>
+        </label>
+
+        <label>
+          Budget Range
+          <select formControlName="budgetRange">
+            <option value="">Select one</option>
+            <option>$1,800–$2,800</option>
+            <option>$2,800–$4,000</option>
+            <option>$4,000+</option>
+            <option>Not sure yet</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-row">
+        <div>
+          <h2>Choose the features you may need</h2>
+          <p>
+            Select anything that sounds helpful. Each option includes a quick explanation,
+            so you do not have to know the technical details yet.
+          </p>
+        </div>
+      </div>
+
+      <div class="feature-groups">
+        <div class="feature-group" *ngFor="let group of featureGroups">
+          <div class="feature-group-heading">
+            <h3>{{ group.title }}</h3>
+            <p>{{ group.description }}</p>
+          </div>
+
+          <div class="feature-picker">
+            <label
+              class="feature-card"
+              *ngFor="let feature of group.options"
+              [class.selected]="isFeatureSelected(feature.value)"
+            >
+              <input
+                type="checkbox"
+                [checked]="isFeatureSelected(feature.value)"
+                (change)="toggleFeature(feature.value, $event)"
+              />
+
+              <span>
+                <strong>{{ feature.title }}</strong>
+                <small>{{ feature.description }}</small>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="package-recommendation-card">
+      <div>
+        <p class="eyebrow">Suggested Package</p>
+        <h2>{{ recommendedPackage.name }}</h2>
+        <p>{{ recommendedPackage.description }}</p>
+        <p class="recommendation-reason">{{ recommendationReason }}</p>
+      </div>
+
+      <div class="package-price-box">
+        <strong>{{ recommendedPackage.buildFee }}</strong>
+        <span>{{ recommendedPackage.monthlyFee }}</span>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2>Anything else I should know?</h2>
+
+      <label>
+        Project Notes
+        <textarea
+          formControlName="message"
+          rows="6"
+          placeholder="Tell me about your goals, what you like, what you do not like, examples, or any technical needs."
+        ></textarea>
+      </label>
+    </div>
+
+    <div class="form-actions">
+      <div>
+        <p class="form-actions-title">Ready to submit your request?</p>
+        <p>
+          Your selected features and suggested package will be included with the project request.
+        </p>
+      </div>
+
+      <button type="submit" class="btn btn-primary">
+        Submit Project Request
+      </button>
+    </div>
+  </form>
 </section>

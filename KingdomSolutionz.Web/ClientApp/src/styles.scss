@@ -726,3 +726,351 @@ img {
     width: calc(100% - 24px);
   }
 }
+
+/* =========================
+   START PROJECT / INTAKE FORM
+========================= */
+
+.intake-page {
+  width: min(1040px, calc(100% - 40px));
+  margin: 24px auto 0;
+  padding-bottom: 80px;
+}
+
+.intake-header,
+.success-panel {
+  background: white;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 30px;
+  box-shadow: var(--shadow-sm);
+  padding: 72px 52px;
+  margin-bottom: 24px;
+}
+
+.intake-header h1 {
+  font-size: clamp(2.8rem, 6vw, 5.2rem);
+  line-height: 0.98;
+  letter-spacing: -0.065em;
+  margin: 16px 0 20px;
+  color: var(--navy);
+}
+
+.intake-header p:not(.eyebrow),
+.success-panel p:not(.eyebrow) {
+  color: var(--muted);
+  font-size: 1.14rem;
+  line-height: 1.75;
+  max-width: 760px;
+  margin: 0;
+}
+
+.success-panel {
+  border-color: rgba(37, 99, 235, 0.18);
+}
+
+.success-panel h2 {
+  color: var(--navy);
+  font-size: 2rem;
+  margin: 12px 0;
+  letter-spacing: -0.04em;
+}
+
+.recommendation {
+  margin-top: 22px;
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 18px;
+  padding: 18px;
+  color: var(--muted);
+}
+
+.recommendation strong {
+  display: block;
+  color: var(--navy);
+  margin-top: 4px;
+  font-size: 1.1rem;
+}
+
+.intake-form {
+  display: grid;
+  gap: 24px;
+}
+
+.form-section,
+.package-recommendation-card {
+  background: white;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 24px;
+  box-shadow: var(--shadow-sm);
+  padding: 32px;
+}
+
+.form-section h2 {
+  margin: 0 0 22px;
+  color: var(--navy);
+  font-size: 1.35rem;
+  letter-spacing: -0.035em;
+}
+
+.form-section p {
+  color: var(--muted);
+  line-height: 1.65;
+  margin: 0;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+label {
+  display: grid;
+  gap: 8px;
+  color: var(--navy);
+  font-weight: 750;
+  font-size: 0.94rem;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  border-radius: 14px;
+  padding: 13px 14px;
+  font: inherit;
+  color: var(--navy);
+  background: #f8fafc;
+  outline: none;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: rgba(37, 99, 235, 0.55);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.10);
+  background: white;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.section-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.feature-groups {
+  display: grid;
+  gap: 30px;
+}
+
+.feature-group {
+  display: grid;
+  gap: 16px;
+}
+
+.feature-group-heading {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  padding-bottom: 14px;
+}
+
+.feature-group-heading h3 {
+  color: var(--navy);
+  font-size: 1.05rem;
+  letter-spacing: -0.025em;
+  margin: 0 0 5px;
+}
+
+.feature-group-heading p {
+  color: var(--muted);
+  font-size: 0.96rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.feature-picker {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.feature-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid rgba(15, 23, 42, 0.09);
+  border-radius: 18px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.feature-card:hover,
+.feature-card.selected {
+  border-color: rgba(37, 99, 235, 0.28);
+  background: white;
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+}
+
+.feature-card.selected {
+  border-color: rgba(11, 22, 40, 0.28);
+  background: #f9fbff;
+}
+
+.feature-card input {
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+  accent-color: var(--navy);
+}
+
+.feature-card span {
+  display: grid;
+  gap: 5px;
+}
+
+.feature-card strong {
+  color: var(--navy);
+  font-size: 0.98rem;
+}
+
+.feature-card small {
+  color: var(--muted);
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.package-recommendation-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: center;
+  background:
+    radial-gradient(circle at top right, rgba(37, 99, 235, 0.08), transparent 20rem),
+    white;
+}
+
+.package-recommendation-card h2 {
+  color: var(--navy);
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+  margin: 10px 0 12px;
+  letter-spacing: -0.045em;
+}
+
+.package-recommendation-card p:not(.eyebrow) {
+  color: var(--muted);
+  line-height: 1.65;
+  margin: 0;
+  max-width: 680px;
+}
+
+.recommendation-reason {
+  margin-top: 12px !important;
+  font-weight: 700;
+  color: var(--navy) !important;
+}
+
+.package-price-box {
+  min-width: 210px;
+  background: var(--navy);
+  color: white;
+  border-radius: 20px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.package-price-box strong {
+  display: block;
+  font-size: 2rem;
+  letter-spacing: -0.04em;
+}
+
+.package-price-box span {
+  color: var(--muted-light);
+  display: block;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+.form-actions {
+  background: var(--navy);
+  color: white;
+  border-radius: 24px;
+  padding: 30px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  box-shadow: var(--shadow-md);
+}
+
+.form-actions-title {
+  color: white !important;
+  font-weight: 850;
+  margin-bottom: 4px !important;
+}
+
+.form-actions .btn-primary {
+  background: white;
+  color: var(--navy);
+}
+
+.form-actions p {
+  color: var(--muted-light);
+  line-height: 1.5;
+  margin: 0;
+  max-width: 520px;
+}
+
+@media (max-width: 760px) {
+  .intake-page {
+    width: calc(100% - 24px);
+  }
+
+  .intake-header,
+  .success-panel {
+    padding: 48px 22px;
+    border-radius: 26px;
+  }
+
+  .form-section,
+  .package-recommendation-card {
+    padding: 24px;
+  }
+
+  .form-grid,
+  .feature-picker,
+  .package-recommendation-card {
+    grid-template-columns: 1fr;
+  }
+
+  .package-price-box {
+    width: 100%;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+  }
+}
