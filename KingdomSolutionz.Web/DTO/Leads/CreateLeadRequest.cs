@@ -1,0 +1,16 @@
+namespace KingdomSolutionz.Web.DTOs.Leads;
+
+public class CreateLeadRequest
+{
+    public string FullName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string? Phone { get; set; }
+    public string? BusinessName { get; set; }
+    public string? CurrentWebsiteUrl { get; set; }
+    public string ProjectType { get; set; } = string.Empty;
+    public string? Timeline { get; set; }
+    public string? BudgetRange { get; set; }
+    public List<string> Features { get; set; } = new();
+    public string? Message { get; set; }
+    public string RecommendedPackage { get; set; } = string.Empty;
+}
