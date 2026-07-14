@@ -1,1 +1,386 @@
-<p>speaking-request-detail works!</p>
+<ng-container
+  *ngIf="request$ | async as request; else requestNotFound">
+
+  <section class="request-detail-page">
+    <a
+      routerLink="/app/speaking-requests"
+      class="back-link">
+
+      <span aria-hidden="true">←</span>
+      Back to speaking requests
+    </a>
+
+    <header class="page-heading">
+      <div>
+        <div class="heading-meta">
+          <p class="eyebrow">Speaking request</p>
+
+          <span
+            [ngClass]="[
+              'status',
+              'status--' + statusTones[request.status]
+            ]">
+
+            {{ statusLabels[request.status] }}
+          </span>
+        </div>
+
+        <h1>{{ request.eventName }}</h1>
+
+        <p class="organization-name">
+          {{ request.organizationName }}
+        </p>
+      </div>
+
+      <div class="heading-actions">
+        <button
+          type="button"
+          class="action-button action-button--secondary"
+          [class.selected]="
+            request.status === 'information-needed'
+          "
+          (click)="updateStatus('information-needed')">
+
+          Request information
+        </button>
+
+        <button
+          type="button"
+          class="action-button action-button--danger"
+          [class.selected]="request.status === 'declined'"
+          (click)="updateStatus('declined')">
+
+          Decline
+        </button>
+
+        <button
+          type="button"
+          class="action-button action-button--primary"
+          [class.selected]="request.status === 'approved'"
+          (click)="updateStatus('approved')">
+
+          Approve invitation
+        </button>
+      </div>
+    </header>
+
+    <section class="summary-grid">
+      <article class="summary-card">
+        <small>Event dates</small>
+
+        <strong>
+          {{ request.startDate | date:'MMM d, y' }}
+
+          <ng-container
+            *ngIf="
+              request.endDate !== request.startDate
+            ">
+
+            –
+            {{ request.endDate | date:'MMM d, y' }}
+          </ng-container>
+        </strong>
+
+        <span>{{ request.eventType }}</span>
+      </article>
+
+      <article class="summary-card">
+        <small>Location</small>
+
+        <strong>
+          {{ request.city }}, {{ request.state }}
+        </strong>
+
+        <span>{{ request.venueName }}</span>
+      </article>
+
+      <article class="summary-card">
+        <small>Expected attendance</small>
+
+        <strong>
+          {{ request.expectedAttendance | number }}
+        </strong>
+
+        <span>Estimated participants</span>
+      </article>
+
+      <article class="summary-card summary-card--readiness">
+        <small>Host readiness</small>
+
+        <strong>
+          {{ request.readinessPercentage }}%
+        </strong>
+
+        <span>
+          {{
+            getCompletedReadinessCount(request)
+          }}
+          of
+          {{
+            getReadinessItems(request).length
+          }}
+          key items complete
+        </span>
+
+        <div class="summary-progress">
+          <span
+            [style.width.%]="
+              request.readinessPercentage
+            ">
+          </span>
+        </div>
+      </article>
+    </section>
+
+    <section class="detail-grid">
+      <div class="main-column">
+        <article class="content-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-eyebrow">
+                Ministry assignment
+              </p>
+
+              <h2>What the host is requesting</h2>
+            </div>
+          </div>
+
+          <p class="ministry-request">
+            {{ request.ministryRequest }}
+          </p>
+        </article>
+
+        <article class="content-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-eyebrow">
+                Event readiness
+              </p>
+
+              <h2>Host preparation checklist</h2>
+            </div>
+
+            <span class="completion-count">
+              {{
+                getCompletedReadinessCount(request)
+              }}
+              /
+              {{
+                getReadinessItems(request).length
+              }}
+              complete
+            </span>
+          </div>
+
+          <div class="readiness-list">
+            <div
+              *ngFor="
+                let item of getReadinessItems(request)
+              "
+              [ngClass]="[
+                'readiness-item',
+                item.complete
+                  ? 'readiness-item--complete'
+                  : 'readiness-item--missing'
+              ]">
+
+              <span class="readiness-icon">
+                {{ item.complete ? '✓' : '!' }}
+              </span>
+
+              <div>
+                <strong>{{ item.label }}</strong>
+                <p>{{ item.description }}</p>
+              </div>
+
+              <span class="readiness-status">
+                {{
+                  item.complete
+                    ? 'Confirmed'
+                    : 'Needed'
+                }}
+              </span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <aside class="side-column">
+        <article class="content-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-eyebrow">
+                Host contact
+              </p>
+
+              <h2>Primary coordinator</h2>
+            </div>
+          </div>
+
+          <div class="contact-card">
+            <span class="contact-avatar">
+              {{ request.contactName.charAt(0) }}
+            </span>
+
+            <div>
+              <strong>{{ request.contactName }}</strong>
+
+              <span>
+                {{ request.organizationName }}
+              </span>
+            </div>
+          </div>
+
+          <dl class="detail-list">
+            <div>
+              <dt>Email</dt>
+              <dd>{{ request.contactEmail }}</dd>
+            </div>
+
+            <div>
+              <dt>Phone</dt>
+              <dd>{{ request.contactPhone }}</dd>
+            </div>
+
+            <div>
+              <dt>Submitted</dt>
+              <dd>
+                {{
+                  request.submittedUtc
+                    | date:'MMM d, y'
+                }}
+              </dd>
+            </div>
+          </dl>
+        </article>
+
+        <article class="content-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-eyebrow">
+                Logistics
+              </p>
+
+              <h2>Coverage summary</h2>
+            </div>
+          </div>
+
+          <div class="coverage-list">
+            <div>
+              <span
+                [class.coverage-icon--complete]="
+                  request.travelCovered
+                "
+                class="coverage-icon">
+
+                {{ request.travelCovered ? '✓' : '!' }}
+              </span>
+
+              <span>
+                <strong>Travel</strong>
+
+                <small>
+                  {{
+                    request.travelCovered
+                      ? 'Covered by host'
+                      : 'Needs clarification'
+                  }}
+                </small>
+              </span>
+            </div>
+
+            <div>
+              <span
+                [class.coverage-icon--complete]="
+                  request.lodgingCovered
+                "
+                class="coverage-icon">
+
+                {{ request.lodgingCovered ? '✓' : '!' }}
+              </span>
+
+              <span>
+                <strong>Lodging</strong>
+
+                <small>
+                  {{
+                    request.lodgingCovered
+                      ? 'Covered by host'
+                      : 'Needs clarification'
+                  }}
+                </small>
+              </span>
+            </div>
+
+            <div>
+              <span
+                [class.coverage-icon--complete]="
+                  request.honorariumProvided
+                "
+                class="coverage-icon">
+
+                {{
+                  request.honorariumProvided
+                    ? '✓'
+                    : '!'
+                }}
+              </span>
+
+              <span>
+                <strong>Honorarium</strong>
+
+                <small>
+                  {{
+                    request.honorariumProvided
+                      ? 'Arrangement confirmed'
+                      : 'Needs clarification'
+                  }}
+                </small>
+              </span>
+            </div>
+          </div>
+        </article>
+
+        <article class="decision-panel">
+          <p class="section-eyebrow">
+            Current decision
+          </p>
+
+          <h2>
+            {{ statusLabels[request.status] }}
+          </h2>
+
+          <p>
+            Changes made during this demonstration are
+            stored temporarily in the seeded session.
+          </p>
+
+          <button
+            *ngIf="request.status !== 'awaiting-review'"
+            type="button"
+            class="reset-button"
+            (click)="updateStatus('awaiting-review')">
+
+            Return to review
+          </button>
+        </article>
+      </aside>
+    </section>
+  </section>
+</ng-container>
+
+<ng-template #requestNotFound>
+  <section class="not-found">
+    <p class="eyebrow">Speaking request</p>
+    <h1>Request not found</h1>
+
+    <p>
+      This speaking request does not exist or is no
+      longer available.
+    </p>
+
+    <a routerLink="/app/speaking-requests">
+      Return to speaking requests
+    </a>
+  </section>
+</ng-template>
