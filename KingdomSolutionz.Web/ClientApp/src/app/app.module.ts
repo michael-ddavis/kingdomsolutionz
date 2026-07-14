@@ -17,6 +17,9 @@ import { PlatformShellComponent } from './platform/layout/platform-shell/platfor
 import { PlatformLoginComponent } from './platform/pages/platform-login/platform-login.component';
 import { PlatformDashboardComponent } from './platform/pages/platform-dashboard/platform-dashboard.component';
 import { WorkspaceSwitcherComponent } from './platform/components/workspace-switcher/workspace-switcher.component';
+import { SpeakingRequestListComponent } from './platform/pages/speaking-requests/speaking-request-list/speaking-request-list.component';
+import { SpeakingRequestDetailComponent } from './platform/pages/speaking-requests/speaking-request-detail/speaking-request-detail.component';
+import { SpeakingRequestFormComponent } from './platform/pages/speaking-requests/speaking-request-form/speaking-request-form.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +35,10 @@ import { WorkspaceSwitcherComponent } from './platform/components/workspace-swit
     PlatformShellComponent,
     PlatformLoginComponent,
     PlatformDashboardComponent,
-    WorkspaceSwitcherComponent
+    WorkspaceSwitcherComponent,
+    SpeakingRequestListComponent,
+    SpeakingRequestDetailComponent,
+    SpeakingRequestFormComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,154 @@
+<p>speaking-request-list works!</p>
+<section class="request-page" *ngIf="speakingRequests$ | async as requests">
+
+    <header class="page-heading">
+        <div>
+            <p class="eyebrow">Itinerant Ministry</p>
+
+            <h1>Speaking requests</h1>
+
+            <p class="page-description">
+                Review invitations, identify missing information and
+                prepare approved ministry engagements.
+            </p>
+        </div>
+
+        <a routerLink="/app/speaking-requests/new" class="primary-action">
+
+            <span aria-hidden="true">+</span>
+            New invitation
+        </a>
+    </header>
+
+    <section class="summary-grid">
+        <article class="summary-card">
+            <strong>{{ requests.length }}</strong>
+            <span>Total requests</span>
+            <small>Currently in the system</small>
+        </article>
+
+        <article class="summary-card">
+            <strong>2</strong>
+            <span>Awaiting review</span>
+            <small>A decision is needed</small>
+        </article>
+
+        <article class="summary-card">
+            <strong>1</strong>
+            <span>Approved</span>
+            <small>Moving toward readiness</small>
+        </article>
+    </section>
+
+    <section class="request-panel">
+        <div class="panel-heading">
+            <div>
+                <p class="section-eyebrow">Invitation queue</p>
+                <h2>Current speaking requests</h2>
+            </div>
+
+            <span class="request-count">
+                {{ requests.length }} requests
+            </span>
+        </div>
+
+        <div class="request-list">
+            <a *ngFor="let request of requests" [routerLink]="[
+          '/app/speaking-requests',
+          request.id
+        ]" class="request-card">
+
+                <span class="organization-mark">
+                    {{ request.organizationName.charAt(0) }}
+                </span>
+
+                <span class="request-copy">
+                    <span class="request-heading">
+                        <span>
+                            <strong>{{ request.eventName }}</strong>
+
+                            <small>
+                                {{ request.organizationName }}
+                            </small>
+                        </span>
+
+                        <span [ngClass]="[
+                'status',
+                'status--' +
+                  statusTones[request.status]
+              ]">
+
+                            {{ statusLabels[request.status] }}
+                        </span>
+                    </span>
+
+                    <span class="request-details">
+                        <span>
+                            <small>Event dates</small>
+
+                            <strong>
+                                {{ request.startDate | date:'MMM d' }}
+                                <ng-container *ngIf="
+                    request.endDate !==
+                    request.startDate
+                  ">
+
+                                    –
+                                    {{ request.endDate | date:'MMM d, y' }}
+                                </ng-container>
+                            </strong>
+                        </span>
+
+                        <span>
+                            <small>Location</small>
+                            <strong>
+                                {{ request.city }},
+                                {{ request.state }}
+                            </strong>
+                        </span>
+
+                        <span>
+                            <small>Expected attendance</small>
+
+                            <strong>
+                                {{ request.expectedAttendance | number }}
+                            </strong>
+                        </span>
+
+                        <span>
+                            <small>Host readiness</small>
+
+                            <strong [ngClass]="[
+                  'readiness-value',
+                  'readiness-value--' +
+                    getReadinessTone(
+                      request.readinessPercentage
+                    )
+                ]">
+
+                                {{ request.readinessPercentage }}%
+                            </strong>
+                        </span>
+                    </span>
+
+                    <span class="readiness-bar">
+                        <span [ngClass]="[
+                'readiness-progress',
+                'readiness-progress--' +
+                  getReadinessTone(
+                    request.readinessPercentage
+                  )
+              ]" [style.width.%]="
+                request.readinessPercentage
+              ">
+                        </span>
+                    </span>
+                </span>
+
+                <span class="request-arrow" aria-hidden="true">
+                    →
+                </span>
+            </a>
+        </div>
+    </section>
+</section>

@@ -14,6 +14,17 @@ import { ContactComponent } from './pages/contact/contact.component';
 import { PlatformShellComponent } from './platform/layout/platform-shell/platform-shell.component';
 import { PlatformLoginComponent } from './platform/pages/platform-login/platform-login.component';
 import { PlatformDashboardComponent } from './platform/pages/platform-dashboard/platform-dashboard.component';
+import {
+  SpeakingRequestListComponent
+} from './platform/pages/speaking-requests/speaking-request-list/speaking-request-list.component';
+
+import {
+  SpeakingRequestDetailComponent
+} from './platform/pages/speaking-requests/speaking-request-detail/speaking-request-detail.component';
+
+import {
+  SpeakingRequestFormComponent
+} from './platform/pages/speaking-requests/speaking-request-form/speaking-request-form.component';
 
 const routes: Routes = [
   {
@@ -29,10 +40,22 @@ const routes: Routes = [
         component: PlatformDashboardComponent
       },
       {
+        path: 'speaking-requests',
+        component: SpeakingRequestListComponent
+      },
+      {
+        path: 'speaking-requests/new',
+        component: SpeakingRequestFormComponent
+      },
+      {
+        path: 'speaking-requests/:id',
+        component: SpeakingRequestDetailComponent
+      },
+      {
         path: '',
         pathMatch: 'full',
         redirectTo: 'dashboard'
-      }
+      },
     ]
   },
   {
@@ -84,4 +107,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

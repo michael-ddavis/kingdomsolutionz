@@ -1,6 +1,4 @@
-<div
-  class="platform-shell"
-  *ngIf="selectedWorkspace$ | async as workspace">
+<div class="platform-shell" *ngIf="selectedWorkspace$ | async as workspace">
 
   <aside class="platform-sidebar">
     <a routerLink="/" class="platform-brand">
@@ -17,10 +15,7 @@
     <nav class="platform-navigation" aria-label="Platform navigation">
       <p class="navigation-label">Workspace</p>
 
-      <a
-        routerLink="/app/dashboard"
-        routerLinkActive="active"
-        class="navigation-item">
+      <a routerLink="/app/dashboard" routerLinkActive="active" class="navigation-item">
 
         <span class="navigation-icon">01</span>
         <span>Dashboard</span>
@@ -45,10 +40,13 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'apostle-cynthia'">
-          <button type="button" class="navigation-item">
+          <a routerLink="/app/speaking-requests" routerLinkActive="active" class="navigation-item">
+
             <span class="navigation-icon">02</span>
             <span>Speaking Requests</span>
-          </button>
+
+            <span class="navigation-count">2</span>
+          </a>
 
           <button type="button" class="navigation-item">
             <span class="navigation-icon">03</span>
@@ -112,10 +110,7 @@
       </div>
 
       <div class="header-actions">
-        <button
-          type="button"
-          class="notification-button"
-          aria-label="Notifications">
+        <button type="button" class="notification-button" aria-label="Notifications">
 
           <span class="notification-dot"></span>
           <span aria-hidden="true">○</span>
