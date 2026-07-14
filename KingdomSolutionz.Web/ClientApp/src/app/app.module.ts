@@ -20,6 +20,7 @@ import { WorkspaceSwitcherComponent } from './platform/components/workspace-swit
 import { SpeakingRequestListComponent } from './platform/pages/speaking-requests/speaking-request-list/speaking-request-list.component';
 import { SpeakingRequestDetailComponent } from './platform/pages/speaking-requests/speaking-request-detail/speaking-request-detail.component';
 import { SpeakingRequestFormComponent } from './platform/pages/speaking-requests/speaking-request-form/speaking-request-form.component';
+import { SpeakerJourneyDetailComponent } from './platform/pages/speaker-journeys/speaker-journey-detail/speaker-journey-detail.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { SpeakingRequestFormComponent } from './platform/pages/speaking-requests
     WorkspaceSwitcherComponent,
     SpeakingRequestListComponent,
     SpeakingRequestDetailComponent,
-    SpeakingRequestFormComponent
+    SpeakingRequestFormComponent,
+    SpeakerJourneyDetailComponent
   ],
   imports: [
     BrowserModule,

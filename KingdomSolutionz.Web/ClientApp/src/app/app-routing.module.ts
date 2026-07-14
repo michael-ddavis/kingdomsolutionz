@@ -25,6 +25,9 @@ import {
 import {
   SpeakingRequestFormComponent
 } from './platform/pages/speaking-requests/speaking-request-form/speaking-request-form.component';
+import {
+  SpeakerJourneyDetailComponent
+} from './platform/pages/speaker-journeys/speaker-journey-detail/speaker-journey-detail.component';
 
 const routes: Routes = [
   {
@@ -46,6 +49,10 @@ const routes: Routes = [
       {
         path: 'speaking-requests/:id',
         component: SpeakingRequestDetailComponent
+      },
+      {
+        path: 'speaker-journeys/:id',
+        component: SpeakerJourneyDetailComponent
       },
       {
         path: '',

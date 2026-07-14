@@ -1,10 +1,7 @@
-<ng-container
-  *ngIf="request$ | async as request; else requestNotFound">
+<ng-container *ngIf="request$ | async as request; else requestNotFound">
 
   <section class="request-detail-page">
-    <a
-      routerLink="/app/speaking-requests"
-      class="back-link">
+    <a routerLink="/app/speaking-requests" class="back-link">
 
       <span aria-hidden="true">←</span>
       Back to speaking requests
@@ -15,8 +12,7 @@
         <div class="heading-meta">
           <p class="eyebrow">Speaking request</p>
 
-          <span
-            [ngClass]="[
+          <span [ngClass]="[
               'status',
               'status--' + statusTones[request.status]
             ]">
@@ -33,33 +29,35 @@
       </div>
 
       <div class="heading-actions">
-        <button
-          type="button"
-          class="action-button action-button--secondary"
-          [class.selected]="
+        <button type="button" class="action-button action-button--secondary" [class.selected]="
             request.status === 'information-needed'
-          "
-          (click)="updateStatus('information-needed')">
+          " (click)="updateStatus('information-needed', request)">
 
           Request information
         </button>
 
-        <button
-          type="button"
-          class="action-button action-button--danger"
-          [class.selected]="request.status === 'declined'"
-          (click)="updateStatus('declined')">
+        <button type="button" class="action-button action-button--danger"
+          [class.selected]="request.status === 'declined'" (click)="updateStatus('declined', request)">
 
           Decline
         </button>
 
-        <button
-          type="button"
-          class="action-button action-button--primary"
-          [class.selected]="request.status === 'approved'"
-          (click)="updateStatus('approved')">
+        <button type="button" class="action-button action-button--primary" [class.selected]="
+    request.status === 'approved'
+  " (click)="
+    request.status === 'approved'
+      ? openSpeakerJourney(request)
+      : updateStatus(
+          'approved',
+          request
+        )
+  ">
 
-          Approve invitation
+          {{
+          request.status === 'approved'
+          ? 'Open speaker journey'
+          : 'Approve & create journey'
+          }}
         </button>
       </div>
     </header>
@@ -71,8 +69,7 @@
         <strong>
           {{ request.startDate | date:'MMM d, y' }}
 
-          <ng-container
-            *ngIf="
+          <ng-container *ngIf="
               request.endDate !== request.startDate
             ">
 
@@ -113,18 +110,17 @@
 
         <span>
           {{
-            getCompletedReadinessCount(request)
+          getCompletedReadinessCount(request)
           }}
           of
           {{
-            getReadinessItems(request).length
+          getReadinessItems(request).length
           }}
           key items complete
         </span>
 
         <div class="summary-progress">
-          <span
-            [style.width.%]="
+          <span [style.width.%]="
               request.readinessPercentage
             ">
           </span>
@@ -162,22 +158,20 @@
 
             <span class="completion-count">
               {{
-                getCompletedReadinessCount(request)
+              getCompletedReadinessCount(request)
               }}
               /
               {{
-                getReadinessItems(request).length
+              getReadinessItems(request).length
               }}
               complete
             </span>
           </div>
 
           <div class="readiness-list">
-            <div
-              *ngFor="
+            <div *ngFor="
                 let item of getReadinessItems(request)
-              "
-              [ngClass]="[
+              " [ngClass]="[
                 'readiness-item',
                 item.complete
                   ? 'readiness-item--complete'
@@ -195,9 +189,9 @@
 
               <span class="readiness-status">
                 {{
-                  item.complete
-                    ? 'Confirmed'
-                    : 'Needed'
+                item.complete
+                ? 'Confirmed'
+                : 'Needed'
                 }}
               </span>
             </div>
@@ -246,8 +240,8 @@
               <dt>Submitted</dt>
               <dd>
                 {{
-                  request.submittedUtc
-                    | date:'MMM d, y'
+                request.submittedUtc
+                | date:'MMM d, y'
                 }}
               </dd>
             </div>
@@ -267,11 +261,9 @@
 
           <div class="coverage-list">
             <div>
-              <span
-                [class.coverage-icon--complete]="
+              <span [class.coverage-icon--complete]="
                   request.travelCovered
-                "
-                class="coverage-icon">
+                " class="coverage-icon">
 
                 {{ request.travelCovered ? '✓' : '!' }}
               </span>
@@ -281,20 +273,18 @@
 
                 <small>
                   {{
-                    request.travelCovered
-                      ? 'Covered by host'
-                      : 'Needs clarification'
+                  request.travelCovered
+                  ? 'Covered by host'
+                  : 'Needs clarification'
                   }}
                 </small>
               </span>
             </div>
 
             <div>
-              <span
-                [class.coverage-icon--complete]="
+              <span [class.coverage-icon--complete]="
                   request.lodgingCovered
-                "
-                class="coverage-icon">
+                " class="coverage-icon">
 
                 {{ request.lodgingCovered ? '✓' : '!' }}
               </span>
@@ -304,25 +294,23 @@
 
                 <small>
                   {{
-                    request.lodgingCovered
-                      ? 'Covered by host'
-                      : 'Needs clarification'
+                  request.lodgingCovered
+                  ? 'Covered by host'
+                  : 'Needs clarification'
                   }}
                 </small>
               </span>
             </div>
 
             <div>
-              <span
-                [class.coverage-icon--complete]="
+              <span [class.coverage-icon--complete]="
                   request.honorariumProvided
-                "
-                class="coverage-icon">
+                " class="coverage-icon">
 
                 {{
-                  request.honorariumProvided
-                    ? '✓'
-                    : '!'
+                request.honorariumProvided
+                ? '✓'
+                : '!'
                 }}
               </span>
 
@@ -331,9 +319,9 @@
 
                 <small>
                   {{
-                    request.honorariumProvided
-                      ? 'Arrangement confirmed'
-                      : 'Needs clarification'
+                  request.honorariumProvided
+                  ? 'Arrangement confirmed'
+                  : 'Needs clarification'
                   }}
                 </small>
               </span>
@@ -355,11 +343,8 @@
             stored temporarily in the seeded session.
           </p>
 
-          <button
-            *ngIf="request.status !== 'awaiting-review'"
-            type="button"
-            class="reset-button"
-            (click)="updateStatus('awaiting-review')">
+          <button *ngIf="request.status !== 'awaiting-review'" type="button" class="reset-button"
+            (click)="updateStatus('awaiting-review', request)">
 
             Return to review
           </button>

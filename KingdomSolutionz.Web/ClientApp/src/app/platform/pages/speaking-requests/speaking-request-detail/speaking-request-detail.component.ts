@@ -10,6 +10,11 @@ import {
 import {
   SpeakingRequestService
 } from '../../../shared/services/speaking-request.service';
+import { Router } from '@angular/router';
+
+import {
+  SpeakerJourneyService
+} from '../../../shared/services/speaker-journey.service';
 
 interface ReadinessItem {
   label: string;
@@ -55,15 +60,40 @@ export class SpeakingRequestDetailComponent {
 
   constructor(
     private readonly route: ActivatedRoute,
-    private readonly speakingRequestService:
-      SpeakingRequestService
-  ) {}
+    private readonly router: Router,
 
-  updateStatus(status: SpeakingRequestStatus): void {
+    private readonly speakingRequestService:
+      SpeakingRequestService,
+
+    private readonly speakerJourneyService:
+      SpeakerJourneyService
+  ) { }
+
+  updateStatus(
+    status: SpeakingRequestStatus,
+    request: SpeakingRequest
+  ): void {
     this.speakingRequestService.updateStatus(
       this.requestId,
       status
     );
+
+    if (status !== 'approved') {
+      return;
+    }
+
+    const journey =
+      this.speakerJourneyService.createOrGetJourney(
+        {
+          ...request,
+          status: 'approved'
+        }
+      );
+
+    this.router.navigate([
+      '/app/speaker-journeys',
+      journey.id
+    ]);
   }
 
   getReadinessItems(
@@ -119,6 +149,20 @@ export class SpeakingRequestDetailComponent {
         complete: request.expectedAttendance > 0
       }
     ];
+  }
+
+  openSpeakerJourney(
+    request: SpeakingRequest
+  ): void {
+    const journey =
+      this.speakerJourneyService.createOrGetJourney(
+        request
+      );
+
+    this.router.navigate([
+      '/app/speaker-journeys',
+      journey.id
+    ]);
   }
 
   getCompletedReadinessCount(
