@@ -63,4 +63,13 @@ export class SpeakingRequestListComponent {
 
     return 'red';
   }
+
+  countByStatus(
+    requests: readonly SpeakingRequest[],
+    status: SpeakingRequestStatus
+  ): number {
+    return requests.filter(
+      request => request.status === status
+    ).length;
+  }
 }

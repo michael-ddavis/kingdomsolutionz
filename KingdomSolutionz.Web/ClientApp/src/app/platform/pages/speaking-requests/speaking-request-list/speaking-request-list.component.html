@@ -12,10 +12,10 @@
             </p>
         </div>
 
-        <a routerLink="/app/speaking-requests/new" class="primary-action">
+        <a routerLink="/invite/apostle-cynthia" class="primary-action">
 
             <span aria-hidden="true">+</span>
-            New invitation
+            Open invitation form
         </a>
     </header>
 
@@ -27,13 +27,27 @@
         </article>
 
         <article class="summary-card">
-            <strong>2</strong>
+            <strong>
+                {{
+                countByStatus(
+                requests,
+                'awaiting-review'
+                )
+                }}
+            </strong>
             <span>Awaiting review</span>
             <small>A decision is needed</small>
         </article>
 
         <article class="summary-card">
-            <strong>1</strong>
+            <strong>
+                {{
+                countByStatus(
+                requests,
+                'approved'
+                )
+                }}
+            </strong>
             <span>Approved</span>
             <small>Moving toward readiness</small>
         </article>

@@ -44,10 +44,6 @@ const routes: Routes = [
         component: SpeakingRequestListComponent
       },
       {
-        path: 'speaking-requests/new',
-        component: SpeakingRequestFormComponent
-      },
-      {
         path: 'speaking-requests/:id',
         component: SpeakingRequestDetailComponent
       },
@@ -57,6 +53,10 @@ const routes: Routes = [
         redirectTo: 'dashboard'
       },
     ]
+  },
+  {
+    path: 'invite/apostle-cynthia',
+    component: SpeakingRequestFormComponent
   },
   {
     path: '',

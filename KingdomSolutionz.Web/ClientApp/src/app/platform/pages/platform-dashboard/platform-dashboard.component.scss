@@ -547,3 +547,20 @@ h1 {
     margin: 0 auto;
   }
 }
+
+.priority-item--clickable {
+  transition:
+    padding 160ms ease,
+    background 160ms ease;
+}
+
+.priority-item--clickable:hover {
+  padding-right: 12px;
+  padding-left: 12px;
+  border-radius: 11px;
+  background: #fafaf8;
+}
+
+.priority-item--clickable:hover .priority-copy strong {
+  color: #345ec6;
+}

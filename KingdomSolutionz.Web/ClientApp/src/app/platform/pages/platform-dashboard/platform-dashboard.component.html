@@ -16,9 +16,7 @@
     </header>
 
     <section class="metric-grid" aria-label="Ministry summary">
-      <article
-        *ngFor="let metric of vm.metrics"
-        [ngClass]="[
+      <article *ngFor="let metric of vm.metrics" [ngClass]="[
           'metric-card',
           'metric-card--' + metric.tone
         ]">
@@ -31,9 +29,7 @@
       </article>
     </section>
 
-    <section
-      class="workspace-overview"
-      *ngIf="vm.workspaceOverviews?.length">
+    <section class="workspace-overview" *ngIf="vm.workspaceOverviews?.length">
 
       <div class="section-heading">
         <div>
@@ -47,9 +43,7 @@
       </div>
 
       <div class="workspace-card-grid">
-        <article
-          *ngFor="let workspace of vm.workspaceOverviews"
-          [ngClass]="[
+        <article *ngFor="let workspace of vm.workspaceOverviews" [ngClass]="[
             'workspace-card',
             'workspace-card--' + workspace.tone
           ]">
@@ -94,13 +88,14 @@
         </div>
 
         <div class="priority-list">
-          <button
-            type="button"
-            class="priority-item"
-            *ngFor="let priority of vm.priorities">
+          <button type="button" *ngFor="let priority of vm.priorities" [ngClass]="[
+    'priority-item',
+    priority.route
+      ? 'priority-item--clickable'
+      : ''
+  ]" (click)="openPriority(priority)">
 
-            <span
-              [ngClass]="[
+            <span [ngClass]="[
                 'priority-indicator',
                 'priority-indicator--' + priority.tone
               ]">
@@ -115,8 +110,7 @@
               </span>
             </span>
 
-            <span
-              [ngClass]="[
+            <span [ngClass]="[
                 'status',
                 'status--' + priority.tone
               ]">
@@ -136,9 +130,7 @@
         </div>
 
         <div class="activity-list">
-          <div
-            class="activity-item"
-            *ngFor="let activity of vm.activities">
+          <div class="activity-item" *ngFor="let activity of vm.activities">
 
             <span class="activity-avatar">
               {{ activity.initials }}

@@ -6,6 +6,7 @@ export type SpeakingRequestStatus =
 
 export interface SpeakingRequest {
   id: number;
+
   organizationName: string;
   eventName: string;
   eventType: string;
@@ -33,3 +34,11 @@ export interface SpeakingRequest {
 
   submittedUtc: string;
 }
+
+export type CreateSpeakingRequestInput = Omit<
+  SpeakingRequest,
+  'id' |
+  'readinessPercentage' |
+  'status' |
+  'submittedUtc'
+>;

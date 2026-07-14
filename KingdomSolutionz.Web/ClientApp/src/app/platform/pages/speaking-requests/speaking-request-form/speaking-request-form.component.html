@@ -1,1 +1,661 @@
-<p>speaking-request-form works!</p>
+<main class="invitation-shell">
+    <aside class="brand-panel">
+        <img class="brand-portrait" src="assets/images/apostle-cynthia/booking-portrait.avif"
+            alt="Apostle Cynthia Thompson">
+
+        <div class="brand-overlay"></div>
+
+        <img src="assets/images/apostle-cynthia/ct-logo.avif" alt="Cynthia Thompson Global"
+            class="brand-logo">
+
+        <div class="brand-content">
+            <p class="brand-kicker">
+                Speaking invitations
+            </p>
+
+            <h1>
+                Invite<br>
+                Apostle Cynthia
+            </h1>
+
+            <p class="brand-description">
+                Thank you for considering Apostle Cynthia Thompson
+                for your gathering. Please share the details of your
+                event so her ministry team can prayerfully review the
+                invitation.
+            </p>
+
+            <div class="brand-divider"></div>
+
+            <p class="brand-note">
+                Excellence in preparation helps create room for
+                effective ministry.
+            </p>
+        </div>
+
+        <div class="brand-footer">
+            <span>Prayer</span>
+            <span>Preparation</span>
+            <span>Ministry</span>
+        </div>
+    </aside>
+
+    <section class="invitation-content">
+        <ng-container *ngIf="
+        submittedRequest as request;
+        else invitationForm
+      ">
+
+            <section class="confirmation-view" aria-live="polite">
+
+                <div class="confirmation-mark">
+                    <span>✓</span>
+                </div>
+
+                <p class="page-eyebrow">
+                    Invitation received
+                </p>
+
+                <h2>
+                    Thank you for inviting Apostle Cynthia.
+                </h2>
+
+                <p class="confirmation-introduction">
+                    Her ministry team will review the information
+                    provided and contact your primary coordinator if
+                    additional details are needed.
+                </p>
+
+                <div class="confirmation-status">
+                    <span class="status-dot"></span>
+
+                    <div>
+                        <small>Current status</small>
+                        <strong>Awaiting review</strong>
+                    </div>
+                </div>
+
+                <section class="confirmation-details">
+                    <div class="confirmation-heading">
+                        <div>
+                            <p class="section-eyebrow">
+                                Invitation summary
+                            </p>
+
+                            <h3>{{ request.eventName }}</h3>
+                        </div>
+
+                        <span class="request-number">
+                            ACT-{{ request.id }}
+                        </span>
+                    </div>
+
+                    <dl>
+                        <div>
+                            <dt>Host ministry</dt>
+                            <dd>{{ request.organizationName }}</dd>
+                        </div>
+
+                        <div>
+                            <dt>Event dates</dt>
+                            <dd>
+                                {{ request.startDate | date:'MMMM d, y' }}
+
+                                <ng-container *ngIf="
+                    request.endDate !==
+                    request.startDate
+                  ">
+
+                                    –
+                                    {{ request.endDate | date:'MMMM d, y' }}
+                                </ng-container>
+                            </dd>
+                        </div>
+
+                        <div>
+                            <dt>Location</dt>
+
+                            <dd>
+                                {{ request.city }},
+                                {{ request.state }}
+                            </dd>
+                        </div>
+
+                        <div>
+                            <dt>Primary contact</dt>
+                            <dd>{{ request.contactName }}</dd>
+                        </div>
+
+                        <div>
+                            <dt>Submitted</dt>
+
+                            <dd>
+                                {{
+                                request.submittedUtc
+                                | date:'MMMM d, y, h:mm a'
+                                }}
+                            </dd>
+                        </div>
+
+                        <div>
+                            <dt>Host readiness</dt>
+                            <dd>{{ request.readinessPercentage }}%</dd>
+                        </div>
+                    </dl>
+                </section>
+
+                <div class="confirmation-actions">
+                    <button type="button" class="primary-button" (click)="submitAnotherInvitation()">
+
+                        Submit another invitation
+                    </button>
+
+                    <a href="https://www.cynthiathompsonglobal.com/" class="secondary-button">
+
+                        Return to Cynthia Thompson Global
+                    </a>
+                </div>
+
+                <p class="confirmation-reminder">
+                    Please keep your reference number
+                    <strong>ACT-{{ request.id }}</strong>
+                    for your records.
+                </p>
+            </section>
+        </ng-container>
+
+        <ng-template #invitationForm>
+            <header class="form-header">
+                <a href="https://www.cynthiathompsonglobal.com/" class="return-link">
+
+                    <span aria-hidden="true">←</span>
+                    Return to Cynthia Thompson Global
+                </a>
+
+                <p class="page-eyebrow">
+                    Host ministry portal
+                </p>
+
+                <h2>Speaking invitation</h2>
+
+                <p class="form-introduction">
+                    Tell us about your ministry, the gathering and the
+                    assignment you are requesting. Fields marked with
+                    an asterisk are required.
+                </p>
+            </header>
+
+            <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+                <section class="form-section">
+                    <div class="section-heading">
+                        <span class="section-number">01</span>
+
+                        <div>
+                            <p class="section-eyebrow">
+                                Host and gathering
+                            </p>
+
+                            <h3>Tell us about the event</h3>
+                        </div>
+                    </div>
+
+                    <div class="field-grid">
+                        <label class="form-field form-field--wide">
+                            <span>
+                                Ministry or organization name
+                                <em>*</em>
+                            </span>
+
+                            <input type="text" formControlName="organizationName"
+                                placeholder="Greater Hope Worship Center" [class.is-invalid]="
+                  isInvalid(controls.organizationName)
+                ">
+
+                            <small class="field-error" *ngIf="
+                  isInvalid(controls.organizationName)
+                ">
+
+                                Please enter the ministry or organization
+                                name.
+                            </small>
+                        </label>
+
+                        <label class="form-field form-field--wide">
+                            <span>
+                                Event name
+                                <em>*</em>
+                            </span>
+
+                            <input type="text" formControlName="eventName" placeholder="Women of Fire Conference"
+                                [class.is-invalid]="
+                  isInvalid(controls.eventName)
+                ">
+
+                            <small class="field-error" *ngIf="isInvalid(controls.eventName)">
+
+                                Please enter the event name.
+                            </small>
+                        </label>
+
+                        <label class="form-field">
+                            <span>
+                                Event type
+                                <em>*</em>
+                            </span>
+
+                            <select formControlName="eventType" [class.is-invalid]="
+                  isInvalid(controls.eventType)
+                ">
+
+                                <option value="">
+                                    Select an event type
+                                </option>
+
+                                <option *ngFor="let eventType of eventTypes" [value]="eventType">
+
+                                    {{ eventType }}
+                                </option>
+                            </select>
+
+                            <small class="field-error" *ngIf="isInvalid(controls.eventType)">
+
+                                Please select an event type.
+                            </small>
+                        </label>
+
+                        <label class="form-field">
+                            <span>
+                                Expected attendance
+                                <em>*</em>
+                            </span>
+
+                            <input type="number" min="1" max="100000" formControlName="expectedAttendance"
+                                placeholder="300" [class.is-invalid]="
+                  isInvalid(
+                    controls.expectedAttendance
+                  )
+                ">
+
+                            <small class="field-error" *ngIf="
+                  isInvalid(
+                    controls.expectedAttendance
+                  )
+                ">
+
+                                Please provide an attendance estimate.
+                            </small>
+                        </label>
+
+                        <label class="form-field form-field--wide">
+                            <span>
+                                Requested ministry assignment
+                                <em>*</em>
+                            </span>
+
+                            <textarea rows="6" formControlName="ministryRequest"
+                                placeholder="Describe the services, sessions, leadership meetings or ministry responsibilities being requested."
+                                [class.is-invalid]="
+                  isInvalid(controls.ministryRequest)
+                ">
+              </textarea>
+
+                            <div class="field-support">
+                                <small class="field-error" *ngIf="
+                    isInvalid(
+                      controls.ministryRequest
+                    )
+                  ">
+
+                                    Please describe the requested ministry
+                                    assignment.
+                                </small>
+
+                                <small class="character-count">
+                                    {{
+                                    controls.ministryRequest.value.length
+                                    }}
+                                    / 1500
+                                </small>
+                            </div>
+                        </label>
+                    </div>
+                </section>
+
+                <section class="form-section">
+                    <div class="section-heading">
+                        <span class="section-number">02</span>
+
+                        <div>
+                            <p class="section-eyebrow">
+                                Event logistics
+                            </p>
+
+                            <h3>Dates and location</h3>
+                        </div>
+                    </div>
+
+                    <div class="field-grid">
+                        <label class="form-field">
+                            <span>
+                                Start date
+                                <em>*</em>
+                            </span>
+
+                            <input type="date" formControlName="startDate" [class.is-invalid]="
+                  isInvalid(controls.startDate) ||
+                  dateRangeInvalid
+                ">
+
+                            <small class="field-error" *ngIf="isInvalid(controls.startDate)">
+
+                                Please select the start date.
+                            </small>
+                        </label>
+
+                        <label class="form-field">
+                            <span>
+                                End date
+                                <em>*</em>
+                            </span>
+
+                            <input type="date" formControlName="endDate" [class.is-invalid]="
+                  isInvalid(controls.endDate) ||
+                  dateRangeInvalid
+                ">
+
+                            <small class="field-error" *ngIf="isInvalid(controls.endDate)">
+
+                                Please select the end date.
+                            </small>
+                        </label>
+
+                        <div class="date-error" *ngIf="
+                dateRangeInvalid &&
+                (
+                  submitted ||
+                  controls.startDate.touched ||
+                  controls.endDate.touched
+                )
+              ">
+
+                            The end date cannot be before the start date.
+                        </div>
+
+                        <label class="form-field form-field--wide">
+                            <span>
+                                Venue name
+                                <em>*</em>
+                            </span>
+
+                            <input type="text" formControlName="venueName" placeholder="Greater Hope Worship Center"
+                                [class.is-invalid]="
+                  isInvalid(controls.venueName)
+                ">
+
+                            <small class="field-error" *ngIf="isInvalid(controls.venueName)">
+
+                                Please enter the venue name.
+                            </small>
+                        </label>
+
+                        <label class="form-field">
+                            <span>
+                                City
+                                <em>*</em>
+                            </span>
+
+                            <input type="text" formControlName="city" placeholder="Charlotte" [class.is-invalid]="
+                  isInvalid(controls.city)
+                ">
+
+                            <small class="field-error" *ngIf="isInvalid(controls.city)">
+
+                                Please enter the event city.
+                            </small>
+                        </label>
+
+                        <label class="form-field">
+                            <span>
+                                State
+                                <em>*</em>
+                            </span>
+
+                            <input type="text" maxlength="2" formControlName="state" placeholder="NC"
+                                (blur)="normalizeState()" [class.is-invalid]="
+                  isInvalid(controls.state)
+                ">
+
+                            <small class="field-error" *ngIf="isInvalid(controls.state)">
+
+                                Enter a two-letter state abbreviation.
+                            </small>
+                        </label>
+                    </div>
+                </section>
+
+                <section class="form-section">
+                    <div class="section-heading">
+                        <span class="section-number">03</span>
+
+                        <div>
+                            <p class="section-eyebrow">
+                                Primary coordinator
+                            </p>
+
+                            <h3>Who should our team contact?</h3>
+                        </div>
+                    </div>
+
+                    <div class="field-grid">
+                        <label class="form-field form-field--wide">
+                            <span>
+                                Contact name
+                                <em>*</em>
+                            </span>
+
+                            <input type="text" formControlName="contactName" placeholder="Pastor Naomi Brooks"
+                                [class.is-invalid]="
+                  isInvalid(controls.contactName)
+                ">
+
+                            <small class="field-error" *ngIf="isInvalid(controls.contactName)">
+
+                                Please enter the primary contact’s name.
+                            </small>
+                        </label>
+
+                        <label class="form-field">
+                            <span>
+                                Email address
+                                <em>*</em>
+                            </span>
+
+                            <input type="email" formControlName="contactEmail" placeholder="name@ministry.org"
+                                [class.is-invalid]="
+                  isInvalid(controls.contactEmail)
+                ">
+
+                            <small class="field-error" *ngIf="isInvalid(controls.contactEmail)">
+
+                                Please enter a valid email address.
+                            </small>
+                        </label>
+
+                        <label class="form-field">
+                            <span>
+                                Phone number
+                                <em>*</em>
+                            </span>
+
+                            <input type="tel" formControlName="contactPhone" placeholder="(804) 555-0123"
+                                [class.is-invalid]="
+                  isInvalid(controls.contactPhone)
+                ">
+
+                            <small class="field-error" *ngIf="isInvalid(controls.contactPhone)">
+
+                                Please enter a phone number.
+                            </small>
+                        </label>
+                    </div>
+                </section>
+
+                <section class="form-section">
+                    <div class="section-heading">
+                        <span class="section-number">04</span>
+
+                        <div>
+                            <p class="section-eyebrow">
+                                Host coverage
+                            </p>
+
+                            <h3>Travel, lodging and honorarium</h3>
+                        </div>
+                    </div>
+
+                    <p class="section-description">
+                        Select each arrangement that the host ministry
+                        has already confirmed.
+                    </p>
+
+                    <div class="coverage-grid">
+                        <label class="coverage-card">
+                            <input type="checkbox" formControlName="travelCovered">
+
+                            <span class="checkbox-mark"></span>
+
+                            <span class="coverage-copy">
+                                <strong>Travel expenses covered</strong>
+
+                                <small>
+                                    Airfare, mileage or other primary travel
+                                    expenses will be provided.
+                                </small>
+                            </span>
+                        </label>
+
+                        <label class="coverage-card">
+                            <input type="checkbox" formControlName="lodgingCovered">
+
+                            <span class="checkbox-mark"></span>
+
+                            <span class="coverage-copy">
+                                <strong>Lodging provided</strong>
+
+                                <small>
+                                    Hotel or approved ministry lodging will be
+                                    arranged.
+                                </small>
+                            </span>
+                        </label>
+
+                        <label class="coverage-card">
+                            <input type="checkbox" formControlName="honorariumProvided">
+
+                            <span class="checkbox-mark"></span>
+
+                            <span class="coverage-copy">
+                                <strong>Honorarium confirmed</strong>
+
+                                <small>
+                                    The ministry has prepared an honorarium
+                                    arrangement.
+                                </small>
+                            </span>
+                        </label>
+                    </div>
+                </section>
+
+                <section class="submission-section">
+                    <div class="readiness-card">
+                        <div class="readiness-heading">
+                            <div>
+                                <p class="section-eyebrow">
+                                    Invitation readiness
+                                </p>
+
+                                <h3>
+                                    {{ readinessPercentage }}% complete
+                                </h3>
+                            </div>
+
+                            <span class="readiness-percentage">
+                                {{ readinessPercentage }}%
+                            </span>
+                        </div>
+
+                        <div class="readiness-bar">
+                            <span [style.width.%]="readinessPercentage">
+                            </span>
+                        </div>
+
+                        <div class="readiness-items">
+                            <span [class.complete]="
+                  eventDetailsComplete
+                ">
+
+                                Event details
+                            </span>
+
+                            <span [class.complete]="
+                  contactDetailsComplete
+                ">
+
+                                Host contact
+                            </span>
+
+                            <span [class.complete]="
+                  controls.travelCovered.value
+                ">
+
+                                Travel
+                            </span>
+
+                            <span [class.complete]="
+                  controls.lodgingCovered.value
+                ">
+
+                                Lodging
+                            </span>
+
+                            <span [class.complete]="
+                  controls.honorariumProvided.value
+                ">
+
+                                Honorarium
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="submission-copy">
+                        <h3>Ready to send the invitation?</h3>
+
+                        <p>
+                            Your request will be delivered to Apostle
+                            Cynthia’s ministry team with the status
+                            <strong>Awaiting review</strong>.
+                        </p>
+
+                        <button type="submit" class="submit-button">
+
+                            Submit speaking invitation
+                            <span aria-hidden="true">→</span>
+                        </button>
+
+                        <p class="privacy-note">
+                            Information submitted through this form is used
+                            only for invitation review and ministry
+                            coordination.
+                        </p>
+                    </div>
+                </section>
+            </form>
+
+            <footer class="powered-by">
+                <span>Ministry workflow powered by</span>
+                <strong>KingdomSolutionz</strong>
+            </footer>
+        </ng-template>
+    </section>
+</main>
