@@ -1,0 +1,472 @@
+<ng-container
+  *ngIf="journeys$ | async as journeys">
+
+  <section class="journeys-page">
+    <header class="page-heading">
+      <div>
+        <p class="eyebrow">
+          Itinerant ministry
+        </p>
+
+        <h1>Speaker journeys</h1>
+
+        <p class="page-description">
+          Track every approved engagement from initial
+          preparation through travel, ministry and
+          follow-up.
+        </p>
+      </div>
+
+      <a
+        routerLink="/invite/apostle-cynthia"
+        class="primary-action">
+
+        <span aria-hidden="true">+</span>
+        Open invitation form
+      </a>
+    </header>
+
+    <section
+      class="summary-grid"
+      aria-label="Speaker journey summary">
+
+      <article class="summary-card">
+        <div class="summary-icon summary-icon--navy">
+          SJ
+        </div>
+
+        <div>
+          <strong>
+            {{ journeys.length }}
+          </strong>
+
+          <span>Total journeys</span>
+
+          <small>
+            Approved ministry engagements
+          </small>
+        </div>
+      </article>
+
+      <article class="summary-card">
+        <div class="summary-icon summary-icon--violet">
+          A
+        </div>
+
+        <div>
+          <strong>
+            {{
+              countByStatus(
+                journeys,
+                'active'
+              )
+            }}
+          </strong>
+
+          <span>Active journeys</span>
+
+          <small>
+            Currently in preparation
+          </small>
+        </div>
+      </article>
+
+      <article class="summary-card">
+        <div class="summary-icon summary-icon--gold">
+          30
+        </div>
+
+        <div>
+          <strong>
+            {{
+              getApproachingEventCount(
+                journeys
+              )
+            }}
+          </strong>
+
+          <span>Within 30 days</span>
+
+          <small>
+            Engagements approaching
+          </small>
+        </div>
+      </article>
+
+      <article class="summary-card">
+        <div class="summary-icon summary-icon--green">
+          %
+        </div>
+
+        <div>
+          <strong>
+            {{
+              getAverageReadiness(
+                journeys
+              )
+            }}%
+          </strong>
+
+          <span>Average readiness</span>
+
+          <small>
+            Across all journeys
+          </small>
+        </div>
+      </article>
+    </section>
+
+    <section
+      class="attention-banner"
+      *ngIf="
+        getTotalBlockedTasks(journeys) > 0
+      ">
+
+      <div class="attention-mark">!</div>
+
+      <div>
+        <strong>
+          Preparation needs attention
+        </strong>
+
+        <p>
+          {{
+            getTotalBlockedTasks(journeys)
+          }}
+          blocked
+          {{
+            getTotalBlockedTasks(journeys) === 1
+              ? 'task requires'
+              : 'tasks require'
+          }}
+          action.
+        </p>
+      </div>
+    </section>
+
+    <section class="journey-toolbar">
+      <div
+        class="filter-group"
+        aria-label="Filter speaker journeys">
+
+        <button
+          type="button"
+          [class.selected]="
+            selectedFilter === 'all'
+          "
+          (click)="setFilter('all')">
+
+          All
+
+          <span>
+            {{ journeys.length }}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          [class.selected]="
+            selectedFilter === 'active'
+          "
+          (click)="setFilter('active')">
+
+          Active
+
+          <span>
+            {{
+              countByStatus(
+                journeys,
+                'active'
+              )
+            }}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          [class.selected]="
+            selectedFilter === 'completed'
+          "
+          (click)="setFilter('completed')">
+
+          Completed
+
+          <span>
+            {{
+              countByStatus(
+                journeys,
+                'completed'
+              )
+            }}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          [class.selected]="
+            selectedFilter === 'cancelled'
+          "
+          (click)="setFilter('cancelled')">
+
+          Cancelled
+
+          <span>
+            {{
+              countByStatus(
+                journeys,
+                'cancelled'
+              )
+            }}
+          </span>
+        </button>
+      </div>
+
+      <span class="result-count">
+        {{
+          getFilteredJourneys(journeys).length
+        }}
+        {{
+          getFilteredJourneys(journeys).length === 1
+            ? 'journey'
+            : 'journeys'
+        }}
+      </span>
+    </section>
+
+    <section
+      class="journey-list"
+      *ngIf="
+        getFilteredJourneys(journeys).length > 0;
+        else noJourneys
+      ">
+
+      <a
+        *ngFor="
+          let journey of
+            getFilteredJourneys(journeys);
+          trackBy: trackByJourneyId
+        "
+        [routerLink]="[
+          '/app/speaker-journeys',
+          journey.id
+        ]"
+        class="journey-card">
+
+        <header class="journey-card-heading">
+          <div class="journey-identity">
+            <span
+              [ngClass]="[
+                'journey-status',
+                'journey-status--' +
+                  journey.status
+              ]">
+
+              {{
+                journey.status === 'active'
+                  ? 'Active'
+                  : journey.status ===
+                      'completed'
+                    ? 'Completed'
+                    : 'Cancelled'
+              }}
+            </span>
+
+            <span class="journey-reference">
+              JRN-{{ journey.id }}
+            </span>
+          </div>
+
+          <span
+            [ngClass]="[
+              'event-timing',
+              getDaysUntilEvent(journey) <= 14 &&
+              getDaysUntilEvent(journey) >= 0
+                ? 'event-timing--soon'
+                : ''
+            ]">
+
+            {{ getEventTimingLabel(journey) }}
+          </span>
+        </header>
+
+        <div class="journey-card-body">
+          <div class="journey-main">
+            <p class="event-type">
+              {{ journey.eventType }}
+            </p>
+
+            <h2>{{ journey.eventName }}</h2>
+
+            <p class="organization-name">
+              {{ journey.organizationName }}
+            </p>
+
+            <div class="event-details">
+              <span>
+                <strong>Dates</strong>
+
+                {{
+                  journey.startDate
+                    | date:'MMM d'
+                }}
+
+                <ng-container
+                  *ngIf="
+                    journey.endDate !==
+                    journey.startDate
+                  ">
+
+                  –
+                  {{
+                    journey.endDate
+                      | date:'MMM d, y'
+                  }}
+                </ng-container>
+
+                <ng-container
+                  *ngIf="
+                    journey.endDate ===
+                    journey.startDate
+                  ">
+
+                  {{
+                    journey.startDate
+                      | date:'y'
+                  }}
+                </ng-container>
+              </span>
+
+              <span>
+                <strong>Location</strong>
+
+                {{ journey.city }},
+                {{ journey.state }}
+              </span>
+
+              <span>
+                <strong>Venue</strong>
+
+                {{ journey.venueName }}
+              </span>
+            </div>
+          </div>
+
+          <div class="current-stage">
+            <small>Current stage</small>
+
+            <strong>
+              {{
+                getCurrentStage(journey)?.name
+              }}
+            </strong>
+
+            <span>
+              {{
+                getCurrentStage(journey)
+                  ?.description
+              }}
+            </span>
+          </div>
+        </div>
+
+        <footer class="journey-card-footer">
+          <div class="journey-progress">
+            <div class="progress-heading">
+              <span>Journey progress</span>
+
+              <strong>
+                {{
+                  journey.readinessPercentage
+                }}%
+              </strong>
+            </div>
+
+            <div class="progress-bar">
+              <span
+                [style.width.%]="
+                  journey.readinessPercentage
+                ">
+              </span>
+            </div>
+
+            <small>
+              {{
+                getCompletedTaskCount(
+                  journey
+                )
+              }}
+              of
+              {{
+                getTotalTaskCount(
+                  journey
+                )
+              }}
+              tasks complete
+            </small>
+          </div>
+
+          <div class="journey-meta">
+            <div
+              class="blocked-count"
+              *ngIf="
+                getBlockedTaskCount(journey) > 0
+              ">
+
+              <span>!</span>
+
+              {{
+                getBlockedTaskCount(journey)
+              }}
+              blocked
+            </div>
+
+            <div
+              class="next-task"
+              *ngIf="
+                getNextDueTask(journey)
+                  as nextTask
+              ">
+
+              <small>Next due</small>
+
+              <strong>
+                {{ nextTask.title }}
+              </strong>
+
+              <span>
+                {{
+                  nextTask.dueDate
+                    | date:'MMM d, y'
+                }}
+              </span>
+            </div>
+
+            <span class="open-arrow">
+              →
+            </span>
+          </div>
+        </footer>
+      </a>
+    </section>
+
+    <ng-template #noJourneys>
+      <section class="empty-state">
+        <div class="empty-mark">SJ</div>
+
+        <h2>No journeys found</h2>
+
+        <p>
+          There are no speaker journeys matching the
+          selected filter.
+        </p>
+
+        <button
+          type="button"
+          (click)="setFilter('all')">
+
+          View all journeys
+        </button>
+      </section>
+    </ng-template>
+  </section>
+</ng-container>

@@ -28,6 +28,9 @@ import {
 import {
   SpeakerJourneyDetailComponent
 } from './platform/pages/speaker-journeys/speaker-journey-detail/speaker-journey-detail.component';
+import {
+  SpeakerJourneyListComponent
+} from './platform/pages/speaker-journeys/speaker-journey-list/speaker-journey-list.component';
 
 const routes: Routes = [
   {
@@ -49,6 +52,14 @@ const routes: Routes = [
       {
         path: 'speaking-requests/:id',
         component: SpeakingRequestDetailComponent
+      },
+      {
+        path: 'speaker-journeys/:id',
+        component: SpeakerJourneyDetailComponent
+      },
+      {
+        path: 'speaker-journeys',
+        component: SpeakerJourneyListComponent
       },
       {
         path: 'speaker-journeys/:id',

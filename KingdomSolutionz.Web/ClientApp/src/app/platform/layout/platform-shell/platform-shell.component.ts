@@ -1,6 +1,27 @@
 import { Component } from '@angular/core';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-import { WorkspaceService } from '../../shared/services/workspace.service';
+import {
+  Workspace
+} from '../../shared/models/workspace.model';
+
+import {
+  WorkspaceService
+} from '../../shared/services/workspace.service';
+
+export interface PlatformNavigationItem {
+  label: string;
+  description?: string;
+  route: string;
+  icon: 'dashboard' | 'requests' | 'journeys';
+  exact?: boolean;
+}
+
+interface PlatformNavigationSection {
+  label: string;
+  items: PlatformNavigationItem[];
+}
 
 @Component({
   selector: 'app-platform-shell',
@@ -8,10 +29,141 @@ import { WorkspaceService } from '../../shared/services/workspace.service';
   styleUrls: ['./platform-shell.component.scss']
 })
 export class PlatformShellComponent {
-  readonly selectedWorkspace$ =
-    this.workspaceService.selectedWorkspace$;
+  sidebarOpen = false;
+
+  readonly selectedWorkspace$:
+    Observable<Workspace> =
+      this.workspaceService.selectedWorkspace$;
+
+  readonly navigationSections$:
+    Observable<PlatformNavigationSection[]> =
+      this.selectedWorkspace$.pipe(
+        map(workspace =>
+          this.buildNavigationSections(workspace)
+        )
+      );
 
   constructor(
-    private readonly workspaceService: WorkspaceService
+    private readonly workspaceService:
+      WorkspaceService
   ) {}
+
+  toggleSidebar(): void {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
+
+  closeSidebar(): void {
+    this.sidebarOpen = false;
+  }
+
+  private buildNavigationSections(
+    workspace: Workspace
+  ): PlatformNavigationSection[] {
+    switch (workspace.id) {
+      case 'apostle-cynthia':
+        return this.buildApostleCynthiaNavigation();
+
+      case 'jpp':
+        return this.buildJppNavigation();
+
+      case 'all':
+      default:
+        return this.buildAllMinistriesNavigation();
+    }
+  }
+
+  private buildAllMinistriesNavigation():
+    PlatformNavigationSection[] {
+    return [
+      {
+        label: 'Overview',
+        items: [
+          {
+            label: 'Dashboard',
+            description:
+              'Priorities across connected ministries',
+            route: '/app/dashboard',
+            icon: 'dashboard',
+            exact: true
+          }
+        ]
+      },
+      {
+        label: 'Apostle Cynthia Ministries',
+        items: [
+          {
+            label: 'Speaking Requests',
+            description:
+              'Review incoming host invitations',
+            route: '/app/speaking-requests',
+            icon: 'requests'
+          },
+          {
+            label: 'Speaker Journeys',
+            description:
+              'Approved engagements and preparation',
+            route: '/app/speaker-journeys',
+            icon: 'journeys'
+          }
+        ]
+      }
+    ];
+  }
+
+  private buildApostleCynthiaNavigation():
+    PlatformNavigationSection[] {
+    return [
+      {
+        label: 'Overview',
+        items: [
+          {
+            label: 'Dashboard',
+            description:
+              'Itinerant ministry overview',
+            route: '/app/dashboard',
+            icon: 'dashboard',
+            exact: true
+          }
+        ]
+      },
+      {
+        label: 'Speaking Ministry',
+        items: [
+          {
+            label: 'Speaking Requests',
+            description:
+              'Review incoming invitations',
+            route: '/app/speaking-requests',
+            icon: 'requests'
+          },
+          {
+            label: 'Speaker Journeys',
+            description:
+              'Travel, preparation and follow-up',
+            route: '/app/speaker-journeys',
+            icon: 'journeys'
+          }
+        ]
+      }
+    ];
+  }
+
+  private buildJppNavigation():
+    PlatformNavigationSection[] {
+    return [
+      {
+        label: 'Overview',
+        items: [
+          {
+            label: 'Dashboard',
+            description:
+              'Discipleship and care overview',
+            route: '/app/dashboard',
+            icon: 'dashboard',
+            exact: true
+          }
+        ]
+      }
+    ];
+  }
 }

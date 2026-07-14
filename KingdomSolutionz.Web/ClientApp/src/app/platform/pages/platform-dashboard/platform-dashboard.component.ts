@@ -12,12 +12,22 @@ import {
 } from '../../shared/models/speaking-request.model';
 
 import {
+  SpeakerJourney,
+  SpeakerJourneyStage,
+  SpeakerJourneyTask
+} from '../../shared/models/speaker-journey.model';
+
+import {
   Workspace
 } from '../../shared/models/workspace.model';
 
 import {
   SpeakingRequestService
 } from '../../shared/services/speaking-request.service';
+
+import {
+  SpeakerJourneyService
+} from '../../shared/services/speaker-journey.service';
 
 import {
   WorkspaceService
@@ -82,6 +92,12 @@ interface DashboardViewModel {
   workspaceOverviews?: WorkspaceOverview[];
 }
 
+interface JourneyTaskContext {
+  journey: SpeakerJourney;
+  stage: SpeakerJourneyStage;
+  task: SpeakerJourneyTask;
+}
+
 @Component({
   selector: 'app-platform-dashboard',
   templateUrl: './platform-dashboard.component.html',
@@ -99,13 +115,20 @@ export class PlatformDashboardComponent {
   readonly viewModel$: Observable<DashboardViewModel> =
     combineLatest([
       this.workspaceService.selectedWorkspace$,
-      this.speakingRequestService.speakingRequests$
+      this.speakingRequestService.speakingRequests$,
+      this.speakerJourneyService.speakerJourneys$
     ]).pipe(
-      map(([workspace, speakingRequests]) =>
-        this.buildDashboard(
+      map(
+        ([
           workspace,
-          speakingRequests
-        )
+          speakingRequests,
+          speakerJourneys
+        ]) =>
+          this.buildDashboard(
+            workspace,
+            speakingRequests,
+            speakerJourneys
+          )
       )
     );
 
@@ -115,6 +138,9 @@ export class PlatformDashboardComponent {
 
     private readonly speakingRequestService:
       SpeakingRequestService,
+
+    private readonly speakerJourneyService:
+      SpeakerJourneyService,
 
     private readonly router: Router
   ) {}
@@ -131,13 +157,15 @@ export class PlatformDashboardComponent {
 
   private buildDashboard(
     workspace: Workspace,
-    speakingRequests: readonly SpeakingRequest[]
+    speakingRequests: readonly SpeakingRequest[],
+    speakerJourneys: readonly SpeakerJourney[]
   ): DashboardViewModel {
     switch (workspace.id) {
       case 'apostle-cynthia':
         return this.buildApostleCynthiaDashboard(
           workspace,
-          speakingRequests
+          speakingRequests,
+          speakerJourneys
         );
 
       case 'jpp':
@@ -147,17 +175,22 @@ export class PlatformDashboardComponent {
       default:
         return this.buildAllMinistriesDashboard(
           workspace,
-          speakingRequests
+          speakingRequests,
+          speakerJourneys
         );
     }
   }
 
   private buildAllMinistriesDashboard(
     workspace: Workspace,
-    speakingRequests: readonly SpeakingRequest[]
+    speakingRequests: readonly SpeakingRequest[],
+    speakerJourneys: readonly SpeakerJourney[]
   ): DashboardViewModel {
     const orderedRequests =
       this.orderRequestsByNewest(speakingRequests);
+
+    const orderedJourneys =
+      this.orderJourneysByEventDate(speakerJourneys);
 
     const awaitingReview =
       orderedRequests.filter(
@@ -171,12 +204,27 @@ export class PlatformDashboardComponent {
           request.status === 'information-needed'
       );
 
+    const activeJourneys =
+      orderedJourneys.filter(
+        journey => journey.status === 'active'
+      );
+
+    const journeyAttentionCount =
+      this.getJourneyAttentionCount(
+        activeJourneys
+      );
+
     const requestPriorities =
       this.buildRequestPriorities(
         orderedRequests
       );
 
-    const staticPriorities: DashboardPriority[] = [
+    const journeyPriorities =
+      this.buildJourneyPriorities(
+        activeJourneys
+      );
+
+    const jppPriorities: DashboardPriority[] = [
       {
         title: 'Contact Marcus Johnson',
         description:
@@ -194,27 +242,20 @@ export class PlatformDashboardComponent {
         due: 'Waiting 1 day',
         status: 'Awaiting handoff',
         tone: 'blue'
-      },
-      {
-        title: 'Confirm airport transportation',
-        description:
-          'Ground transportation is still missing for the Atlanta engagement.',
-        workspace: 'ACT Ministries',
-        due: 'Due Friday',
-        status: 'Travel needed',
-        tone: 'amber'
       }
     ];
 
     const priorities = [
       ...requestPriorities.slice(0, 2),
-      ...staticPriorities
+      ...journeyPriorities.slice(0, 2),
+      ...jppPriorities
     ].slice(0, 5);
 
     const openPriorityCount =
       awaitingReview.length +
       informationNeeded.length +
-      staticPriorities.length;
+      journeyAttentionCount +
+      jppPriorities.length;
 
     return {
       workspace,
@@ -227,14 +268,14 @@ export class PlatformDashboardComponent {
         {
           value: openPriorityCount.toString(),
           label: 'Open priorities',
-          detail: 'Across both ministries',
+          detail: 'Across connected ministries',
           tone: 'navy'
         },
         {
-          value: '18',
-          label: 'Active in discipleship',
-          detail: 'Currently connected',
-          tone: 'blue'
+          value: activeJourneys.length.toString(),
+          label: 'Active engagements',
+          detail: 'Speaking journeys underway',
+          tone: 'violet'
         },
         {
           value: awaitingReview.length.toString(),
@@ -243,7 +284,7 @@ export class PlatformDashboardComponent {
             awaitingReview.length === 1
               ? 'One decision is needed'
               : 'Decisions are needed',
-          tone: 'violet'
+          tone: 'blue'
         },
         {
           value: '3',
@@ -256,7 +297,8 @@ export class PlatformDashboardComponent {
       priorities,
 
       activities: this.buildCombinedActivities(
-        orderedRequests
+        orderedRequests,
+        orderedJourneys
       ),
 
       workspaceOverviews: [
@@ -265,11 +307,13 @@ export class PlatformDashboardComponent {
           description:
             'Speaking, travel, events and ministry responses.',
           primaryMetric:
-            awaitingReview.length.toString(),
-          primaryLabel: 'To review',
+            activeJourneys.length.toString(),
+          primaryLabel: 'Active journeys',
           secondaryMetric:
-            informationNeeded.length.toString(),
-          secondaryLabel: 'Need information',
+            this.getAverageReadiness(
+              activeJourneys
+            ) + '%',
+          secondaryLabel: 'Readiness',
           tone: 'violet'
         },
         {
@@ -288,21 +332,19 @@ export class PlatformDashboardComponent {
 
   private buildApostleCynthiaDashboard(
     workspace: Workspace,
-    speakingRequests: readonly SpeakingRequest[]
+    speakingRequests: readonly SpeakingRequest[],
+    speakerJourneys: readonly SpeakerJourney[]
   ): DashboardViewModel {
     const orderedRequests =
       this.orderRequestsByNewest(speakingRequests);
+
+    const orderedJourneys =
+      this.orderJourneysByEventDate(speakerJourneys);
 
     const awaitingReview =
       orderedRequests.filter(
         request =>
           request.status === 'awaiting-review'
-      );
-
-    const approved =
-      orderedRequests.filter(
-        request =>
-          request.status === 'approved'
       );
 
     const informationNeeded =
@@ -311,31 +353,33 @@ export class PlatformDashboardComponent {
           request.status === 'information-needed'
       );
 
+    const activeJourneys =
+      orderedJourneys.filter(
+        journey => journey.status === 'active'
+      );
+
+    const approachingEvents =
+      activeJourneys.filter(
+        journey => {
+          const daysUntilEvent =
+            this.getDaysUntilEvent(journey);
+
+          return (
+            daysUntilEvent >= 0 &&
+            daysUntilEvent <= 30
+          );
+        }
+      );
+
     const requestPriorities =
       this.buildRequestPriorities(
         orderedRequests
       );
 
-    const staticPriorities: DashboardPriority[] = [
-      {
-        title: 'Confirm Atlanta ground transportation',
-        description:
-          'The host has confirmed the hotel but not airport pickup.',
-        workspace: 'Travel',
-        due: 'Due Friday',
-        status: 'Information needed',
-        tone: 'amber'
-      },
-      {
-        title: 'Handoff three discipleship responses',
-        description:
-          'Responses from the Charlotte gathering need receiving ministries.',
-        workspace: 'Ministry Responses',
-        due: 'Waiting 2 days',
-        status: 'Awaiting handoff',
-        tone: 'blue'
-      }
-    ];
+    const journeyPriorities =
+      this.buildJourneyPriorities(
+        activeJourneys
+      );
 
     return {
       workspace,
@@ -346,42 +390,46 @@ export class PlatformDashboardComponent {
 
       metrics: [
         {
-          value: speakingRequests.length.toString(),
-          label: 'Speaking requests',
-          detail: 'Currently in the system',
+          value: activeJourneys.length.toString(),
+          label: 'Active journeys',
+          detail: 'Approved engagements underway',
           tone: 'navy'
+        },
+        {
+          value:
+            this.getAverageReadiness(
+              activeJourneys
+            ) + '%',
+          label: 'Average readiness',
+          detail: 'Across active engagements',
+          tone: 'green'
+        },
+        {
+          value: approachingEvents.length.toString(),
+          label: 'Within 30 days',
+          detail: 'Engagements approaching',
+          tone: 'gold'
         },
         {
           value: awaitingReview.length.toString(),
           label: 'Awaiting review',
           detail:
-            awaitingReview.length === 1
-              ? 'One decision is needed'
-              : 'Decisions are needed',
+            informationNeeded.length > 0
+              ? `${informationNeeded.length} also need information`
+              : 'Host decisions needed',
           tone: 'violet'
-        },
-        {
-          value: approved.length.toString(),
-          label: 'Approved engagements',
-          detail: 'Moving toward readiness',
-          tone: 'green'
-        },
-        {
-          value: informationNeeded.length.toString(),
-          label: 'Need information',
-          detail: 'Waiting on host details',
-          tone: 'amber'
         }
       ],
 
       priorities: [
         ...requestPriorities,
-        ...staticPriorities
+        ...journeyPriorities
       ].slice(0, 5),
 
       activities:
         this.buildApostleCynthiaActivities(
-          orderedRequests
+          orderedRequests,
+          orderedJourneys
         )
     };
   }
@@ -518,18 +566,198 @@ export class PlatformDashboardComponent {
       }));
   }
 
+  private buildJourneyPriorities(
+    journeys: readonly SpeakerJourney[]
+  ): DashboardPriority[] {
+    const priorities: DashboardPriority[] = [];
+
+    for (const journey of journeys) {
+      const blockedTask =
+        this.getBlockedTask(journey);
+
+      if (blockedTask) {
+        priorities.push({
+          title:
+            `Resolve ${blockedTask.task.title}`,
+          description:
+            `${journey.eventName} · ${blockedTask.stage.name}`,
+          workspace: 'Speaker Journeys',
+          due: 'Blocked',
+          status: 'Needs attention',
+          tone: 'amber',
+          route:
+            `/app/speaker-journeys/${journey.id}`
+        });
+
+        continue;
+      }
+
+      const nextTask =
+        this.getNextIncompleteTask(journey);
+
+      if (!nextTask) {
+        continue;
+      }
+
+      const daysUntilDue =
+        this.getDaysUntilDate(
+          nextTask.task.dueDate
+        );
+
+      priorities.push({
+        title: nextTask.task.title,
+        description:
+          `${journey.eventName} · ${nextTask.stage.name}`,
+        workspace: 'Speaker Journeys',
+        due:
+          this.getTaskDueLabel(
+            nextTask.task.dueDate
+          ),
+        status:
+          daysUntilDue < 0
+            ? 'Overdue'
+            : 'Journey task',
+        tone:
+          daysUntilDue <= 7
+            ? 'amber'
+            : 'blue',
+        route:
+          `/app/speaker-journeys/${journey.id}`
+      });
+    }
+
+    return priorities.sort(
+      (left, right) => {
+        if (left.due === 'Blocked') {
+          return -1;
+        }
+
+        if (right.due === 'Blocked') {
+          return 1;
+        }
+
+        return 0;
+      }
+    );
+  }
+
+  private getBlockedTask(
+    journey: SpeakerJourney
+  ): JourneyTaskContext | undefined {
+    for (const stage of journey.stages) {
+      const task = stage.tasks.find(
+        item => item.status === 'blocked'
+      );
+
+      if (task) {
+        return {
+          journey,
+          stage,
+          task
+        };
+      }
+    }
+
+    return undefined;
+  }
+
+  private getNextIncompleteTask(
+    journey: SpeakerJourney
+  ): JourneyTaskContext | undefined {
+    const contexts: JourneyTaskContext[] = [];
+
+    for (const stage of journey.stages) {
+      for (const task of stage.tasks) {
+        if (task.status !== 'complete') {
+          contexts.push({
+            journey,
+            stage,
+            task
+          });
+        }
+      }
+    }
+
+    return contexts.sort(
+      (left, right) =>
+        this.parseDateOnly(
+          left.task.dueDate
+        ).getTime() -
+        this.parseDateOnly(
+          right.task.dueDate
+        ).getTime()
+    )[0];
+  }
+
+  private getJourneyAttentionCount(
+    journeys: readonly SpeakerJourney[]
+  ): number {
+    return journeys.filter(
+      journey => {
+        const blocked =
+          this.getBlockedTask(journey);
+
+        if (blocked) {
+          return true;
+        }
+
+        const nextTask =
+          this.getNextIncompleteTask(journey);
+
+        if (!nextTask) {
+          return false;
+        }
+
+        return (
+          this.getDaysUntilDate(
+            nextTask.task.dueDate
+          ) <= 7
+        );
+      }
+    ).length;
+  }
+
+  private getAverageReadiness(
+    journeys: readonly SpeakerJourney[]
+  ): number {
+    if (journeys.length === 0) {
+      return 0;
+    }
+
+    const total =
+      journeys.reduce(
+        (sum, journey) =>
+          sum + journey.readinessPercentage,
+        0
+      );
+
+    return Math.round(
+      total / journeys.length
+    );
+  }
+
   private buildCombinedActivities(
-    speakingRequests: readonly SpeakingRequest[]
+    speakingRequests: readonly SpeakingRequest[],
+    speakerJourneys: readonly SpeakerJourney[]
   ): DashboardActivity[] {
+    const activities: DashboardActivity[] = [];
+
     const requestActivity =
       this.buildLatestRequestActivity(
         speakingRequests
       );
 
-    const activities: DashboardActivity[] = [];
+    const journeyActivity =
+      this.buildLatestJourneyActivity(
+        speakerJourneys
+      );
 
     if (requestActivity) {
       activities.push(requestActivity);
+    }
+
+    if (journeyActivity) {
+      activities.push(journeyActivity);
     }
 
     activities.push(
@@ -546,13 +774,6 @@ export class PlatformDashboardComponent {
           'David Carter completed Foundations of Faith — Week 2.',
         time: '1 hour ago',
         initials: 'DC'
-      },
-      {
-        title: 'Leader follow-up recorded',
-        description:
-          'Sarah recorded a successful conversation with Tiana.',
-        time: 'Yesterday',
-        initials: 'TS'
       }
     );
 
@@ -560,17 +781,27 @@ export class PlatformDashboardComponent {
   }
 
   private buildApostleCynthiaActivities(
-    speakingRequests: readonly SpeakingRequest[]
+    speakingRequests: readonly SpeakingRequest[],
+    speakerJourneys: readonly SpeakerJourney[]
   ): DashboardActivity[] {
+    const activities: DashboardActivity[] = [];
+
     const requestActivity =
       this.buildLatestRequestActivity(
         speakingRequests
       );
 
-    const activities: DashboardActivity[] = [];
+    const journeyActivity =
+      this.buildLatestJourneyActivity(
+        speakerJourneys
+      );
 
     if (requestActivity) {
       activities.push(requestActivity);
+    }
+
+    if (journeyActivity) {
+      activities.push(journeyActivity);
     }
 
     activities.push(
@@ -580,13 +811,6 @@ export class PlatformDashboardComponent {
           'New Covenant Church uploaded the event schedule.',
         time: '32 minutes ago',
         initials: 'NC'
-      },
-      {
-        title: 'Flight confirmed',
-        description:
-          'Travel to Atlanta is now marked confirmed.',
-        time: '2 hours ago',
-        initials: 'AT'
       },
       {
         title: 'Ministry response submitted',
@@ -614,12 +838,46 @@ export class PlatformDashboardComponent {
       title: 'Speaking invitation received',
       description:
         `${latestRequest.eventName} — ${latestRequest.organizationName}`,
-      time: this.getSubmissionLabel(
-        latestRequest.submittedUtc
-      ),
+      time:
+        this.getSubmissionLabel(
+          latestRequest.submittedUtc
+        ),
       initials:
         this.getOrganizationInitials(
           latestRequest.organizationName
+        )
+    };
+  }
+
+  private buildLatestJourneyActivity(
+    speakerJourneys: readonly SpeakerJourney[]
+  ): DashboardActivity | null {
+    const latestJourney =
+      [...speakerJourneys].sort(
+        (left, right) =>
+          new Date(
+            right.createdUtc
+          ).getTime() -
+          new Date(
+            left.createdUtc
+          ).getTime()
+      )[0];
+
+    if (!latestJourney) {
+      return null;
+    }
+
+    return {
+      title: 'Speaker journey created',
+      description:
+        `${latestJourney.eventName} is now in ministry preparation.`,
+      time:
+        this.getSubmissionLabel(
+          latestJourney.createdUtc
+        ),
+      initials:
+        this.getOrganizationInitials(
+          latestJourney.organizationName
         )
     };
   }
@@ -629,9 +887,93 @@ export class PlatformDashboardComponent {
   ): SpeakingRequest[] {
     return [...speakingRequests].sort(
       (left, right) =>
-        new Date(right.submittedUtc).getTime() -
-        new Date(left.submittedUtc).getTime()
+        new Date(
+          right.submittedUtc
+        ).getTime() -
+        new Date(
+          left.submittedUtc
+        ).getTime()
     );
+  }
+
+  private orderJourneysByEventDate(
+    speakerJourneys: readonly SpeakerJourney[]
+  ): SpeakerJourney[] {
+    return [...speakerJourneys].sort(
+      (left, right) =>
+        this.parseDateOnly(
+          left.startDate
+        ).getTime() -
+        this.parseDateOnly(
+          right.startDate
+        ).getTime()
+    );
+  }
+
+  private getDaysUntilEvent(
+    journey: SpeakerJourney
+  ): number {
+    return this.getDaysUntilDate(
+      journey.startDate
+    );
+  }
+
+  private getDaysUntilDate(
+    isoDate: string
+  ): number {
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+
+    const targetDate =
+      this.parseDateOnly(isoDate);
+
+    targetDate.setHours(0, 0, 0, 0);
+
+    return Math.ceil(
+      (
+        targetDate.getTime() -
+        today.getTime()
+      ) / 86400000
+    );
+  }
+
+  private getTaskDueLabel(
+    dueDate: string
+  ): string {
+    const daysUntilDue =
+      this.getDaysUntilDate(dueDate);
+
+    if (daysUntilDue < 0) {
+      const overdueDays =
+        Math.abs(daysUntilDue);
+
+      return overdueDays === 1
+        ? 'Overdue by 1 day'
+        : `Overdue by ${overdueDays} days`;
+    }
+
+    if (daysUntilDue === 0) {
+      return 'Due today';
+    }
+
+    if (daysUntilDue === 1) {
+      return 'Due tomorrow';
+    }
+
+    if (daysUntilDue <= 7) {
+      return `Due in ${daysUntilDue} days`;
+    }
+
+    return `Due ${this.parseDateOnly(
+      dueDate
+    ).toLocaleDateString(
+      'en-US',
+      {
+        month: 'short',
+        day: 'numeric'
+      }
+    )}`;
   }
 
   private getSubmissionLabel(
@@ -652,14 +994,14 @@ export class PlatformDashboardComponent {
       elapsedMinutes >= 0 &&
       elapsedMinutes < 1
     ) {
-      return 'Submitted moments ago';
+      return 'Moments ago';
     }
 
     if (
       elapsedMinutes >= 1 &&
       elapsedMinutes < 60
     ) {
-      return `Submitted ${elapsedMinutes} minutes ago`;
+      return `${elapsedMinutes} minutes ago`;
     }
 
     const elapsedHours =
@@ -670,11 +1012,11 @@ export class PlatformDashboardComponent {
       elapsedHours < 24
     ) {
       return elapsedHours === 1
-        ? 'Submitted 1 hour ago'
-        : `Submitted ${elapsedHours} hours ago`;
+        ? '1 hour ago'
+        : `${elapsedHours} hours ago`;
     }
 
-    return `Submitted ${new Date(
+    return new Date(
       submittedUtc
     ).toLocaleDateString(
       'en-US',
@@ -682,7 +1024,15 @@ export class PlatformDashboardComponent {
         month: 'short',
         day: 'numeric'
       }
-    )}`;
+    );
+  }
+
+  private parseDateOnly(
+    isoDate: string
+  ): Date {
+    return new Date(
+      `${isoDate}T12:00:00`
+    );
   }
 
   private getOrganizationInitials(
@@ -700,7 +1050,9 @@ export class PlatformDashboardComponent {
 
     return words
       .slice(0, 2)
-      .map(word => word.charAt(0))
+      .map(word =>
+        word.charAt(0)
+      )
       .join('')
       .toUpperCase();
   }

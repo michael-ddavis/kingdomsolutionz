@@ -21,6 +21,7 @@ import { SpeakingRequestListComponent } from './platform/pages/speaking-requests
 import { SpeakingRequestDetailComponent } from './platform/pages/speaking-requests/speaking-request-detail/speaking-request-detail.component';
 import { SpeakingRequestFormComponent } from './platform/pages/speaking-requests/speaking-request-form/speaking-request-form.component';
 import { SpeakerJourneyDetailComponent } from './platform/pages/speaker-journeys/speaker-journey-detail/speaker-journey-detail.component';
+import { SpeakerJourneyListComponent } from './platform/pages/speaker-journeys/speaker-journey-list/speaker-journey-list.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { SpeakerJourneyDetailComponent } from './platform/pages/speaker-journeys
     SpeakingRequestListComponent,
     SpeakingRequestDetailComponent,
     SpeakingRequestFormComponent,
-    SpeakerJourneyDetailComponent
+    SpeakerJourneyDetailComponent,
+    SpeakerJourneyListComponent
   ],
   imports: [
     BrowserModule,
