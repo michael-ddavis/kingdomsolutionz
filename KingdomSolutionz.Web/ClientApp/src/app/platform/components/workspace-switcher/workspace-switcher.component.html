@@ -1,0 +1,29 @@
+<div
+  class="workspace-switcher"
+  *ngIf="selectedWorkspace$ | async as selectedWorkspace">
+
+  <label for="workspace-select">
+    Ministry workspace
+  </label>
+
+  <div class="workspace-select-wrapper">
+    <span class="workspace-mark">
+      {{ selectedWorkspace.shortName.charAt(0) }}
+    </span>
+
+    <select
+      id="workspace-select"
+      [value]="selectedWorkspace.id"
+      (change)="onWorkspaceChange($event)">
+
+      <option
+        *ngFor="let workspace of workspaces"
+        [value]="workspace.id">
+
+        {{ workspace.name }}
+      </option>
+    </select>
+
+    <span class="select-arrow" aria-hidden="true">⌄</span>
+  </div>
+</div>

@@ -1,0 +1,66 @@
+:host {
+  display: block;
+}
+
+.workspace-switcher {
+  display: grid;
+  gap: 8px;
+}
+
+label {
+  color: rgb(255 255 255 / 52%);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.workspace-select-wrapper {
+  position: relative;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) 18px;
+  align-items: center;
+  min-height: 48px;
+  padding: 6px 10px 6px 8px;
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 12px;
+  background: rgb(255 255 255 / 7%);
+}
+
+.workspace-mark {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  color: #101d35;
+  font-size: 13px;
+  font-weight: 800;
+  place-items: center;
+  background: #f2c66d;
+}
+
+select {
+  width: 100%;
+  min-width: 0;
+  padding: 0 10px;
+  border: 0;
+  outline: 0;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  appearance: none;
+  cursor: pointer;
+  background: transparent;
+}
+
+select option {
+  color: #101d35;
+  background: #ffffff;
+}
+
+.select-arrow {
+  color: rgb(255 255 255 / 65%);
+  font-size: 16px;
+  pointer-events: none;
+}

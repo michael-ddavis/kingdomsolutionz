@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+import { PublicLayoutComponent } from './layouts/public-layout/public-layout.component';
+
 import { HomeComponent } from './pages/home/home.component';
 import { ServicesComponent } from './pages/services/services.component';
 import { PricingComponent } from './pages/pricing/pricing.component';
@@ -9,22 +11,77 @@ import { StartProjectComponent } from './pages/start-project/start-project.compo
 import { AboutComponent } from './pages/about/about.component';
 import { ContactComponent } from './pages/contact/contact.component';
 
+import { PlatformShellComponent } from './platform/layout/platform-shell/platform-shell.component';
+import { PlatformLoginComponent } from './platform/pages/platform-login/platform-login.component';
+import { PlatformDashboardComponent } from './platform/pages/platform-dashboard/platform-dashboard.component';
+
 const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'services', component: ServicesComponent },
-  { path: 'pricing', component: PricingComponent },
-  { path: 'portfolio', component: PortfolioComponent },
-  { path: 'start-project', component: StartProjectComponent },
-  { path: 'about', component: AboutComponent },
-  { path: 'contact', component: ContactComponent },
-  { path: '**', redirectTo: '' }
+  {
+    path: 'app/login',
+    component: PlatformLoginComponent
+  },
+  {
+    path: 'app',
+    component: PlatformShellComponent,
+    children: [
+      {
+        path: 'dashboard',
+        component: PlatformDashboardComponent
+      },
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'dashboard'
+      }
+    ]
+  },
+  {
+    path: '',
+    component: PublicLayoutComponent,
+    children: [
+      {
+        path: '',
+        component: HomeComponent
+      },
+      {
+        path: 'services',
+        component: ServicesComponent
+      },
+      {
+        path: 'pricing',
+        component: PricingComponent
+      },
+      {
+        path: 'portfolio',
+        component: PortfolioComponent
+      },
+      {
+        path: 'start-project',
+        component: StartProjectComponent
+      },
+      {
+        path: 'about',
+        component: AboutComponent
+      },
+      {
+        path: 'contact',
+        component: ContactComponent
+      }
+    ]
+  },
+  {
+    path: '**',
+    redirectTo: ''
+  }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {
-    scrollPositionRestoration: 'enabled',
-    anchorScrolling: 'enabled'
-  })],
+  imports: [
+    RouterModule.forRoot(routes, {
+      scrollPositionRestoration: 'enabled',
+      anchorScrolling: 'enabled'
+    })
+  ],
   exports: [RouterModule]
 })
 export class AppRoutingModule {}

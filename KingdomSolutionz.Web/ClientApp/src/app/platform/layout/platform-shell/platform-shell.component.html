@@ -1,0 +1,139 @@
+<div
+  class="platform-shell"
+  *ngIf="selectedWorkspace$ | async as workspace">
+
+  <aside class="platform-sidebar">
+    <a routerLink="/" class="platform-brand">
+      <span class="brand-symbol">K</span>
+
+      <span class="brand-copy">
+        <strong>KingdomOS</strong>
+        <small>by KingdomSolutionz</small>
+      </span>
+    </a>
+
+    <app-workspace-switcher></app-workspace-switcher>
+
+    <nav class="platform-navigation" aria-label="Platform navigation">
+      <p class="navigation-label">Workspace</p>
+
+      <a
+        routerLink="/app/dashboard"
+        routerLinkActive="active"
+        class="navigation-item">
+
+        <span class="navigation-icon">01</span>
+        <span>Dashboard</span>
+      </a>
+
+      <ng-container [ngSwitch]="workspace.id">
+        <ng-container *ngSwitchCase="'all'">
+          <button type="button" class="navigation-item">
+            <span class="navigation-icon">02</span>
+            <span>Ministry Handoffs</span>
+          </button>
+
+          <button type="button" class="navigation-item">
+            <span class="navigation-icon">03</span>
+            <span>People</span>
+          </button>
+
+          <button type="button" class="navigation-item">
+            <span class="navigation-icon">04</span>
+            <span>Network Reports</span>
+          </button>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'apostle-cynthia'">
+          <button type="button" class="navigation-item">
+            <span class="navigation-icon">02</span>
+            <span>Speaking Requests</span>
+          </button>
+
+          <button type="button" class="navigation-item">
+            <span class="navigation-icon">03</span>
+            <span>Travel &amp; Events</span>
+          </button>
+
+          <button type="button" class="navigation-item">
+            <span class="navigation-icon">04</span>
+            <span>Ministry Responses</span>
+          </button>
+
+          <button type="button" class="navigation-item">
+            <span class="navigation-icon">05</span>
+            <span>Handoffs</span>
+          </button>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'jpp'">
+          <button type="button" class="navigation-item">
+            <span class="navigation-icon">02</span>
+            <span>People</span>
+          </button>
+
+          <button type="button" class="navigation-item">
+            <span class="navigation-icon">03</span>
+            <span>Small Groups</span>
+          </button>
+
+          <button type="button" class="navigation-item">
+            <span class="navigation-icon">04</span>
+            <span>Curriculum</span>
+          </button>
+
+          <button type="button" class="navigation-item">
+            <span class="navigation-icon">05</span>
+            <span>Needs Care</span>
+
+            <span class="navigation-count">3</span>
+          </button>
+        </ng-container>
+      </ng-container>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-help">
+        <span class="help-mark">?</span>
+
+        <div>
+          <strong>Need help?</strong>
+          <span>KingdomSolutionz support</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <section class="platform-content">
+    <header class="platform-header">
+      <div>
+        <p class="mobile-brand">KingdomOS</p>
+        <p class="header-context">{{ workspace.name }}</p>
+      </div>
+
+      <div class="header-actions">
+        <button
+          type="button"
+          class="notification-button"
+          aria-label="Notifications">
+
+          <span class="notification-dot"></span>
+          <span aria-hidden="true">○</span>
+        </button>
+
+        <div class="current-user">
+          <span class="user-avatar">CT</span>
+
+          <span class="user-copy">
+            <strong>Apostle Cynthia</strong>
+            <small>Network administrator</small>
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <main class="platform-main">
+      <router-outlet></router-outlet>
+    </main>
+  </section>
+</div>

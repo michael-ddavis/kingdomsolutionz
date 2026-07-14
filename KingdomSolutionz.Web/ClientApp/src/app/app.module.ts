@@ -12,6 +12,11 @@ import { AboutComponent } from './pages/about/about.component';
 import { ContactComponent } from './pages/contact/contact.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { PublicLayoutComponent } from './layouts/public-layout/public-layout.component';
+import { PlatformShellComponent } from './platform/layout/platform-shell/platform-shell.component';
+import { PlatformLoginComponent } from './platform/pages/platform-login/platform-login.component';
+import { PlatformDashboardComponent } from './platform/pages/platform-dashboard/platform-dashboard.component';
+import { WorkspaceSwitcherComponent } from './platform/components/workspace-switcher/workspace-switcher.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +27,12 @@ import { HttpClientModule } from '@angular/common/http';
     PortfolioComponent,
     StartProjectComponent,
     AboutComponent,
-    ContactComponent
+    ContactComponent,
+    PublicLayoutComponent,
+    PlatformShellComponent,
+    PlatformLoginComponent,
+    PlatformDashboardComponent,
+    WorkspaceSwitcherComponent
   ],
   imports: [
     BrowserModule,

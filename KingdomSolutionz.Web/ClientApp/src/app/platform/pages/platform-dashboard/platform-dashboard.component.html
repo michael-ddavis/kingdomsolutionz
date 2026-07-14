@@ -1,0 +1,209 @@
+<ng-container *ngIf="viewModel$ | async as vm">
+  <section class="dashboard">
+    <header class="dashboard-heading">
+      <div>
+        <p class="eyebrow">{{ vm.eyebrow }}</p>
+        <h1>{{ vm.title }}</h1>
+        <p class="dashboard-description">
+          {{ vm.description }}
+        </p>
+      </div>
+
+      <button type="button" class="primary-action">
+        <span>+</span>
+        New ministry item
+      </button>
+    </header>
+
+    <section class="metric-grid" aria-label="Ministry summary">
+      <article
+        *ngFor="let metric of vm.metrics"
+        [ngClass]="[
+          'metric-card',
+          'metric-card--' + metric.tone
+        ]">
+
+        <span class="metric-accent"></span>
+
+        <p class="metric-value">{{ metric.value }}</p>
+        <h2>{{ metric.label }}</h2>
+        <p>{{ metric.detail }}</p>
+      </article>
+    </section>
+
+    <section
+      class="workspace-overview"
+      *ngIf="vm.workspaceOverviews?.length">
+
+      <div class="section-heading">
+        <div>
+          <p class="section-eyebrow">Connected workspaces</p>
+          <h2>Your ministry network</h2>
+        </div>
+
+        <button type="button" class="text-button">
+          View network
+        </button>
+      </div>
+
+      <div class="workspace-card-grid">
+        <article
+          *ngFor="let workspace of vm.workspaceOverviews"
+          [ngClass]="[
+            'workspace-card',
+            'workspace-card--' + workspace.tone
+          ]">
+
+          <div class="workspace-card-heading">
+            <span class="workspace-card-mark">
+              {{ workspace.name.charAt(0) }}
+            </span>
+
+            <div>
+              <h3>{{ workspace.name }}</h3>
+              <p>{{ workspace.description }}</p>
+            </div>
+          </div>
+
+          <div class="workspace-card-metrics">
+            <div>
+              <strong>{{ workspace.primaryMetric }}</strong>
+              <span>{{ workspace.primaryLabel }}</span>
+            </div>
+
+            <div>
+              <strong>{{ workspace.secondaryMetric }}</strong>
+              <span>{{ workspace.secondaryLabel }}</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="dashboard-columns">
+      <article class="content-panel priority-panel">
+        <div class="section-heading">
+          <div>
+            <p class="section-eyebrow">Action required</p>
+            <h2>Today’s priorities</h2>
+          </div>
+
+          <button type="button" class="text-button">
+            View all
+          </button>
+        </div>
+
+        <div class="priority-list">
+          <button
+            type="button"
+            class="priority-item"
+            *ngFor="let priority of vm.priorities">
+
+            <span
+              [ngClass]="[
+                'priority-indicator',
+                'priority-indicator--' + priority.tone
+              ]">
+            </span>
+
+            <span class="priority-copy">
+              <strong>{{ priority.title }}</strong>
+              <span>{{ priority.description }}</span>
+
+              <span class="priority-meta">
+                {{ priority.workspace }} · {{ priority.due }}
+              </span>
+            </span>
+
+            <span
+              [ngClass]="[
+                'status',
+                'status--' + priority.tone
+              ]">
+
+              {{ priority.status }}
+            </span>
+          </button>
+        </div>
+      </article>
+
+      <article class="content-panel activity-panel">
+        <div class="section-heading">
+          <div>
+            <p class="section-eyebrow">Ministry memory</p>
+            <h2>Recent activity</h2>
+          </div>
+        </div>
+
+        <div class="activity-list">
+          <div
+            class="activity-item"
+            *ngFor="let activity of vm.activities">
+
+            <span class="activity-avatar">
+              {{ activity.initials }}
+            </span>
+
+            <div class="activity-copy">
+              <strong>{{ activity.title }}</strong>
+              <p>{{ activity.description }}</p>
+              <span>{{ activity.time }}</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="journey-panel">
+      <div>
+        <p class="section-eyebrow">Connected ministry journey</p>
+        <h2>From ministry moment to meaningful discipleship</h2>
+
+        <p class="journey-description">
+          KingdomOS keeps responsibility visible as a person moves
+          from an event response into sustained care.
+        </p>
+      </div>
+
+      <div class="journey-steps">
+        <div class="journey-step journey-step--complete">
+          <span>1</span>
+          <strong>Response</strong>
+          <small>Received</small>
+        </div>
+
+        <div class="journey-line journey-line--complete"></div>
+
+        <div class="journey-step journey-step--complete">
+          <span>2</span>
+          <strong>Handoff</strong>
+          <small>Accepted</small>
+        </div>
+
+        <div class="journey-line journey-line--complete"></div>
+
+        <div class="journey-step journey-step--current">
+          <span>3</span>
+          <strong>Group</strong>
+          <small>Assigned</small>
+        </div>
+
+        <div class="journey-line"></div>
+
+        <div class="journey-step">
+          <span>4</span>
+          <strong>Curriculum</strong>
+          <small>In progress</small>
+        </div>
+
+        <div class="journey-line"></div>
+
+        <div class="journey-step">
+          <span>5</span>
+          <strong>Care</strong>
+          <small>Ongoing</small>
+        </div>
+      </div>
+    </section>
+  </section>
+</ng-container>
