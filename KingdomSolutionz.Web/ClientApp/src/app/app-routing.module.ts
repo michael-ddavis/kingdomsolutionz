@@ -41,6 +41,7 @@ import {
 import { AssignmentTravelComponent } from './platform/pages/assignments/assignment-travel/assignment-travel.component';
 import { AssignmentContactsComponent } from './platform/pages/assignments/assignment-contacts/assignment-contacts.component';
 import { AssignmentDocumentsComponent } from './platform/pages/assignments/assignment-documents/assignment-documents.component';
+import { AssignmentActivityComponent } from './platform/pages/assignments/assignment-activity/assignment-activity.component';
 
 const routes: Routes = [
   {
@@ -91,6 +92,10 @@ const routes: Routes = [
           {
             path: 'documents',
             component: AssignmentDocumentsComponent
+          },
+          {
+            path: 'activity',
+            component: AssignmentActivityComponent
           }
         ]
       },

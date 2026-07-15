@@ -1,0 +1,207 @@
+<ng-container
+  *ngIf="
+    assignment$ | async as assignment;
+    else assignmentNotFound
+  ">
+
+  <section class="activity-page">
+    <header class="activity-heading">
+      <div>
+        <p class="eyebrow">
+          Ministry Log
+        </p>
+
+        <h2>Assignment activity</h2>
+
+        <p>
+          Review meaningful updates, decisions and
+          operational changes across this assignment.
+        </p>
+      </div>
+
+      <div class="activity-summary">
+        <strong>
+          {{ assignment.activityLog.items.length }}
+        </strong>
+
+        <span>Log entries</span>
+
+        <small
+          *ngIf="
+            assignment.activityLog
+              .lastUpdatedUtc
+          ">
+
+          Last updated
+          {{
+            assignment.activityLog
+              .lastUpdatedUtc
+              | date:'MMM d, y, h:mm a'
+          }}
+        </small>
+      </div>
+    </header>
+
+    <section class="activity-layout">
+      <form
+        class="composer-panel"
+        [formGroup]="noteForm"
+        (ngSubmit)="addNote()">
+
+        <p class="eyebrow">
+          Add update
+        </p>
+
+        <h3>Record a ministry update</h3>
+
+        <p class="composer-description">
+          Add a decision, communication update, completed
+          milestone or item needing attention.
+        </p>
+
+        <label class="field">
+          <span>Update type</span>
+
+          <select formControlName="tone">
+            <option value="neutral">
+              General update
+            </option>
+
+            <option value="success">
+              Completed or confirmed
+            </option>
+
+            <option value="attention">
+              Needs attention
+            </option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Update</span>
+
+          <textarea
+            rows="6"
+            maxlength="500"
+            formControlName="message"
+            placeholder="Example: The host confirmed the final Friday evening schedule.">
+          </textarea>
+
+          <small
+            class="field-error"
+            *ngIf="
+              noteForm.controls
+                .message.touched &&
+              noteForm.controls
+                .message.invalid
+            ">
+
+            Enter an update before saving.
+          </small>
+        </label>
+
+        <div class="composer-footer">
+          <span
+            class="saved-message"
+            *ngIf="saved">
+
+            ✓ Update added
+          </span>
+
+          <button type="submit">
+            Add to Ministry Log
+          </button>
+        </div>
+      </form>
+
+      <section class="feed-panel">
+        <header class="feed-heading">
+          <div>
+            <p class="eyebrow">
+              Recent activity
+            </p>
+
+            <h3>Assignment history</h3>
+          </div>
+        </header>
+
+        <div
+          class="activity-list"
+          *ngIf="
+            assignment.activityLog
+              .items.length > 0;
+            else emptyActivity
+          ">
+
+          <article
+            *ngFor="
+              let item of
+                getSortedActivity(
+                  assignment
+                );
+              trackBy: trackByActivityId
+            "
+            [ngClass]="[
+              'activity-item',
+              'activity-item--' +
+                item.tone
+            ]">
+
+            <span class="activity-symbol">
+              {{ getActivitySymbol(item) }}
+            </span>
+
+            <div class="activity-copy">
+              <div class="activity-title-row">
+                <strong>
+                  {{ item.title }}
+                </strong>
+
+                <span class="section-label">
+                  {{
+                    sectionLabels[
+                      item.section
+                    ]
+                  }}
+                </span>
+              </div>
+
+              <p>
+                {{ item.description }}
+              </p>
+
+              <small>
+                {{ item.actor }}
+                ·
+                {{
+                  item.createdUtc
+                    | date:'MMM d, y, h:mm a'
+                }}
+              </small>
+            </div>
+          </article>
+        </div>
+
+        <ng-template #emptyActivity>
+          <div class="empty-activity">
+            <h4>No activity yet</h4>
+
+            <p>
+              Assignment updates will appear here.
+            </p>
+          </div>
+        </ng-template>
+      </section>
+    </section>
+  </section>
+</ng-container>
+
+<ng-template #assignmentNotFound>
+  <section class="not-found">
+    <h2>Assignment not found</h2>
+
+    <p>
+      This Ministry Log is no longer available.
+    </p>
+  </section>
+</ng-template>

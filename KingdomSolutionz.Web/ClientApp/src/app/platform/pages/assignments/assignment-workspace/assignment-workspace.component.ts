@@ -75,6 +75,12 @@ export class AssignmentWorkspaceComponent {
         route: 'documents',
         description:
           'Files, schedules and resources'
+      },
+      {
+        label: 'Ministry Log',
+        route: 'activity',
+        description:
+          'Updates, decisions and activity'
       }
     ];
 

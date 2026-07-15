@@ -1,4 +1,5 @@
-<ng-container *ngIf="
+<ng-container
+  *ngIf="
     assignment$ | async as assignment;
     else checklistNotFound
   ">
@@ -10,26 +11,41 @@
           Assignment checklist
         </p>
 
-        <h2>Preparation responsibilities</h2>
+        <h2>
+          Preparation responsibilities
+        </h2>
 
         <p>
-          Track ownership, deadlines and completion across
-          every stage of the assignment.
+          Track ownership, deadlines, completion and
+          communication across every stage of the
+          assignment.
         </p>
       </div>
 
       <div class="checklist-summary">
         <strong>
-          {{ getCompletedTaskCount(assignment) }}
+          {{
+            getCompletedTaskCount(
+              assignment
+            )
+          }}
           /
-          {{ getTotalTaskCount(assignment) }}
+          {{
+            getTotalTaskCount(
+              assignment
+            )
+          }}
         </strong>
 
-        <span>Items complete</span>
+        <span>
+          Items complete
+        </span>
 
         <div class="progress-bar">
-          <span [style.width.%]="
-              assignment.readinessPercentage
+          <span
+            [style.width.%]="
+              assignment
+                .readinessPercentage
             ">
           </span>
         </div>
@@ -37,68 +53,115 @@
     </header>
 
     <div class="stage-list">
-      <article *ngFor="let stage of assignment.stages" [ngClass]="[
+      <article
+        *ngFor="
+          let stage of
+            assignment.stages
+        "
+        [ngClass]="[
           'stage-panel',
-          'stage-panel--' + stage.status
+          'stage-panel--' +
+            stage.status
         ]">
 
         <header class="stage-heading">
           <div class="stage-heading-copy">
-            <span [ngClass]="[
+            <span
+              [ngClass]="[
                 'stage-marker',
-                'stage-marker--' + stage.status
+                'stage-marker--' +
+                  stage.status
               ]">
 
               {{
-              stage.status === 'complete'
-              ? '✓'
-              : stage.status === 'blocked'
-              ? '!'
-              : stage.name.charAt(0)
+                stage.status ===
+                'complete'
+                  ? '✓'
+                  : stage.status ===
+                    'blocked'
+                    ? '!'
+                    : stage.name
+                        .charAt(0)
               }}
             </span>
 
             <div>
               <div class="stage-title-row">
-                <h3>{{ stage.name }}</h3>
+                <h3>
+                  {{ stage.name }}
+                </h3>
 
-                <span [ngClass]="[
+                <span
+                  [ngClass]="[
                     'stage-status',
-                    'stage-status--' + stage.status
+                    'stage-status--' +
+                      stage.status
                   ]">
 
-                  {{ stageLabels[stage.status] }}
+                  {{
+                    stageLabels[
+                      stage.status
+                    ]
+                  }}
                 </span>
               </div>
 
-              <p>{{ stage.description }}</p>
+              <p>
+                {{ stage.description }}
+              </p>
             </div>
           </div>
 
           <div class="stage-heading-actions">
-            <a *ngIf="stage.id === 'travel'" routerLink="../travel" class="stage-link">
+            <a
+              *ngIf="
+                stage.id === 'travel'
+              "
+              routerLink="../travel"
+              class="stage-link">
 
-              Open travel itinerary
-              <span aria-hidden="true">→</span>
+              Open travel
+              <span aria-hidden="true">
+                →
+              </span>
             </a>
 
-            <a *ngIf="stage.id === 'host-readiness'" routerLink="../contacts" class="stage-link">
+            <a
+              *ngIf="
+                stage.id ===
+                'host-readiness'
+              "
+              routerLink="../contacts"
+              class="stage-link">
 
               Open contacts
-              <span aria-hidden="true">→</span>
+              <span aria-hidden="true">
+                →
+              </span>
             </a>
 
-            <a *ngIf="
-    stage.id === 'promotion' ||
-    stage.id === 'host-readiness'
-  " routerLink="../documents" class="stage-link">
+            <a
+              *ngIf="
+                stage.id ===
+                  'promotion' ||
+                stage.id ===
+                  'host-readiness'
+              "
+              routerLink="../documents"
+              class="stage-link">
 
               Open documents
-              <span aria-hidden="true">→</span>
+              <span aria-hidden="true">
+                →
+              </span>
             </a>
 
             <span class="stage-count">
-              {{ getCompletedStageTaskCount(stage) }}
+              {{
+                getCompletedStageTaskCount(
+                  stage
+                )
+              }}
               /
               {{ stage.tasks.length }}
             </span>
@@ -106,48 +169,233 @@
         </header>
 
         <div class="task-list">
-          <button type="button" *ngFor="let task of stage.tasks" [ngClass]="[
+          <article
+            *ngFor="
+              let task of stage.tasks
+            "
+            [ngClass]="[
               'task-row',
-              'task-row--' + task.status
-            ]" (click)="
-              toggleTask(
-                assignment.id,
-                stage.id,
-                task
-              )
-            ">
+              'task-row--' +
+                task.status
+            ]">
 
-            <span class="task-checkbox">
-              {{
-              task.status === 'complete'
-              ? '✓'
-              : ''
-              }}
-            </span>
+            <div class="task-main">
+              <button
+                type="button"
+                class="task-toggle"
+                [attr.aria-label]="
+                  task.status ===
+                  'complete'
+                    ? 'Mark ' +
+                      task.title +
+                      ' incomplete'
+                    : 'Mark ' +
+                      task.title +
+                      ' complete'
+                "
+                (click)="
+                  toggleTask(
+                    assignment.id,
+                    stage.id,
+                    task
+                  )
+                ">
 
-            <span class="task-copy">
-              <strong>{{ task.title }}</strong>
-              <span>{{ task.description }}</span>
+                <span class="task-checkbox">
+                  {{
+                    task.status ===
+                    'complete'
+                      ? '✓'
+                      : ''
+                  }}
+                </span>
+              </button>
 
-              <small>
-                {{ task.owner }}
-                ·
-                Due
+              <div class="task-copy">
+                <strong>
+                  {{ task.title }}
+                </strong>
+
+                <span>
+                  {{ task.description }}
+                </span>
+
+                <small>
+                  {{ task.owner }}
+                  · Due
+                  {{
+                    task.dueDate
+                      | date:'MMM d, y'
+                  }}
+                </small>
+
+                <div class="task-actions">
+                  <button
+                    type="button"
+                    class="comment-toggle"
+                    [class.comment-toggle--active]="
+                      expandedCommentTaskId ===
+                      task.id
+                    "
+                    (click)="
+                      toggleComments(
+                        task.id
+                      )
+                    ">
+
+                    <span aria-hidden="true">
+                      ◌
+                    </span>
+
+                    {{
+                      task.comments
+                        ?.length || 0
+                    }}
+
+                    {{
+                      (
+                        task.comments
+                          ?.length || 0
+                      ) === 1
+                        ? 'comment'
+                        : 'comments'
+                    }}
+                  </button>
+                </div>
+              </div>
+
+              <span
+                [ngClass]="[
+                  'task-status',
+                  'task-status--' +
+                    task.status
+                ]">
+
                 {{
-                task.dueDate
-                | date:'MMM d, y'
+                  taskLabels[
+                    task.status
+                  ]
                 }}
-              </small>
-            </span>
+              </span>
+            </div>
 
-            <span [ngClass]="[
-                'task-status',
-                'task-status--' + task.status
-              ]">
+            <section
+              class="comment-panel"
+              *ngIf="
+                expandedCommentTaskId ===
+                task.id
+              ">
 
-              {{ taskLabels[task.status] }}
-            </span>
-          </button>
+              <div
+                class="comment-thread"
+                *ngIf="
+                  task.comments
+                    ?.length;
+                  else noTaskComments
+                ">
+
+                <article
+                  class="task-comment"
+                  *ngFor="
+                    let comment of
+                      task.comments
+                  ">
+
+                  <div class="comment-avatar">
+                    {{
+                      comment.author
+                        .charAt(0)
+                        .toUpperCase()
+                    }}
+                  </div>
+
+                  <div class="comment-content">
+                    <div class="comment-meta">
+                      <strong>
+                        {{ comment.author }}
+                      </strong>
+
+                      <span>
+                        {{
+                          comment.createdUtc
+                            | date:
+                              'MMM d, y, h:mm a'
+                        }}
+                      </span>
+                    </div>
+
+                    <p>
+                      {{ comment.message }}
+                    </p>
+                  </div>
+                </article>
+              </div>
+
+              <ng-template #noTaskComments>
+                <p class="empty-comments">
+                  No comments have been added to this
+                  checklist item.
+                </p>
+              </ng-template>
+
+              <div class="comment-composer">
+                <label
+                  [for]="
+                    'task-comment-' +
+                    task.id
+                  ">
+
+                  Add an update
+                </label>
+
+                <textarea
+                  [id]="
+                    'task-comment-' +
+                    task.id
+                  "
+                  rows="3"
+                  maxlength="500"
+                  [value]="
+                    getCommentDraft(
+                      task.id
+                    )
+                  "
+                  (input)="
+                    updateCommentDraft(
+                      task.id,
+                      $event
+                    )
+                  "
+                  placeholder="Add context, a decision, an update or explain what is still needed.">
+                </textarea>
+
+                <div class="comment-composer-footer">
+                  <span>
+                    Comments are also recorded in the
+                    Ministry Log.
+                  </span>
+
+                  <button
+                    type="button"
+                    [disabled]="
+                      !canAddComment(
+                        task.id
+                      )
+                    "
+                    (click)="
+                      addComment(
+                        assignment.id,
+                        stage.id,
+                        task.id
+                      )
+                    ">
+
+                    Add comment
+                  </button>
+                </div>
+              </div>
+            </section>
+          </article>
         </div>
       </article>
     </div>
@@ -156,6 +404,12 @@
 
 <ng-template #checklistNotFound>
   <section class="not-found">
-    <h2>Checklist not found</h2>
+    <h2>
+      Checklist not found
+    </h2>
+
+    <p>
+      This assignment checklist is no longer available.
+    </p>
   </section>
 </ng-template>

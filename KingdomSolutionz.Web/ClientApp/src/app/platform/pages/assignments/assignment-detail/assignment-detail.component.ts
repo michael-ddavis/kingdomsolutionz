@@ -1,9 +1,18 @@
-import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
+import {
+  Component
+} from '@angular/core';
+
+import {
+  ActivatedRoute
+} from '@angular/router';
+
+import {
+  Observable
+} from 'rxjs';
 
 import {
   Assignment,
+  AssignmentStage,
   AssignmentStageStatus,
   AssignmentTask,
   AssignmentTaskStatus
@@ -14,9 +23,12 @@ import {
 } from '../../../shared/services/assignment.service';
 
 @Component({
-  selector: 'app-speaker-assignment-detail',
+  selector:
+    'app-assignment-detail',
+
   templateUrl:
     './assignment-detail.component.html',
+
   styleUrls: [
     './assignment-detail.component.scss'
   ]
@@ -28,56 +40,158 @@ export class AssignmentDetailComponent {
         ?.snapshot.paramMap.get('id')
     );
 
+  expandedCommentTaskId:
+    number | null = null;
+
+  readonly commentDrafts:
+    Record<number, string> = {};
+
   readonly assignment$:
     Observable<Assignment | undefined> =
-    this.speakerAssignmentService.getAssignment(
-      this.assignmentId
-    );
+      this.assignmentService.getAssignment(
+        this.assignmentId
+      );
 
   readonly stageLabels:
-    Record<AssignmentStageStatus, string> = {
-      complete: 'Complete',
-      current: 'In progress',
-      upcoming: 'Upcoming',
-      blocked: 'Blocked'
+    Record<
+      AssignmentStageStatus,
+      string
+    > = {
+      complete:
+        'Complete',
+
+      current:
+        'In progress',
+
+      upcoming:
+        'Upcoming',
+
+      blocked:
+        'Needs attention'
     };
 
   readonly taskLabels:
-    Record<AssignmentTaskStatus, string> = {
-      'not-started': 'Not started',
-      'in-progress': 'In progress',
-      complete: 'Complete',
-      blocked: 'Blocked'
+    Record<
+      AssignmentTaskStatus,
+      string
+    > = {
+      'not-started':
+        'Not started',
+
+      'in-progress':
+        'In progress',
+
+      complete:
+        'Complete',
+
+      blocked:
+        'Blocked'
     };
 
   constructor(
-    private readonly route: ActivatedRoute,
+    private readonly route:
+      ActivatedRoute,
 
-    private readonly speakerAssignmentService:
+    private readonly assignmentService:
       AssignmentService
-  ) { }
+  ) {}
 
   toggleTask(
     assignmentId: number,
     stageId: string,
     task: AssignmentTask
   ): void {
-    this.speakerAssignmentService.toggleTask(
+    this.assignmentService.toggleTask(
       assignmentId,
       stageId,
-      task.id
+      task
     );
+  }
+
+  toggleComments(
+    taskId: number
+  ): void {
+    this.expandedCommentTaskId =
+      this.expandedCommentTaskId ===
+      taskId
+        ? null
+        : taskId;
+  }
+
+  updateCommentDraft(
+    taskId: number,
+    event: Event
+  ): void {
+    const textarea =
+      event.target as
+        HTMLTextAreaElement;
+
+    this.commentDrafts[taskId] =
+      textarea.value;
+  }
+
+  getCommentDraft(
+    taskId: number
+  ): string {
+    return (
+      this.commentDrafts[
+        taskId
+      ] ?? ''
+    );
+  }
+
+  canAddComment(
+    taskId: number
+  ): boolean {
+    return Boolean(
+      this.getCommentDraft(
+        taskId
+      ).trim()
+    );
+  }
+
+  addComment(
+    assignmentId: number,
+    stageId: string,
+    taskId: number
+  ): void {
+    const message =
+      this.getCommentDraft(
+        taskId
+      ).trim();
+
+    if (!message) {
+      return;
+    }
+
+    this.assignmentService
+      .addTaskComment(
+        assignmentId,
+        stageId,
+        taskId,
+        message
+      );
+
+    this.commentDrafts[
+      taskId
+    ] = '';
   }
 
   getCompletedTaskCount(
     assignment: Assignment
   ): number {
     return assignment.stages.reduce(
-      (total, stage) =>
+      (
+        total,
+        stage
+      ) =>
         total +
         stage.tasks.filter(
-          task => task.status === 'complete'
+          task =>
+            task.status ===
+            'complete'
         ).length,
+
       0
     );
   }
@@ -86,27 +200,24 @@ export class AssignmentDetailComponent {
     assignment: Assignment
   ): number {
     return assignment.stages.reduce(
-      (total, stage) =>
-        total + stage.tasks.length,
+      (
+        total,
+        stage
+      ) =>
+        total +
+        stage.tasks.length,
+
       0
     );
   }
 
-  getStageCompletedCount(
-    assignment: Assignment
-  ): number {
-    return assignment.stages.filter(
-      stage => stage.status === 'complete'
-    ).length;
-  }
-
   getCompletedStageTaskCount(
-    stage: {
-      tasks: AssignmentTask[];
-    }
+    stage: AssignmentStage
   ): number {
     return stage.tasks.filter(
-      task => task.status === 'complete'
+      task =>
+        task.status ===
+        'complete'
     ).length;
   }
 }

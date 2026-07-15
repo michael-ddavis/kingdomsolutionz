@@ -323,3 +323,240 @@ p {
 .stage-link:hover {
   text-decoration: underline;
 }
+
+// The task row is now a container instead of one large button.
+.task-row {
+  display: block;
+  width: 100%;
+  padding: 16px 0;
+  border: 0;
+  border-top: 1px solid #ecece9;
+  cursor: default;
+  background: transparent;
+}
+
+.task-row:first-child {
+  border-top: 0;
+}
+
+.task-main {
+  display: grid;
+  grid-template-columns:
+    23px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.task-toggle {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  place-items: center;
+  background: transparent;
+}
+
+.task-toggle:focus-visible {
+  outline: 2px solid #345ec6;
+  outline-offset: 3px;
+}
+
+.task-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 9px;
+}
+
+.comment-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 27px;
+  padding: 0 8px;
+  border: 1px solid #dfe1e5;
+  border-radius: 7px;
+  color: #687386;
+  font-family: inherit;
+  font-size: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  background: #ffffff;
+}
+
+.comment-toggle:hover,
+.comment-toggle--active {
+  border-color: rgb(52 94 198 / 30%);
+  color: #345ec6;
+  background: rgb(52 94 198 / 5%);
+}
+
+.comment-panel {
+  margin: 15px 0 2px 35px;
+  padding: 16px;
+  border: 1px solid #e5e6e3;
+  border-radius: 11px;
+  background: #fafaf8;
+}
+
+.comment-thread {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.task-comment {
+  display: grid;
+  grid-template-columns:
+    31px minmax(0, 1fr);
+  gap: 10px;
+}
+
+.comment-avatar {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 800;
+  place-items: center;
+  background: #7656b5;
+}
+
+.comment-content {
+  min-width: 0;
+}
+
+.comment-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+}
+
+.comment-meta strong {
+  color: #3d485a;
+  font-size: 9px;
+}
+
+.comment-meta span {
+  color: #9a9fa8;
+  font-size: 7px;
+}
+
+.comment-content p {
+  margin: 5px 0 0;
+  color: #697386;
+  font-size: 9px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.empty-comments {
+  margin: 0 0 15px;
+  color: #9299a5;
+  font-size: 8px;
+}
+
+.comment-composer {
+  padding-top: 15px;
+  border-top: 1px solid #e4e5e2;
+}
+
+.comment-composer label {
+  display: block;
+  margin-bottom: 7px;
+  color: #515c6e;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.comment-composer textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #dfe1e5;
+  border-radius: 8px;
+  outline: none;
+  color: #263249;
+  font-family: inherit;
+  font-size: 10px;
+  line-height: 1.55;
+  resize: vertical;
+  background: #ffffff;
+}
+
+.comment-composer textarea:focus {
+  border-color: #345ec6;
+  box-shadow:
+    0 0 0 3px rgb(52 94 198 / 8%);
+}
+
+.comment-composer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.comment-composer-footer span {
+  color: #9299a5;
+  font-size: 7px;
+}
+
+.comment-composer-footer button {
+  min-height: 34px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: 7px;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 8px;
+  font-weight: 750;
+  cursor: pointer;
+  background: #101d35;
+}
+
+.comment-composer-footer button:disabled {
+  color: #9ba1aa;
+  cursor: not-allowed;
+  background: #e5e6e3;
+}
+
+.stage-heading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+@media (max-width: 700px) {
+  .task-main {
+    grid-template-columns:
+      23px minmax(0, 1fr);
+  }
+
+  .task-status {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .comment-panel {
+    margin-left: 0;
+  }
+
+  .comment-composer-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .comment-composer-footer button {
+    width: 100%;
+  }
+}

@@ -15,6 +15,13 @@ export type AssignmentTaskStatus =
   | 'complete'
   | 'blocked';
 
+export interface AssignmentTaskComment {
+  id: number;
+  author: string;
+  message: string;
+  createdUtc: string;
+}
+
 export interface AssignmentTask {
   id: number;
   title: string;
@@ -22,6 +29,8 @@ export interface AssignmentTask {
   owner: string;
   dueDate: string;
   status: AssignmentTaskStatus;
+  comments?: AssignmentTaskComment[];
+
 }
 
 export interface AssignmentStage {
@@ -185,6 +194,51 @@ export interface AssignmentContactDirectory {
   lastUpdatedUtc: string | null;
 }
 
+export type AssignmentActivityType =
+  | 'assignment-created'
+  | 'travel-updated'
+  | 'contacts-updated'
+  | 'document-uploaded'
+  | 'document-removed'
+  | 'task-updated'
+  | 'comment-added'
+  | 'note-added';
+
+export type AssignmentActivityTone =
+  | 'neutral'
+  | 'success'
+  | 'attention';
+
+export type AssignmentActivitySection =
+  | 'overview'
+  | 'checklist'
+  | 'travel'
+  | 'contacts'
+  | 'documents'
+  | 'responses'
+  | 'follow-up';
+
+export interface AssignmentActivityItem {
+  id: number;
+
+  type: AssignmentActivityType;
+  tone: AssignmentActivityTone;
+
+  title: string;
+  description: string;
+
+  actor: string;
+  createdUtc: string;
+
+  section:
+  AssignmentActivitySection;
+}
+
+export interface AssignmentActivityLog {
+  items: AssignmentActivityItem[];
+  lastUpdatedUtc: string | null;
+}
+
 export interface Assignment {
   id: number;
   speakingRequestId: number;
@@ -210,6 +264,9 @@ export interface Assignment {
 
   documentLibrary:
   AssignmentDocumentLibrary;
+
+  activityLog:
+  AssignmentActivityLog;
 
   status: AssignmentStatus;
   readinessPercentage: number;
