@@ -26,18 +26,18 @@ import {
   SpeakingRequestFormComponent
 } from './platform/pages/speaking-requests/speaking-request-form/speaking-request-form.component';
 import {
-  SpeakerJourneyDetailComponent
-} from './platform/pages/speaker-journeys/speaker-journey-detail/speaker-journey-detail.component';
+  AssignmentDetailComponent
+} from './platform/pages/assignments/assignment-detail/assignment-detail.component';
 import {
-  SpeakerJourneyListComponent
-} from './platform/pages/speaker-journeys/speaker-journey-list/speaker-journey-list.component';
+  AssignmentListComponent
+} from './platform/pages/assignments/assignment-list/assignment-list.component';
 import {
   AssignmentWorkspaceComponent
-} from './platform/pages/speaker-journeys/assignment-workspace/assignment-workspace.component';
+} from './platform/pages/assignments/assignment-workspace/assignment-workspace.component';
 
 import {
   AssignmentOverviewComponent
-} from './platform/pages/speaker-journeys/assignment-overview/assignment-overview.component';
+} from './platform/pages/assignments/assignment-overview/assignment-overview.component';
 
 const routes: Routes = [
   {
@@ -61,7 +61,7 @@ const routes: Routes = [
         component: SpeakingRequestDetailComponent
       },
       {
-        path: 'speaker-journeys/:id',
+        path: 'assignments/:id',
         component: AssignmentWorkspaceComponent,
         children: [
           {
@@ -75,13 +75,13 @@ const routes: Routes = [
           },
           {
             path: 'checklist',
-            component: SpeakerJourneyDetailComponent
+            component: AssignmentDetailComponent
           }
         ]
       },
       {
-        path: 'speaker-journeys',
-        component: SpeakerJourneyListComponent
+        path: 'assignments',
+        component: AssignmentListComponent
       },
       {
         path: '',

@@ -3,39 +3,39 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 
 import {
-  SpeakerJourney,
-  SpeakerJourneyStageStatus,
-  SpeakerJourneyTask,
-  SpeakerJourneyTaskStatus
-} from '../../../shared/models/speaker-journey.model';
+  Assignment,
+  AssignmentStageStatus,
+  AssignmentTask,
+  AssignmentTaskStatus
+} from '../../../shared/models/assignment.model';
 
 import {
-  SpeakerJourneyService
-} from '../../../shared/services/speaker-journey.service';
+  AssignmentService
+} from '../../../shared/services/assignment.service';
 
 @Component({
-  selector: 'app-speaker-journey-detail',
+  selector: 'app-speaker-assignment-detail',
   templateUrl:
-    './speaker-journey-detail.component.html',
+    './assignment-detail.component.html',
   styleUrls: [
-    './speaker-journey-detail.component.scss'
+    './assignment-detail.component.scss'
   ]
 })
-export class SpeakerJourneyDetailComponent {
-  private readonly journeyId =
+export class AssignmentDetailComponent {
+  private readonly assignmentId =
     Number(
       this.route.parent
         ?.snapshot.paramMap.get('id')
     );
 
-  readonly journey$:
-    Observable<SpeakerJourney | undefined> =
-    this.speakerJourneyService.getJourney(
-      this.journeyId
+  readonly assignment$:
+    Observable<Assignment | undefined> =
+    this.speakerAssignmentService.getAssignment(
+      this.assignmentId
     );
 
   readonly stageLabels:
-    Record<SpeakerJourneyStageStatus, string> = {
+    Record<AssignmentStageStatus, string> = {
       complete: 'Complete',
       current: 'In progress',
       upcoming: 'Upcoming',
@@ -43,7 +43,7 @@ export class SpeakerJourneyDetailComponent {
     };
 
   readonly taskLabels:
-    Record<SpeakerJourneyTaskStatus, string> = {
+    Record<AssignmentTaskStatus, string> = {
       'not-started': 'Not started',
       'in-progress': 'In progress',
       complete: 'Complete',
@@ -53,26 +53,26 @@ export class SpeakerJourneyDetailComponent {
   constructor(
     private readonly route: ActivatedRoute,
 
-    private readonly speakerJourneyService:
-      SpeakerJourneyService
+    private readonly speakerAssignmentService:
+      AssignmentService
   ) { }
 
   toggleTask(
-    journeyId: number,
+    assignmentId: number,
     stageId: string,
-    task: SpeakerJourneyTask
+    task: AssignmentTask
   ): void {
-    this.speakerJourneyService.toggleTask(
-      journeyId,
+    this.speakerAssignmentService.toggleTask(
+      assignmentId,
       stageId,
       task.id
     );
   }
 
   getCompletedTaskCount(
-    journey: SpeakerJourney
+    assignment: Assignment
   ): number {
-    return journey.stages.reduce(
+    return assignment.stages.reduce(
       (total, stage) =>
         total +
         stage.tasks.filter(
@@ -83,9 +83,9 @@ export class SpeakerJourneyDetailComponent {
   }
 
   getTotalTaskCount(
-    journey: SpeakerJourney
+    assignment: Assignment
   ): number {
-    return journey.stages.reduce(
+    return assignment.stages.reduce(
       (total, stage) =>
         total + stage.tasks.length,
       0
@@ -93,16 +93,16 @@ export class SpeakerJourneyDetailComponent {
   }
 
   getStageCompletedCount(
-    journey: SpeakerJourney
+    assignment: Assignment
   ): number {
-    return journey.stages.filter(
+    return assignment.stages.filter(
       stage => stage.status === 'complete'
     ).length;
   }
 
   getCompletedStageTaskCount(
     stage: {
-      tasks: SpeakerJourneyTask[];
+      tasks: AssignmentTask[];
     }
   ): number {
     return stage.tasks.filter(

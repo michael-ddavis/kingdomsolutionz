@@ -3,14 +3,14 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 
 import {
-  SpeakerJourney,
-  SpeakerJourneyStage,
-  SpeakerJourneyTask
-} from '../../../shared/models/speaker-journey.model';
+  Assignment,
+  AssignmentStage,
+  AssignmentTask
+} from '../../../shared/models/assignment.model';
 
 import {
-  SpeakerJourneyService
-} from '../../../shared/services/speaker-journey.service';
+  AssignmentService
+} from '../../../shared/services/assignment.service';
 
 @Component({
   selector: 'app-assignment-overview',
@@ -28,20 +28,20 @@ export class AssignmentOverviewComponent {
     );
 
   readonly assignment$:
-    Observable<SpeakerJourney | undefined> =
-      this.speakerJourneyService.getJourney(
+    Observable<Assignment | undefined> =
+      this.speakerAssignmentService.getAssignment(
         this.assignmentId
       );
 
   constructor(
     private readonly route: ActivatedRoute,
 
-    private readonly speakerJourneyService:
-      SpeakerJourneyService
+    private readonly speakerAssignmentService:
+      AssignmentService
   ) {}
 
   getTotalTaskCount(
-    assignment: SpeakerJourney
+    assignment: Assignment
   ): number {
     return assignment.stages.reduce(
       (total, stage) =>
@@ -51,7 +51,7 @@ export class AssignmentOverviewComponent {
   }
 
   getCompletedTaskCount(
-    assignment: SpeakerJourney
+    assignment: Assignment
   ): number {
     return assignment.stages.reduce(
       (total, stage) =>
@@ -64,8 +64,8 @@ export class AssignmentOverviewComponent {
   }
 
   getCurrentStage(
-    assignment: SpeakerJourney
-  ): SpeakerJourneyStage | undefined {
+    assignment: Assignment
+  ): AssignmentStage | undefined {
     return (
       assignment.stages.find(
         stage => stage.status === 'blocked'
@@ -80,8 +80,8 @@ export class AssignmentOverviewComponent {
   }
 
   getNextTask(
-    assignment: SpeakerJourney
-  ): SpeakerJourneyTask | undefined {
+    assignment: Assignment
+  ): AssignmentTask | undefined {
     return assignment.stages
       .flatMap(stage => stage.tasks)
       .filter(
@@ -95,7 +95,7 @@ export class AssignmentOverviewComponent {
   }
 
   getStageReadiness(
-    stage: SpeakerJourneyStage
+    stage: AssignmentStage
   ): number {
     if (stage.tasks.length === 0) {
       return 0;
@@ -115,7 +115,7 @@ export class AssignmentOverviewComponent {
   }
 
   getDaysUntilEvent(
-    assignment: SpeakerJourney
+    assignment: Assignment
   ): number {
     const today = new Date();
 
@@ -137,7 +137,7 @@ export class AssignmentOverviewComponent {
   }
 
   getEventTimingLabel(
-    assignment: SpeakerJourney
+    assignment: Assignment
   ): string {
     const daysUntilEvent =
       this.getDaysUntilEvent(assignment);

@@ -1,108 +1,108 @@
 import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
-  Observable
+  Observable,
+  map
 } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 import {
   SpeakingRequest
 } from '../models/speaking-request.model';
 
 import {
-  SpeakerJourney,
-  SpeakerJourneyStage,
-  SpeakerJourneyTaskStatus
-} from '../models/speaker-journey.model';
+  Assignment,
+  AssignmentStage,
+  AssignmentTaskStatus
+} from '../models/assignment.model';
 
 @Injectable({
   providedIn: 'root'
 })
-export class SpeakerJourneyService {
-  private readonly journeysSubject =
-    new BehaviorSubject<readonly SpeakerJourney[]>(
+export class AssignmentService {
+  private readonly assignmentsSubject =
+    new BehaviorSubject<readonly Assignment[]>(
       [
-        this.createSeededJourney()
+        this.createSeededAssignment()
       ]
     );
 
-  readonly speakerJourneys$ =
-    this.journeysSubject.asObservable();
+  readonly assignments$ =
+    this.assignmentsSubject.asObservable();
 
-  getJourney(
-    journeyId: number
-  ): Observable<SpeakerJourney | undefined> {
-    return this.speakerJourneys$.pipe(
-      map(journeys =>
-        journeys.find(
-          journey => journey.id === journeyId
+  getAssignment(
+    assignmentId: number
+  ): Observable<Assignment | undefined> {
+    return this.assignments$.pipe(
+      map(assignments =>
+        assignments.find(
+          assignment => assignment.id === assignmentId
         )
       )
     );
   }
 
-  getJourneyBySpeakingRequest(
+  getAssignmentBySpeakingRequest(
     speakingRequestId: number
-  ): Observable<SpeakerJourney | undefined> {
-    return this.speakerJourneys$.pipe(
-      map(journeys =>
-        journeys.find(
-          journey =>
-            journey.speakingRequestId ===
+  ): Observable<Assignment | undefined> {
+    return this.assignments$.pipe(
+      map(assignments =>
+        assignments.find(
+          assignment =>
+            assignment.speakingRequestId ===
             speakingRequestId
         )
       )
     );
   }
 
-  createOrGetJourney(
+  createOrGetAssignment(
     request: SpeakingRequest
-  ): SpeakerJourney {
-    const existingJourney =
-      this.journeysSubject.value.find(
-        journey =>
-          journey.speakingRequestId === request.id
+  ): Assignment {
+    const existingAssignment =
+      this.assignmentsSubject.value.find(
+        assignment =>
+          assignment.speakingRequestId === request.id
       );
 
-    if (existingJourney) {
-      return existingJourney;
+    if (existingAssignment) {
+      return existingAssignment;
     }
 
     const nextId =
       Math.max(
         2000,
-        ...this.journeysSubject.value.map(
-          journey => journey.id
+        ...this.assignmentsSubject.value.map(
+          assignment => assignment.id
         )
       ) + 1;
 
-    const newJourney =
-      this.buildJourney(
+    const newAssignment =
+      this.buildAssignment(
         request,
         nextId
       );
 
-    this.journeysSubject.next([
-      newJourney,
-      ...this.journeysSubject.value
+    this.assignmentsSubject.next([
+      newAssignment,
+      ...this.assignmentsSubject.value
     ]);
 
-    return newJourney;
+    return newAssignment;
   }
 
   toggleTask(
-    journeyId: number,
+    assignmentId: number,
     stageId: string,
     taskId: number
   ): void {
-    const updatedJourneys: SpeakerJourney[] =
-      this.journeysSubject.value.map(journey => {
-        if (journey.id !== journeyId) {
-          return journey;
+    const updatedAssignments: Assignment[] =
+      this.assignmentsSubject.value.map(assignment => {
+        if (assignment.id !== assignmentId) {
+          return assignment;
         }
 
-        const updatedStages: SpeakerJourneyStage[] =
-          journey.stages.map(stage => {
+        const updatedStages: AssignmentStage[] =
+          assignment.stages.map(stage => {
             if (stage.id !== stageId) {
               return stage;
             }
@@ -116,7 +116,7 @@ export class SpeakerJourneyService {
                 }
 
                 const nextStatus:
-                  SpeakerJourneyTaskStatus =
+                  AssignmentTaskStatus =
                   task.status === 'complete'
                     ? 'not-started'
                     : 'complete';
@@ -129,29 +129,29 @@ export class SpeakerJourneyService {
             };
           });
 
-        return this.recalculateJourney({
-          ...journey,
+        return this.recalculateAssignment({
+          ...assignment,
           stages: updatedStages
         });
       });
 
-    this.journeysSubject.next(updatedJourneys);
+    this.assignmentsSubject.next(updatedAssignments);
   }
 
   updateTaskStatus(
-    journeyId: number,
+    assignmentId: number,
     stageId: string,
     taskId: number,
-    status: SpeakerJourneyTaskStatus
+    status: AssignmentTaskStatus
   ): void {
-    const updatedJourneys: SpeakerJourney[] =
-      this.journeysSubject.value.map(journey => {
-        if (journey.id !== journeyId) {
-          return journey;
+    const updatedAssignments: Assignment[] =
+      this.assignmentsSubject.value.map(assignment => {
+        if (assignment.id !== assignmentId) {
+          return assignment;
         }
 
-        const updatedStages: SpeakerJourneyStage[] =
-          journey.stages.map(stage => {
+        const updatedStages: AssignmentStage[] =
+          assignment.stages.map(stage => {
             if (stage.id !== stageId) {
               return stage;
             }
@@ -170,27 +170,27 @@ export class SpeakerJourneyService {
             };
           });
 
-        return this.recalculateJourney({
-          ...journey,
+        return this.recalculateAssignment({
+          ...assignment,
           stages: updatedStages
         });
       });
 
-    this.journeysSubject.next(updatedJourneys);
+    this.assignmentsSubject.next(updatedAssignments);
   }
 
-  private buildJourney(
+  private buildAssignment(
     request: SpeakingRequest,
-    journeyId: number
-  ): SpeakerJourney {
-    let taskId = journeyId * 100;
+    assignmentId: number
+  ): Assignment {
+    let taskId = assignmentId * 100;
 
     const createTask = (
       title: string,
       description: string,
       owner: string,
       dueDate: string,
-      status: SpeakerJourneyTaskStatus =
+      status: AssignmentTaskStatus =
         'not-started'
     ) => ({
       id: ++taskId,
@@ -201,7 +201,7 @@ export class SpeakerJourneyService {
       status
     });
 
-    const stages: SpeakerJourneyStage[] = [
+    const stages: AssignmentStage[] = [
       {
         id: 'invitation',
         name: 'Invitation',
@@ -434,8 +434,8 @@ export class SpeakerJourneyService {
       }
     ];
 
-    return this.recalculateJourney({
-      id: journeyId,
+    return this.recalculateAssignment({
+      id: assignmentId,
       speakingRequestId: request.id,
 
       eventName: request.eventName,
@@ -463,18 +463,18 @@ export class SpeakerJourneyService {
     });
   }
 
-  private recalculateJourney(
-    journey: SpeakerJourney
-  ): SpeakerJourney {
+  private recalculateAssignment(
+    assignment: Assignment
+  ): Assignment {
     const totalTasks =
-      journey.stages.reduce(
+      assignment.stages.reduce(
         (total, stage) =>
           total + stage.tasks.length,
         0
       );
 
     const completedTasks =
-      journey.stages.reduce(
+      assignment.stages.reduce(
         (total, stage) =>
           total +
           stage.tasks.filter(
@@ -486,7 +486,7 @@ export class SpeakerJourneyService {
     let currentStageFound = false;
 
     const updatedStages =
-      journey.stages.map(stage => {
+      assignment.stages.map(stage => {
         const allTasksComplete =
           stage.tasks.length > 0 &&
           stage.tasks.every(
@@ -530,7 +530,7 @@ export class SpeakerJourneyService {
         );
 
     return {
-      ...journey,
+      ...assignment,
       status:
         completedTasks === totalTasks
           ? 'completed'
@@ -557,7 +557,7 @@ export class SpeakerJourneyService {
       .slice(0, 10);
   }
 
-  private createSeededJourney(): SpeakerJourney {
+  private createSeededAssignment(): Assignment {
     const request: SpeakingRequest = {
       id: 1003,
       organizationName:
@@ -598,12 +598,12 @@ export class SpeakerJourneyService {
         '2026-07-07T16:45:00Z'
     };
 
-    const journey =
-      this.buildJourney(
+    const assignment =
+      this.buildAssignment(
         request,
         2001
       );
 
-    return journey;
+    return assignment;
   }
 }

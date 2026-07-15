@@ -1,35 +1,35 @@
-export type SpeakerJourneyStatus =
+export type AssignmentStatus =
   | 'active'
   | 'completed'
   | 'cancelled';
 
-export type SpeakerJourneyStageStatus =
+export type AssignmentStageStatus =
   | 'complete'
   | 'current'
   | 'upcoming'
   | 'blocked';
 
-export type SpeakerJourneyTaskStatus =
+export type AssignmentTaskStatus =
   | 'not-started'
   | 'in-progress'
   | 'complete'
   | 'blocked';
 
-export interface SpeakerJourneyTask {
+export interface AssignmentTask {
   id: number;
   title: string;
   description: string;
   owner: string;
   dueDate: string;
-  status: SpeakerJourneyTaskStatus;
+  status: AssignmentTaskStatus;
 }
 
-export interface SpeakerJourneyStage {
+export interface AssignmentStage {
   id: string;
   name: string;
   description: string;
-  status: SpeakerJourneyStageStatus;
-  tasks: SpeakerJourneyTask[];
+  status: AssignmentStageStatus;
+  tasks: AssignmentTask[];
 }
 
 export interface AssignmentCoordinator {
@@ -39,7 +39,7 @@ export interface AssignmentCoordinator {
   phone?: string;
 }
 
-export interface SpeakerJourney {
+export interface Assignment {
   id: number;
   speakingRequestId: number;
   coordinator: AssignmentCoordinator;
@@ -55,9 +55,9 @@ export interface SpeakerJourney {
   startDate: string;
   endDate: string;
 
-  status: SpeakerJourneyStatus;
+  status: AssignmentStatus;
   readinessPercentage: number;
 
   createdUtc: string;
-  stages: SpeakerJourneyStage[];
+  stages: AssignmentStage[];
 }

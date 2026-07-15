@@ -1,14 +1,14 @@
 <ng-container
-  *ngIf="journeys$ | async as journeys">
+  *ngIf="assignments$ | async as assignments">
 
-  <section class="journeys-page">
+  <section class="assignments-page">
     <header class="page-heading">
       <div>
         <p class="eyebrow">
           Itinerant ministry
         </p>
 
-        <h1>Speaker journeys</h1>
+        <h1>Assignments</h1>
 
         <p class="page-description">
           Track every approved engagement from initial
@@ -28,7 +28,7 @@
 
     <section
       class="summary-grid"
-      aria-label="Speaker journey summary">
+      aria-label="Assignment summary">
 
       <article class="summary-card">
         <div class="summary-icon summary-icon--navy">
@@ -37,10 +37,10 @@
 
         <div>
           <strong>
-            {{ journeys.length }}
+            {{ assignments.length }}
           </strong>
 
-          <span>Total journeys</span>
+          <span>Total assignments</span>
 
           <small>
             Approved ministry engagements
@@ -57,13 +57,13 @@
           <strong>
             {{
               countByStatus(
-                journeys,
+                assignments,
                 'active'
               )
             }}
           </strong>
 
-          <span>Active journeys</span>
+          <span>Active assignments</span>
 
           <small>
             Currently in preparation
@@ -80,7 +80,7 @@
           <strong>
             {{
               getApproachingEventCount(
-                journeys
+                assignments
               )
             }}
           </strong>
@@ -102,7 +102,7 @@
           <strong>
             {{
               getAverageReadiness(
-                journeys
+                assignments
               )
             }}%
           </strong>
@@ -110,7 +110,7 @@
           <span>Average readiness</span>
 
           <small>
-            Across all journeys
+            Across all assignments
           </small>
         </div>
       </article>
@@ -119,7 +119,7 @@
     <section
       class="attention-banner"
       *ngIf="
-        getTotalBlockedTasks(journeys) > 0
+        getTotalBlockedTasks(assignments) > 0
       ">
 
       <div class="attention-mark">!</div>
@@ -131,11 +131,11 @@
 
         <p>
           {{
-            getTotalBlockedTasks(journeys)
+            getTotalBlockedTasks(assignments)
           }}
           blocked
           {{
-            getTotalBlockedTasks(journeys) === 1
+            getTotalBlockedTasks(assignments) === 1
               ? 'task requires'
               : 'tasks require'
           }}
@@ -144,10 +144,10 @@
       </div>
     </section>
 
-    <section class="journey-toolbar">
+    <section class="assignment-toolbar">
       <div
         class="filter-group"
-        aria-label="Filter speaker journeys">
+        aria-label="Filter speaker assignments">
 
         <button
           type="button"
@@ -159,7 +159,7 @@
           All
 
           <span>
-            {{ journeys.length }}
+            {{ assignments.length }}
           </span>
         </button>
 
@@ -175,7 +175,7 @@
           <span>
             {{
               countByStatus(
-                journeys,
+                assignments,
                 'active'
               )
             }}
@@ -194,7 +194,7 @@
           <span>
             {{
               countByStatus(
-                journeys,
+                assignments,
                 'completed'
               )
             }}
@@ -213,7 +213,7 @@
           <span>
             {{
               countByStatus(
-                journeys,
+                assignments,
                 'cancelled'
               )
             }}
@@ -223,82 +223,82 @@
 
       <span class="result-count">
         {{
-          getFilteredJourneys(journeys).length
+          getFilteredJourneys(assignments).length
         }}
         {{
-          getFilteredJourneys(journeys).length === 1
-            ? 'journey'
-            : 'journeys'
+          getFilteredJourneys(assignments).length === 1
+            ? 'assignment'
+            : 'assignments'
         }}
       </span>
     </section>
 
     <section
-      class="journey-list"
+      class="assignment-list"
       *ngIf="
-        getFilteredJourneys(journeys).length > 0;
+        getFilteredJourneys(assignments).length > 0;
         else noJourneys
       ">
 
       <a
         *ngFor="
-          let journey of
-            getFilteredJourneys(journeys);
+          let assignment of
+            getFilteredJourneys(assignments);
           trackBy: trackByJourneyId
         "
         [routerLink]="[
-          '/app/speaker-journeys',
-          journey.id
+          '/app/speaker-assignments',
+          assignment.id
         ]"
-        class="journey-card">
+        class="assignment-card">
 
-        <header class="journey-card-heading">
-          <div class="journey-identity">
+        <header class="assignment-card-heading">
+          <div class="assignment-identity">
             <span
               [ngClass]="[
-                'journey-status',
-                'journey-status--' +
-                  journey.status
+                'assignment-status',
+                'assignment-status--' +
+                  assignment.status
               ]">
 
               {{
-                journey.status === 'active'
+                assignment.status === 'active'
                   ? 'Active'
-                  : journey.status ===
+                  : assignment.status ===
                       'completed'
                     ? 'Completed'
                     : 'Cancelled'
               }}
             </span>
 
-            <span class="journey-reference">
-              JRN-{{ journey.id }}
+            <span class="assignment-reference">
+              JRN-{{ assignment.id }}
             </span>
           </div>
 
           <span
             [ngClass]="[
               'event-timing',
-              getDaysUntilEvent(journey) <= 14 &&
-              getDaysUntilEvent(journey) >= 0
+              getDaysUntilEvent(assignment) <= 14 &&
+              getDaysUntilEvent(assignment) >= 0
                 ? 'event-timing--soon'
                 : ''
             ]">
 
-            {{ getEventTimingLabel(journey) }}
+            {{ getEventTimingLabel(assignment) }}
           </span>
         </header>
 
-        <div class="journey-card-body">
-          <div class="journey-main">
+        <div class="assignment-card-body">
+          <div class="assignment-main">
             <p class="event-type">
-              {{ journey.eventType }}
+              {{ assignment.eventType }}
             </p>
 
-            <h2>{{ journey.eventName }}</h2>
+            <h2>{{ assignment.eventName }}</h2>
 
             <p class="organization-name">
-              {{ journey.organizationName }}
+              {{ assignment.organizationName }}
             </p>
 
             <div class="event-details">
@@ -306,31 +306,31 @@
                 <strong>Dates</strong>
 
                 {{
-                  journey.startDate
+                  assignment.startDate
                     | date:'MMM d'
                 }}
 
                 <ng-container
                   *ngIf="
-                    journey.endDate !==
-                    journey.startDate
+                    assignment.endDate !==
+                    assignment.startDate
                   ">
 
                   –
                   {{
-                    journey.endDate
+                    assignment.endDate
                       | date:'MMM d, y'
                   }}
                 </ng-container>
 
                 <ng-container
                   *ngIf="
-                    journey.endDate ===
-                    journey.startDate
+                    assignment.endDate ===
+                    assignment.startDate
                   ">
 
                   {{
-                    journey.startDate
+                    assignment.startDate
                       | date:'y'
                   }}
                 </ng-container>
@@ -339,14 +339,14 @@
               <span>
                 <strong>Location</strong>
 
-                {{ journey.city }},
-                {{ journey.state }}
+                {{ assignment.city }},
+                {{ assignment.state }}
               </span>
 
               <span>
                 <strong>Venue</strong>
 
-                {{ journey.venueName }}
+                {{ assignment.venueName }}
               </span>
             </div>
           </div>
@@ -356,27 +356,27 @@
 
             <strong>
               {{
-                getCurrentStage(journey)?.name
+                getCurrentStage(assignment)?.name
               }}
             </strong>
 
             <span>
               {{
-                getCurrentStage(journey)
+                getCurrentStage(assignment)
                   ?.description
               }}
             </span>
           </div>
         </div>
 
-        <footer class="journey-card-footer">
-          <div class="journey-progress">
+        <footer class="assignment-card-footer">
+          <div class="assignment-progress">
             <div class="progress-heading">
-              <span>Journey progress</span>
+              <span>Assignment progress</span>
 
               <strong>
                 {{
-                  journey.readinessPercentage
+                  assignment.readinessPercentage
                 }}%
               </strong>
             </div>
@@ -384,7 +384,7 @@
             <div class="progress-bar">
               <span
                 [style.width.%]="
-                  journey.readinessPercentage
+                  assignment.readinessPercentage
                 ">
               </span>
             </div>
@@ -392,30 +392,30 @@
             <small>
               {{
                 getCompletedTaskCount(
-                  journey
+                  assignment
                 )
               }}
               of
               {{
                 getTotalTaskCount(
-                  journey
+                  assignment
                 )
               }}
               tasks complete
             </small>
           </div>
 
-          <div class="journey-meta">
+          <div class="assignment-meta">
             <div
               class="blocked-count"
               *ngIf="
-                getBlockedTaskCount(journey) > 0
+                getBlockedTaskCount(assignment) > 0
               ">
 
               <span>!</span>
 
               {{
-                getBlockedTaskCount(journey)
+                getBlockedTaskCount(assignment)
               }}
               blocked
             </div>
@@ -423,7 +423,7 @@
             <div
               class="next-task"
               *ngIf="
-                getNextDueTask(journey)
+                getNextDueTask(assignment)
                   as nextTask
               ">
 
@@ -453,10 +453,10 @@
       <section class="empty-state">
         <div class="empty-mark">SJ</div>
 
-        <h2>No journeys found</h2>
+        <h2>No assignments found</h2>
 
         <p>
-          There are no speaker journeys matching the
+          There are no speaker assignments matching the
           selected filter.
         </p>
 
@@ -464,7 +464,7 @@
           type="button"
           (click)="setFilter('all')">
 
-          View all journeys
+          View all assignments
         </button>
       </section>
     </ng-template>

@@ -13,8 +13,8 @@ import {
 import { Router } from '@angular/router';
 
 import {
-  SpeakerJourneyService
-} from '../../../shared/services/speaker-journey.service';
+  AssignmentService
+} from '../../../shared/services/assignment.service';
 
 interface ReadinessItem {
   label: string;
@@ -65,8 +65,8 @@ export class SpeakingRequestDetailComponent {
     private readonly speakingRequestService:
       SpeakingRequestService,
 
-    private readonly speakerJourneyService:
-      SpeakerJourneyService
+    private readonly speakerAssignmentService:
+      AssignmentService
   ) { }
 
   updateStatus(
@@ -83,7 +83,7 @@ export class SpeakingRequestDetailComponent {
     }
 
     const journey =
-      this.speakerJourneyService.createOrGetJourney(
+      this.speakerAssignmentService.createOrGetAssignment(
         {
           ...request,
           status: 'approved'
@@ -151,11 +151,11 @@ export class SpeakingRequestDetailComponent {
     ];
   }
 
-  openSpeakerJourney(
+  openAssignment(
     request: SpeakingRequest
   ): void {
     const journey =
-      this.speakerJourneyService.createOrGetJourney(
+      this.speakerAssignmentService.createOrGetAssignment(
         request
       );
 

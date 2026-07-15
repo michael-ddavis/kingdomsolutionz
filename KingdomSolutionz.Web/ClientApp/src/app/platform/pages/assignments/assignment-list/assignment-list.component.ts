@@ -3,14 +3,14 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import {
-  SpeakerJourney,
-  SpeakerJourneyStage,
-  SpeakerJourneyTask
-} from '../../../shared/models/speaker-journey.model';
+  Assignment,
+  AssignmentStage,
+  AssignmentTask
+} from '../../../shared/models/assignment.model';
 
 import {
-  SpeakerJourneyService
-} from '../../../shared/services/speaker-journey.service';
+  AssignmentService
+} from '../../../shared/services/assignment.service';
 
 type JourneyFilter =
   | 'all'
@@ -19,20 +19,23 @@ type JourneyFilter =
   | 'cancelled';
 
 @Component({
-  selector: 'app-speaker-journey-list',
-  templateUrl: './speaker-journey-list.component.html',
-  styleUrls: ['./speaker-journey-list.component.scss']
+  selector: 'app-assignment-list',
+  templateUrl:
+    './assignment-list.component.html',
+  styleUrls: [
+    './assignment-list.component.scss'
+  ]
 })
-export class SpeakerJourneyListComponent {
+export class AssignmentListComponent {
   selectedFilter: JourneyFilter = 'all';
 
-  readonly journeys$: Observable<
-    readonly SpeakerJourney[]
-  > = this.speakerJourneyService
-    .speakerJourneys$
+  readonly assignments$: Observable<
+    readonly Assignment[]
+  > = this.assignmentService
+    .assignments$
     .pipe(
-      map(journeys =>
-        [...journeys].sort(
+      map(assignments =>
+        [...assignments].sort(
           (left, right) =>
             new Date(left.startDate).getTime() -
             new Date(right.startDate).getTime()
@@ -41,63 +44,63 @@ export class SpeakerJourneyListComponent {
     );
 
   constructor(
-    private readonly speakerJourneyService:
-      SpeakerJourneyService
-  ) {}
+    private readonly assignmentService:
+      AssignmentService
+  ) { }
 
   setFilter(filter: JourneyFilter): void {
     this.selectedFilter = filter;
   }
 
   getFilteredJourneys(
-    journeys: readonly SpeakerJourney[]
-  ): readonly SpeakerJourney[] {
+    assignments: readonly Assignment[]
+  ): readonly Assignment[] {
     if (this.selectedFilter === 'all') {
-      return journeys;
+      return assignments;
     }
 
-    return journeys.filter(
+    return assignments.filter(
       journey =>
         journey.status === this.selectedFilter
     );
   }
 
   countByStatus(
-    journeys: readonly SpeakerJourney[],
+    assignments: readonly Assignment[],
     status: JourneyFilter
   ): number {
     if (status === 'all') {
-      return journeys.length;
+      return assignments.length;
     }
 
-    return journeys.filter(
+    return assignments.filter(
       journey => journey.status === status
     ).length;
   }
 
   getAverageReadiness(
-    journeys: readonly SpeakerJourney[]
+    assignments: readonly Assignment[]
   ): number {
-    if (journeys.length === 0) {
+    if (assignments.length === 0) {
       return 0;
     }
 
     const totalReadiness =
-      journeys.reduce(
+      assignments.reduce(
         (total, journey) =>
           total + journey.readinessPercentage,
         0
       );
 
     return Math.round(
-      totalReadiness / journeys.length
+      totalReadiness / assignments.length
     );
   }
 
   getApproachingEventCount(
-    journeys: readonly SpeakerJourney[]
+    assignments: readonly Assignment[]
   ): number {
-    return journeys.filter(journey => {
+    return assignments.filter(journey => {
       const daysUntilEvent =
         this.getDaysUntilEvent(journey);
 
@@ -110,9 +113,9 @@ export class SpeakerJourneyListComponent {
   }
 
   getTotalBlockedTasks(
-    journeys: readonly SpeakerJourney[]
+    assignments: readonly Assignment[]
   ): number {
-    return journeys.reduce(
+    return assignments.reduce(
       (total, journey) =>
         total +
         journey.stages.reduce(
@@ -128,8 +131,8 @@ export class SpeakerJourneyListComponent {
   }
 
   getCurrentStage(
-    journey: SpeakerJourney
-  ): SpeakerJourneyStage | undefined {
+    journey: Assignment
+  ): AssignmentStage | undefined {
     return (
       journey.stages.find(
         stage =>
@@ -140,13 +143,13 @@ export class SpeakerJourneyListComponent {
           stage.status === 'current'
       ) ??
       journey.stages[
-        journey.stages.length - 1
+      journey.stages.length - 1
       ]
     );
   }
 
   getCompletedTaskCount(
-    journey: SpeakerJourney
+    journey: Assignment
   ): number {
     return journey.stages.reduce(
       (total, stage) =>
@@ -159,7 +162,7 @@ export class SpeakerJourneyListComponent {
   }
 
   getTotalTaskCount(
-    journey: SpeakerJourney
+    journey: Assignment
   ): number {
     return journey.stages.reduce(
       (total, stage) =>
@@ -169,7 +172,7 @@ export class SpeakerJourneyListComponent {
   }
 
   getBlockedTaskCount(
-    journey: SpeakerJourney
+    journey: Assignment
   ): number {
     return journey.stages.reduce(
       (total, stage) =>
@@ -182,8 +185,8 @@ export class SpeakerJourneyListComponent {
   }
 
   getNextDueTask(
-    journey: SpeakerJourney
-  ): SpeakerJourneyTask | undefined {
+    journey: Assignment
+  ): AssignmentTask | undefined {
     const incompleteTasks =
       journey.stages
         .flatMap(stage => stage.tasks)
@@ -200,7 +203,7 @@ export class SpeakerJourneyListComponent {
   }
 
   getDaysUntilEvent(
-    journey: SpeakerJourney
+    journey: Assignment
   ): number {
     const today = new Date();
 
@@ -219,7 +222,7 @@ export class SpeakerJourneyListComponent {
   }
 
   getEventTimingLabel(
-    journey: SpeakerJourney
+    journey: Assignment
   ): string {
     const daysUntilEvent =
       this.getDaysUntilEvent(journey);
@@ -249,7 +252,7 @@ export class SpeakerJourneyListComponent {
 
   trackByJourneyId(
     index: number,
-    journey: SpeakerJourney
+    journey: Assignment
   ): number {
     return journey.id;
   }

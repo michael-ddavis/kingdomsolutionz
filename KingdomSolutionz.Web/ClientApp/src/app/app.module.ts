@@ -20,10 +20,11 @@ import { WorkspaceSwitcherComponent } from './platform/components/workspace-swit
 import { SpeakingRequestListComponent } from './platform/pages/speaking-requests/speaking-request-list/speaking-request-list.component';
 import { SpeakingRequestDetailComponent } from './platform/pages/speaking-requests/speaking-request-detail/speaking-request-detail.component';
 import { SpeakingRequestFormComponent } from './platform/pages/speaking-requests/speaking-request-form/speaking-request-form.component';
-import { SpeakerJourneyDetailComponent } from './platform/pages/speaker-journeys/speaker-journey-detail/speaker-journey-detail.component';
-import { SpeakerJourneyListComponent } from './platform/pages/speaker-journeys/speaker-journey-list/speaker-journey-list.component';
-import { AssignmentWorkspaceComponent } from './platform/pages/speaker-journeys/assignment-workspace/assignment-workspace.component';
-import { AssignmentOverviewComponent } from './platform/pages/speaker-journeys/assignment-overview/assignment-overview.component';
+import { AssignmentDetailComponent } from './platform/pages/assignments/assignment-detail/assignment-detail.component';
+import {
+  AssignmentListComponent
+} from './platform/pages/assignments/assignment-list/assignment-list.component';import { AssignmentWorkspaceComponent } from './platform/pages/assignments/assignment-workspace/assignment-workspace.component';
+import { AssignmentOverviewComponent } from './platform/pages/assignments/assignment-overview/assignment-overview.component';
 
 @NgModule({
   declarations: [
@@ -43,8 +44,8 @@ import { AssignmentOverviewComponent } from './platform/pages/speaker-journeys/a
     SpeakingRequestListComponent,
     SpeakingRequestDetailComponent,
     SpeakingRequestFormComponent,
-    SpeakerJourneyDetailComponent,
-    SpeakerJourneyListComponent,
+    AssignmentDetailComponent,
+    AssignmentListComponent,
     AssignmentWorkspaceComponent,
     AssignmentOverviewComponent
   ],

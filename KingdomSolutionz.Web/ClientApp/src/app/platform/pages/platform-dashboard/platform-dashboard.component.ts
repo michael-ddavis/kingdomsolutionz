@@ -12,10 +12,10 @@ import {
 } from '../../shared/models/speaking-request.model';
 
 import {
-  SpeakerJourney,
-  SpeakerJourneyStage,
-  SpeakerJourneyTask
-} from '../../shared/models/speaker-journey.model';
+  Assignment,
+  AssignmentStage,
+  AssignmentTask
+} from '../../shared/models/assignment.model';
 
 import {
   Workspace
@@ -26,8 +26,8 @@ import {
 } from '../../shared/services/speaking-request.service';
 
 import {
-  SpeakerJourneyService
-} from '../../shared/services/speaker-journey.service';
+  AssignmentService
+} from '../../shared/services/assignment.service';
 
 import {
   WorkspaceService
@@ -93,9 +93,9 @@ interface DashboardViewModel {
 }
 
 interface JourneyTaskContext {
-  journey: SpeakerJourney;
-  stage: SpeakerJourneyStage;
-  task: SpeakerJourneyTask;
+  assignment: Assignment;
+  stage: AssignmentStage;
+  task: AssignmentTask;
 }
 
 @Component({
@@ -116,18 +116,18 @@ export class PlatformDashboardComponent {
     combineLatest([
       this.workspaceService.selectedWorkspace$,
       this.speakingRequestService.speakingRequests$,
-      this.speakerJourneyService.speakerJourneys$
+      this.assignmentService.assignments$
     ]).pipe(
       map(
         ([
           workspace,
           speakingRequests,
-          speakerJourneys
+          assignments
         ]) =>
           this.buildDashboard(
             workspace,
             speakingRequests,
-            speakerJourneys
+            assignments
           )
       )
     );
@@ -139,8 +139,8 @@ export class PlatformDashboardComponent {
     private readonly speakingRequestService:
       SpeakingRequestService,
 
-    private readonly speakerJourneyService:
-      SpeakerJourneyService,
+    private readonly assignmentService:
+      AssignmentService,
 
     private readonly router: Router
   ) {}
@@ -158,14 +158,14 @@ export class PlatformDashboardComponent {
   private buildDashboard(
     workspace: Workspace,
     speakingRequests: readonly SpeakingRequest[],
-    speakerJourneys: readonly SpeakerJourney[]
+    assignments: readonly Assignment[]
   ): DashboardViewModel {
     switch (workspace.id) {
       case 'apostle-cynthia':
         return this.buildApostleCynthiaDashboard(
           workspace,
           speakingRequests,
-          speakerJourneys
+          assignments
         );
 
       case 'jpp':
@@ -176,7 +176,7 @@ export class PlatformDashboardComponent {
         return this.buildAllMinistriesDashboard(
           workspace,
           speakingRequests,
-          speakerJourneys
+          assignments
         );
     }
   }
@@ -184,13 +184,13 @@ export class PlatformDashboardComponent {
   private buildAllMinistriesDashboard(
     workspace: Workspace,
     speakingRequests: readonly SpeakingRequest[],
-    speakerJourneys: readonly SpeakerJourney[]
+    assignments: readonly Assignment[]
   ): DashboardViewModel {
     const orderedRequests =
       this.orderRequestsByNewest(speakingRequests);
 
     const orderedJourneys =
-      this.orderJourneysByEventDate(speakerJourneys);
+      this.orderJourneysByEventDate(assignments);
 
     const awaitingReview =
       orderedRequests.filter(
@@ -206,10 +206,10 @@ export class PlatformDashboardComponent {
 
     const activeJourneys =
       orderedJourneys.filter(
-        journey => journey.status === 'active'
+        assignment => assignment.status === 'active'
       );
 
-    const journeyAttentionCount =
+    const assignmentAttentionCount =
       this.getJourneyAttentionCount(
         activeJourneys
       );
@@ -219,7 +219,7 @@ export class PlatformDashboardComponent {
         orderedRequests
       );
 
-    const journeyPriorities =
+    const assignmentPriorities =
       this.buildJourneyPriorities(
         activeJourneys
       );
@@ -247,14 +247,14 @@ export class PlatformDashboardComponent {
 
     const priorities = [
       ...requestPriorities.slice(0, 2),
-      ...journeyPriorities.slice(0, 2),
+      ...assignmentPriorities.slice(0, 2),
       ...jppPriorities
     ].slice(0, 5);
 
     const openPriorityCount =
       awaitingReview.length +
       informationNeeded.length +
-      journeyAttentionCount +
+      assignmentAttentionCount +
       jppPriorities.length;
 
     return {
@@ -274,7 +274,7 @@ export class PlatformDashboardComponent {
         {
           value: activeJourneys.length.toString(),
           label: 'Active engagements',
-          detail: 'Speaking journeys underway',
+          detail: 'Speaking assignments underway',
           tone: 'violet'
         },
         {
@@ -308,7 +308,7 @@ export class PlatformDashboardComponent {
             'Speaking, travel, events and ministry responses.',
           primaryMetric:
             activeJourneys.length.toString(),
-          primaryLabel: 'Active journeys',
+          primaryLabel: 'Active assignments',
           secondaryMetric:
             this.getAverageReadiness(
               activeJourneys
@@ -333,13 +333,13 @@ export class PlatformDashboardComponent {
   private buildApostleCynthiaDashboard(
     workspace: Workspace,
     speakingRequests: readonly SpeakingRequest[],
-    speakerJourneys: readonly SpeakerJourney[]
+    assignments: readonly Assignment[]
   ): DashboardViewModel {
     const orderedRequests =
       this.orderRequestsByNewest(speakingRequests);
 
     const orderedJourneys =
-      this.orderJourneysByEventDate(speakerJourneys);
+      this.orderJourneysByEventDate(assignments);
 
     const awaitingReview =
       orderedRequests.filter(
@@ -355,14 +355,14 @@ export class PlatformDashboardComponent {
 
     const activeJourneys =
       orderedJourneys.filter(
-        journey => journey.status === 'active'
+        assignment => assignment.status === 'active'
       );
 
     const approachingEvents =
       activeJourneys.filter(
-        journey => {
+        assignment => {
           const daysUntilEvent =
-            this.getDaysUntilEvent(journey);
+            this.getDaysUntilEvent(assignment);
 
           return (
             daysUntilEvent >= 0 &&
@@ -376,7 +376,7 @@ export class PlatformDashboardComponent {
         orderedRequests
       );
 
-    const journeyPriorities =
+    const assignmentPriorities =
       this.buildJourneyPriorities(
         activeJourneys
       );
@@ -391,7 +391,7 @@ export class PlatformDashboardComponent {
       metrics: [
         {
           value: activeJourneys.length.toString(),
-          label: 'Active journeys',
+          label: 'Active assignments',
           detail: 'Approved engagements underway',
           tone: 'navy'
         },
@@ -423,7 +423,7 @@ export class PlatformDashboardComponent {
 
       priorities: [
         ...requestPriorities,
-        ...journeyPriorities
+        ...assignmentPriorities
       ].slice(0, 5),
 
       activities:
@@ -567,33 +567,33 @@ export class PlatformDashboardComponent {
   }
 
   private buildJourneyPriorities(
-    journeys: readonly SpeakerJourney[]
+    assignments: readonly Assignment[]
   ): DashboardPriority[] {
     const priorities: DashboardPriority[] = [];
 
-    for (const journey of journeys) {
+    for (const assignment of assignments) {
       const blockedTask =
-        this.getBlockedTask(journey);
+        this.getBlockedTask(assignment);
 
       if (blockedTask) {
         priorities.push({
           title:
             `Resolve ${blockedTask.task.title}`,
           description:
-            `${journey.eventName} · ${blockedTask.stage.name}`,
+            `${assignment.eventName} · ${blockedTask.stage.name}`,
           workspace: 'Speaker Journeys',
           due: 'Blocked',
           status: 'Needs attention',
           tone: 'amber',
           route:
-            `/app/speaker-journeys/${journey.id}`
+            `/app/speaker-assignments/${assignment.id}`
         });
 
         continue;
       }
 
       const nextTask =
-        this.getNextIncompleteTask(journey);
+        this.getNextIncompleteTask(assignment);
 
       if (!nextTask) {
         continue;
@@ -607,7 +607,7 @@ export class PlatformDashboardComponent {
       priorities.push({
         title: nextTask.task.title,
         description:
-          `${journey.eventName} · ${nextTask.stage.name}`,
+          `${assignment.eventName} · ${nextTask.stage.name}`,
         workspace: 'Speaker Journeys',
         due:
           this.getTaskDueLabel(
@@ -622,7 +622,7 @@ export class PlatformDashboardComponent {
             ? 'amber'
             : 'blue',
         route:
-          `/app/speaker-journeys/${journey.id}`
+          `/app/speaker-assignments/${assignment.id}`
       });
     }
 
@@ -642,16 +642,16 @@ export class PlatformDashboardComponent {
   }
 
   private getBlockedTask(
-    journey: SpeakerJourney
+    assignment: Assignment
   ): JourneyTaskContext | undefined {
-    for (const stage of journey.stages) {
+    for (const stage of assignment.stages) {
       const task = stage.tasks.find(
         item => item.status === 'blocked'
       );
 
       if (task) {
         return {
-          journey,
+          assignment,
           stage,
           task
         };
@@ -662,15 +662,15 @@ export class PlatformDashboardComponent {
   }
 
   private getNextIncompleteTask(
-    journey: SpeakerJourney
+    assignment: Assignment
   ): JourneyTaskContext | undefined {
     const contexts: JourneyTaskContext[] = [];
 
-    for (const stage of journey.stages) {
+    for (const stage of assignment.stages) {
       for (const task of stage.tasks) {
         if (task.status !== 'complete') {
           contexts.push({
-            journey,
+            assignment,
             stage,
             task
           });
@@ -690,19 +690,19 @@ export class PlatformDashboardComponent {
   }
 
   private getJourneyAttentionCount(
-    journeys: readonly SpeakerJourney[]
+    assignments: readonly Assignment[]
   ): number {
-    return journeys.filter(
-      journey => {
+    return assignments.filter(
+      assignment => {
         const blocked =
-          this.getBlockedTask(journey);
+          this.getBlockedTask(assignment);
 
         if (blocked) {
           return true;
         }
 
         const nextTask =
-          this.getNextIncompleteTask(journey);
+          this.getNextIncompleteTask(assignment);
 
         if (!nextTask) {
           return false;
@@ -718,27 +718,27 @@ export class PlatformDashboardComponent {
   }
 
   private getAverageReadiness(
-    journeys: readonly SpeakerJourney[]
+    assignments: readonly Assignment[]
   ): number {
-    if (journeys.length === 0) {
+    if (assignments.length === 0) {
       return 0;
     }
 
     const total =
-      journeys.reduce(
-        (sum, journey) =>
-          sum + journey.readinessPercentage,
+      assignments.reduce(
+        (sum, assignment) =>
+          sum + assignment.readinessPercentage,
         0
       );
 
     return Math.round(
-      total / journeys.length
+      total / assignments.length
     );
   }
 
   private buildCombinedActivities(
     speakingRequests: readonly SpeakingRequest[],
-    speakerJourneys: readonly SpeakerJourney[]
+    assignments: readonly Assignment[]
   ): DashboardActivity[] {
     const activities: DashboardActivity[] = [];
 
@@ -747,17 +747,17 @@ export class PlatformDashboardComponent {
         speakingRequests
       );
 
-    const journeyActivity =
+    const assignmentActivity =
       this.buildLatestJourneyActivity(
-        speakerJourneys
+        assignments
       );
 
     if (requestActivity) {
       activities.push(requestActivity);
     }
 
-    if (journeyActivity) {
-      activities.push(journeyActivity);
+    if (assignmentActivity) {
+      activities.push(assignmentActivity);
     }
 
     activities.push(
@@ -782,7 +782,7 @@ export class PlatformDashboardComponent {
 
   private buildApostleCynthiaActivities(
     speakingRequests: readonly SpeakingRequest[],
-    speakerJourneys: readonly SpeakerJourney[]
+    assignments: readonly Assignment[]
   ): DashboardActivity[] {
     const activities: DashboardActivity[] = [];
 
@@ -791,17 +791,17 @@ export class PlatformDashboardComponent {
         speakingRequests
       );
 
-    const journeyActivity =
+    const assignmentActivity =
       this.buildLatestJourneyActivity(
-        speakerJourneys
+        assignments
       );
 
     if (requestActivity) {
       activities.push(requestActivity);
     }
 
-    if (journeyActivity) {
-      activities.push(journeyActivity);
+    if (assignmentActivity) {
+      activities.push(assignmentActivity);
     }
 
     activities.push(
@@ -850,10 +850,10 @@ export class PlatformDashboardComponent {
   }
 
   private buildLatestJourneyActivity(
-    speakerJourneys: readonly SpeakerJourney[]
+    assignments: readonly Assignment[]
   ): DashboardActivity | null {
     const latestJourney =
-      [...speakerJourneys].sort(
+      [...assignments].sort(
         (left, right) =>
           new Date(
             right.createdUtc
@@ -868,7 +868,7 @@ export class PlatformDashboardComponent {
     }
 
     return {
-      title: 'Speaker journey created',
+      title: 'Speaker assignment created',
       description:
         `${latestJourney.eventName} is now in ministry preparation.`,
       time:
@@ -897,9 +897,9 @@ export class PlatformDashboardComponent {
   }
 
   private orderJourneysByEventDate(
-    speakerJourneys: readonly SpeakerJourney[]
-  ): SpeakerJourney[] {
-    return [...speakerJourneys].sort(
+    assignments: readonly Assignment[]
+  ): Assignment[] {
+    return [...assignments].sort(
       (left, right) =>
         this.parseDateOnly(
           left.startDate
@@ -911,10 +911,10 @@ export class PlatformDashboardComponent {
   }
 
   private getDaysUntilEvent(
-    journey: SpeakerJourney
+    assignment: Assignment
   ): number {
     return this.getDaysUntilDate(
-      journey.startDate
+      assignment.startDate
     );
   }
 

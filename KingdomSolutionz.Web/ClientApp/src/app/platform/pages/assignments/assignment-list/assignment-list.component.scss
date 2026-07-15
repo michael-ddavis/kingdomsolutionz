@@ -176,7 +176,7 @@ h1 {
   font-size: 9px;
 }
 
-.journey-toolbar {
+.assignment-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -240,12 +240,12 @@ h1 {
   font-weight: 700;
 }
 
-.journey-list {
+.assignment-list {
   display: grid;
   gap: 15px;
 }
 
-.journey-card {
+.assignment-card {
   display: block;
   overflow: hidden;
   border: 1px solid #e2e3e0;
@@ -259,14 +259,14 @@ h1 {
     transform 160ms ease;
 }
 
-.journey-card:hover {
+.assignment-card:hover {
   border-color: rgb(52 94 198 / 28%);
   box-shadow:
     0 14px 42px rgb(24 36 58 / 7%);
   transform: translateY(-2px);
 }
 
-.journey-card-heading {
+.assignment-card-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -276,41 +276,41 @@ h1 {
   background: #fafaf8;
 }
 
-.journey-identity {
+.assignment-identity {
   display: flex;
   align-items: center;
   gap: 9px;
 }
 
-.journey-status,
-.journey-reference,
+.assignment-status,
+.assignment-reference,
 .event-timing {
   font-size: 8px;
   font-weight: 750;
   white-space: nowrap;
 }
 
-.journey-status {
+.assignment-status {
   padding: 5px 8px;
   border-radius: 999px;
 }
 
-.journey-status--active {
+.assignment-status--active {
   color: #3159b9;
   background: rgb(52 94 198 / 9%);
 }
 
-.journey-status--completed {
+.assignment-status--completed {
   color: #34795e;
   background: rgb(61 141 109 / 10%);
 }
 
-.journey-status--cancelled {
+.assignment-status--cancelled {
   color: #a8514c;
   background: rgb(191 99 93 / 10%);
 }
 
-.journey-reference {
+.assignment-reference {
   color: #9299a5;
   letter-spacing: 0.04em;
 }
@@ -323,7 +323,7 @@ h1 {
   color: #94772a;
 }
 
-.journey-card-body {
+.assignment-card-body {
   display: grid;
   grid-template-columns:
     minmax(0, 1.5fr)
@@ -341,7 +341,7 @@ h1 {
   text-transform: uppercase;
 }
 
-.journey-main h2 {
+.assignment-main h2 {
   margin-bottom: 5px;
   color: #263249;
   font-size: 19px;
@@ -403,7 +403,7 @@ h1 {
   line-height: 1.5;
 }
 
-.journey-card-footer {
+.assignment-card-footer {
   display: grid;
   grid-template-columns:
     minmax(0, 1.15fr)
@@ -447,14 +447,14 @@ h1 {
   background: #3d8d6d;
 }
 
-.journey-progress small {
+.assignment-progress small {
   display: block;
   margin-top: 7px;
   color: #9299a5;
   font-size: 8px;
 }
 
-.journey-meta {
+.assignment-meta {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -562,8 +562,8 @@ h1 {
       repeat(2, minmax(0, 1fr));
   }
 
-  .journey-card-body,
-  .journey-card-footer {
+  .assignment-card-body,
+  .assignment-card-footer {
     grid-template-columns: 1fr;
   }
 
@@ -573,14 +573,14 @@ h1 {
     border-left: 0;
   }
 
-  .journey-meta {
+  .assignment-meta {
     justify-content: flex-start;
   }
 }
 
 @media (max-width: 720px) {
   .page-heading,
-  .journey-toolbar {
+  .assignment-toolbar {
     align-items: stretch;
     flex-direction: column;
   }
@@ -599,7 +599,7 @@ h1 {
     overflow-x: auto;
   }
 
-  .journey-card-heading {
+  .assignment-card-heading {
     align-items: flex-start;
     flex-direction: column;
   }
@@ -609,7 +609,7 @@ h1 {
     gap: 9px;
   }
 
-  .journey-meta {
+  .assignment-meta {
     align-items: flex-start;
     flex-direction: column;
   }
