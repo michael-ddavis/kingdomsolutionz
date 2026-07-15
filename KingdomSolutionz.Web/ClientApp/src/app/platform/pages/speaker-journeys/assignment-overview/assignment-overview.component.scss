@@ -359,3 +359,24 @@ p {
     gap: 9px;
   }
 }
+
+.brief-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 40px;
+  margin-top: 21px;
+  padding: 0 12px;
+  border: 1px solid #dfe1e5;
+  border-radius: 8px;
+  color: #4f5a6c;
+  font-size: 9px;
+  font-weight: 750;
+  text-decoration: none;
+  background: #ffffff;
+}
+
+.brief-link:hover {
+  border-color: rgb(52 94 198 / 30%);
+  color: #345ec6;
+}
