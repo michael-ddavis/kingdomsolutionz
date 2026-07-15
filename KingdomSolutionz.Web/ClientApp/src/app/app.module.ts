@@ -22,6 +22,8 @@ import { SpeakingRequestDetailComponent } from './platform/pages/speaking-reques
 import { SpeakingRequestFormComponent } from './platform/pages/speaking-requests/speaking-request-form/speaking-request-form.component';
 import { SpeakerJourneyDetailComponent } from './platform/pages/speaker-journeys/speaker-journey-detail/speaker-journey-detail.component';
 import { SpeakerJourneyListComponent } from './platform/pages/speaker-journeys/speaker-journey-list/speaker-journey-list.component';
+import { AssignmentWorkspaceComponent } from './platform/pages/speaker-journeys/assignment-workspace/assignment-workspace.component';
+import { AssignmentOverviewComponent } from './platform/pages/speaker-journeys/assignment-overview/assignment-overview.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +44,9 @@ import { SpeakerJourneyListComponent } from './platform/pages/speaker-journeys/s
     SpeakingRequestDetailComponent,
     SpeakingRequestFormComponent,
     SpeakerJourneyDetailComponent,
-    SpeakerJourneyListComponent
+    SpeakerJourneyListComponent,
+    AssignmentWorkspaceComponent,
+    AssignmentOverviewComponent
   ],
   imports: [
     BrowserModule,

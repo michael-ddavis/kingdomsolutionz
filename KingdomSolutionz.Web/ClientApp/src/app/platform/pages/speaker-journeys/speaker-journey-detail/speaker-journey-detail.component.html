@@ -1,461 +1,149 @@
 <ng-container
   *ngIf="
-    journey$ | async as journey;
-    else journeyNotFound
+    journey$ | async as assignment;
+    else checklistNotFound
   ">
 
-  <section class="journey-page">
-    <a
-      [routerLink]="[
-        '/app/speaking-requests',
-        journey.speakingRequestId
-      ]"
-      class="back-link">
-
-      <span aria-hidden="true">←</span>
-      Back to speaking request
-    </a>
-
-    <header class="page-heading">
+  <section class="checklist-page">
+    <header class="checklist-heading">
       <div>
-        <div class="heading-meta">
-          <p class="eyebrow">
-            Speaker journey
-          </p>
+        <p class="eyebrow">
+          Assignment checklist
+        </p>
 
-          <span
-            [ngClass]="[
-              'journey-status',
-              'journey-status--' + journey.status
-            ]">
+        <h2>Preparation responsibilities</h2>
 
-            {{
-              journey.status === 'completed'
-                ? 'Journey completed'
-                : journey.status === 'cancelled'
-                  ? 'Journey cancelled'
-                  : 'Active journey'
-            }}
-          </span>
-        </div>
-
-        <h1>{{ journey.eventName }}</h1>
-
-        <p class="organization-name">
-          {{ journey.organizationName }}
-          ·
-          {{ journey.city }},
-          {{ journey.state }}
+        <p>
+          Track ownership, deadlines and completion across
+          every stage of the assignment.
         </p>
       </div>
 
-      <div class="event-date">
-        <small>Event dates</small>
-
+      <div class="checklist-summary">
         <strong>
-          {{ journey.startDate | date:'MMM d' }}
-
-          <ng-container
-            *ngIf="
-              journey.endDate !== journey.startDate
-            ">
-
-            –
-            {{ journey.endDate | date:'MMM d, y' }}
-          </ng-container>
-
-          <ng-container
-            *ngIf="
-              journey.endDate === journey.startDate
-            ">
-
-            {{ journey.startDate | date:'y' }}
-          </ng-container>
+          {{ getCompletedTaskCount(assignment) }}
+          /
+          {{ getTotalTaskCount(assignment) }}
         </strong>
 
-        <span>{{ journey.venueName }}</span>
-      </div>
-    </header>
-
-    <section
-      class="summary-grid"
-      aria-label="Speaker journey summary">
-
-      <article class="summary-card">
-        <small>Journey progress</small>
-
-        <strong>
-          {{ journey.readinessPercentage }}%
-        </strong>
-
-        <span>
-          {{ getCompletedTaskCount(journey) }}
-          of
-          {{ getTotalTaskCount(journey) }}
-          tasks complete
-        </span>
+        <span>Items complete</span>
 
         <div class="progress-bar">
           <span
             [style.width.%]="
-              journey.readinessPercentage
+              assignment.readinessPercentage
             ">
           </span>
         </div>
-      </article>
+      </div>
+    </header>
 
-      <article class="summary-card">
-        <small>Stages complete</small>
+    <div class="stage-list">
+      <article
+        *ngFor="let stage of assignment.stages"
+        [ngClass]="[
+          'stage-panel',
+          'stage-panel--' + stage.status
+        ]">
 
-        <strong>
-          {{ getStageCompletedCount(journey) }}
-          /
-          {{ journey.stages.length }}
-        </strong>
+        <header class="stage-heading">
+          <div class="stage-heading-copy">
+            <span
+              [ngClass]="[
+                'stage-marker',
+                'stage-marker--' + stage.status
+              ]">
 
-        <span>
-          Invitation through follow-up
-        </span>
-      </article>
-
-      <article class="summary-card">
-        <small>Current focus</small>
-
-        <strong>
-          Travel
-        </strong>
-
-        <span>
-          Transportation, lodging and itinerary
-        </span>
-      </article>
-
-      <article class="summary-card">
-        <small>Journey reference</small>
-
-        <strong>
-          JRN-{{ journey.id }}
-        </strong>
-
-        <span>
-          Request ACT-{{
-            journey.speakingRequestId
-          }}
-        </span>
-      </article>
-    </section>
-
-    <section
-      class="stage-map"
-      aria-label="Speaker journey stages">
-
-      <div
-        class="stage-map-item"
-        *ngFor="
-          let stage of journey.stages;
-          let last = last
-        ">
-
-        <div
-          [ngClass]="[
-            'stage-marker',
-            'stage-marker--' + stage.status
-          ]">
-
-          <span>
-            {{
-              stage.status === 'complete'
-                ? '✓'
-                : stage.status === 'current'
-                  ? '•'
+              {{
+                stage.status === 'complete'
+                  ? '✓'
                   : stage.status === 'blocked'
                     ? '!'
-                    : '○'
-            }}
-          </span>
-        </div>
-
-        <div class="stage-map-copy">
-          <strong>{{ stage.name }}</strong>
-
-          <small>
-            {{ stageLabels[stage.status] }}
-          </small>
-        </div>
-
-        <div
-          *ngIf="!last"
-          [ngClass]="[
-            'stage-map-line',
-            stage.status === 'complete'
-              ? 'stage-map-line--complete'
-              : ''
-          ]">
-        </div>
-      </div>
-    </section>
-
-    <section class="journey-layout">
-      <div class="stage-list">
-        <article
-          *ngFor="let stage of journey.stages"
-          [ngClass]="[
-            'stage-panel',
-            'stage-panel--' + stage.status
-          ]">
-
-          <header class="stage-heading">
-            <div class="stage-heading-copy">
-              <span
-                [ngClass]="[
-                  'stage-number',
-                  'stage-number--' + stage.status
-                ]">
-
-                {{
-                  stage.status === 'complete'
-                    ? '✓'
-                    : stage.status === 'blocked'
-                      ? '!'
-                      : stage.name.charAt(0)
-                }}
-              </span>
-
-              <div>
-                <div class="stage-title-row">
-                  <h2>{{ stage.name }}</h2>
-
-                  <span
-                    [ngClass]="[
-                      'stage-status',
-                      'stage-status--' + stage.status
-                    ]">
-
-                    {{
-                      stageLabels[
-                        stage.status
-                      ]
-                    }}
-                  </span>
-                </div>
-
-                <p>
-                  {{ stage.description }}
-                </p>
-              </div>
-            </div>
-
-            <span class="stage-task-count">
-              {{
-                getCompletedStageTaskCount(stage)
+                    : stage.name.charAt(0)
               }}
-              /
-              {{ stage.tasks.length }}
             </span>
-          </header>
 
-          <div class="task-list">
-            <button
-              type="button"
-              *ngFor="let task of stage.tasks"
-              [ngClass]="[
-                'task-item',
-                'task-item--' + task.status
-              ]"
-              (click)="
-                toggleTask(
-                  journey.id,
-                  stage.id,
-                  task
-                )
-              ">
+            <div>
+              <div class="stage-title-row">
+                <h3>{{ stage.name }}</h3>
 
-              <span class="task-checkbox">
-                {{
-                  task.status === 'complete'
-                    ? '✓'
-                    : ''
-                }}
-              </span>
+                <span
+                  [ngClass]="[
+                    'stage-status',
+                    'stage-status--' + stage.status
+                  ]">
 
-              <span class="task-copy">
-                <strong>
-                  {{ task.title }}
-                </strong>
-
-                <span>
-                  {{ task.description }}
+                  {{ stageLabels[stage.status] }}
                 </span>
+              </div>
 
-                <span class="task-meta">
-                  {{ task.owner }}
-                  ·
-                  Due
-                  {{
-                    task.dueDate
-                      | date:'MMM d, y'
-                  }}
-                </span>
-              </span>
-
-              <span
-                [ngClass]="[
-                  'task-status',
-                  'task-status--' + task.status
-                ]">
-
-                {{
-                  taskLabels[
-                    task.status
-                  ]
-                }}
-              </span>
-            </button>
+              <p>{{ stage.description }}</p>
+            </div>
           </div>
-        </article>
-      </div>
 
-      <aside class="journey-sidebar">
-        <article class="side-panel">
-          <p class="section-eyebrow">
-            Ministry assignment
-          </p>
+          <span class="stage-count">
+            {{ getCompletedStageTaskCount(stage) }}
+            /
+            {{ stage.tasks.length }}
+          </span>
+        </header>
 
-          <h2>
-            {{ journey.eventType }}
-          </h2>
+        <div class="task-list">
+          <button
+            type="button"
+            *ngFor="let task of stage.tasks"
+            [ngClass]="[
+              'task-row',
+              'task-row--' + task.status
+            ]"
+            (click)="
+              toggleTask(
+                assignment.id,
+                stage.id,
+                task
+              )
+            ">
 
-          <dl>
-            <div>
-              <dt>Host ministry</dt>
+            <span class="task-checkbox">
+              {{
+                task.status === 'complete'
+                  ? '✓'
+                  : ''
+              }}
+            </span>
 
-              <dd>
-                {{ journey.organizationName }}
-              </dd>
-            </div>
+            <span class="task-copy">
+              <strong>{{ task.title }}</strong>
+              <span>{{ task.description }}</span>
 
-            <div>
-              <dt>Venue</dt>
-
-              <dd>
-                {{ journey.venueName }}
-              </dd>
-            </div>
-
-            <div>
-              <dt>Location</dt>
-
-              <dd>
-                {{ journey.city }},
-                {{ journey.state }}
-              </dd>
-            </div>
-
-            <div>
-              <dt>Event dates</dt>
-
-              <dd>
+              <small>
+                {{ task.owner }}
+                ·
+                Due
                 {{
-                  journey.startDate
+                  task.dueDate
                     | date:'MMM d, y'
                 }}
+              </small>
+            </span>
 
-                <ng-container
-                  *ngIf="
-                    journey.endDate !==
-                    journey.startDate
-                  ">
+            <span
+              [ngClass]="[
+                'task-status',
+                'task-status--' + task.status
+              ]">
 
-                  –
-                  {{
-                    journey.endDate
-                      | date:'MMM d, y'
-                  }}
-                </ng-container>
-              </dd>
-            </div>
-
-            <div>
-              <dt>Journey created</dt>
-
-              <dd>
-                {{
-                  journey.createdUtc
-                    | date:'MMM d, y'
-                }}
-              </dd>
-            </div>
-          </dl>
-        </article>
-
-        <article class="why-panel">
-          <p class="section-eyebrow">
-            Why this matters
-          </p>
-
-          <h2>
-            One approval creates a connected plan.
-          </h2>
-
-          <p>
-            Travel, promotion, prayer, ministry
-            preparation, event execution and follow-up
-            are now visible in one place with clear
-            ownership.
-          </p>
-        </article>
-
-        <article class="side-panel">
-          <p class="section-eyebrow">
-            Journey responsibility
-          </p>
-
-          <h2>
-            Clear ownership at every stage
-          </h2>
-
-          <dl>
-            <div>
-              <dt>Travel coordination</dt>
-              <dd>Executive Assistant</dd>
-            </div>
-
-            <div>
-              <dt>Promotional assets</dt>
-              <dd>Media Coordinator</dd>
-            </div>
-
-            <div>
-              <dt>Prayer coverage</dt>
-              <dd>Prayer Coordinator</dd>
-            </div>
-
-            <div>
-              <dt>Ministry responses</dt>
-              <dd>Discipleship Coordinator</dd>
-            </div>
-          </dl>
-        </article>
-      </aside>
-    </section>
+              {{ taskLabels[task.status] }}
+            </span>
+          </button>
+        </div>
+      </article>
+    </div>
   </section>
 </ng-container>
 
-<ng-template #journeyNotFound>
+<ng-template #checklistNotFound>
   <section class="not-found">
-    <p class="eyebrow">
-      Speaker journey
-    </p>
-
-    <h1>Journey not found</h1>
-
-    <p>
-      This journey does not exist or is no longer
-      available.
-    </p>
-
-    <a routerLink="/app/speaking-requests">
-      Return to speaking requests
-    </a>
+    <h2>Checklist not found</h2>
   </section>
 </ng-template>

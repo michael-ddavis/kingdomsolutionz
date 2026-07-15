@@ -1,0 +1,152 @@
+<ng-container
+  *ngIf="
+    assignment$ | async as assignment;
+    else assignmentNotFound
+  ">
+
+  <section class="assignment-workspace">
+    <a
+      routerLink="/app/speaker-journeys"
+      class="back-link">
+
+      <span aria-hidden="true">←</span>
+      Back to assignments
+    </a>
+
+    <header class="workspace-heading">
+      <div class="assignment-heading-copy">
+        <div class="heading-meta">
+          <p class="eyebrow">
+            Ministry assignment
+          </p>
+
+          <span
+            [ngClass]="[
+              'assignment-status',
+              'assignment-status--' +
+                assignment.status
+            ]">
+
+            {{ getStatusLabel(assignment) }}
+          </span>
+        </div>
+
+        <h1>{{ assignment.eventName }}</h1>
+
+        <p class="assignment-subtitle">
+          {{ assignment.organizationName }}
+          <span aria-hidden="true">·</span>
+          {{ assignment.city }},
+          {{ assignment.state }}
+        </p>
+      </div>
+
+      <div class="heading-summary">
+        <div class="event-date">
+          <small>Event dates</small>
+
+          <strong>
+            {{
+              assignment.startDate
+                | date:'MMM d'
+            }}
+
+            <ng-container
+              *ngIf="
+                assignment.endDate !==
+                assignment.startDate
+              ">
+
+              –
+              {{
+                assignment.endDate
+                  | date:'MMM d, y'
+              }}
+            </ng-container>
+
+            <ng-container
+              *ngIf="
+                assignment.endDate ===
+                assignment.startDate
+              ">
+
+              {{
+                assignment.startDate
+                  | date:'y'
+              }}
+            </ng-container>
+          </strong>
+
+          <span>{{ assignment.venueName }}</span>
+        </div>
+
+        <div class="heading-readiness">
+          <div>
+            <small>Overall readiness</small>
+
+            <strong>
+              {{ assignment.readinessPercentage }}%
+            </strong>
+          </div>
+
+          <div class="heading-progress">
+            <span
+              [style.width.%]="
+                assignment.readinessPercentage
+              ">
+            </span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <nav
+      class="assignment-tabs"
+      aria-label="Assignment sections">
+
+      <a
+        *ngFor="let tab of tabs"
+        [routerLink]="tab.route"
+        routerLinkActive="assignment-tab--active"
+        class="assignment-tab">
+
+        <strong>{{ tab.label }}</strong>
+        <small>{{ tab.description }}</small>
+      </a>
+
+      <div
+        class="future-sections"
+        aria-label="Upcoming assignment sections">
+
+        <span>Travel</span>
+        <span>Contacts</span>
+        <span>Documents</span>
+        <span>Ministry Log</span>
+        <span>Responses</span>
+      </div>
+    </nav>
+
+    <div class="assignment-content">
+      <router-outlet></router-outlet>
+    </div>
+  </section>
+</ng-container>
+
+<ng-template #assignmentNotFound>
+  <section class="not-found">
+    <p class="eyebrow">
+      Ministry assignment
+    </p>
+
+    <h1>Assignment not found</h1>
+
+    <p>
+      This assignment does not exist or is no longer
+      available.
+    </p>
+
+    <a routerLink="/app/speaker-journeys">
+      Return to assignments
+    </a>
+  </section>
+</ng-template>

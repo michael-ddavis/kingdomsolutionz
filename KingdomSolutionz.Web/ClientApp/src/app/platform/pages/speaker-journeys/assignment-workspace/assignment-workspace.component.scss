@@ -1,0 +1,282 @@
+:host {
+  display: block;
+}
+
+.assignment-workspace,
+.not-found {
+  width: min(100%, 1420px);
+  margin: 0 auto;
+}
+
+.assignment-workspace {
+  display: grid;
+  gap: 24px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 8px;
+  color: #647084;
+  font-size: 10px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: #345ec6;
+}
+
+.workspace-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.heading-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #7656b5;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+h1,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 7px;
+  color: #101d35;
+  font-size: clamp(32px, 4vw, 46px);
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+}
+
+.assignment-subtitle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 0;
+  color: #697386;
+  font-size: 13px;
+}
+
+.assignment-status {
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: #3159b9;
+  font-size: 8px;
+  font-weight: 750;
+  background: rgb(52 94 198 / 9%);
+}
+
+.assignment-status--completed {
+  color: #34795e;
+  background: rgb(61 141 109 / 10%);
+}
+
+.assignment-status--cancelled {
+  color: #a8514c;
+  background: rgb(191 99 93 / 10%);
+}
+
+.heading-summary {
+  display: grid;
+  grid-template-columns:
+    minmax(210px, 1fr)
+    minmax(190px, 0.8fr);
+  gap: 11px;
+  min-width: 430px;
+}
+
+.event-date,
+.heading-readiness {
+  display: flex;
+  min-height: 92px;
+  padding: 16px 18px;
+  border: 1px solid #e2e3e0;
+  border-radius: 13px;
+  flex-direction: column;
+  background: #ffffff;
+}
+
+.event-date small,
+.heading-readiness small {
+  color: #9299a5;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.event-date strong,
+.heading-readiness strong {
+  margin-top: 7px;
+  color: #263249;
+  font-size: 13px;
+}
+
+.event-date span {
+  margin-top: 4px;
+  overflow: hidden;
+  color: #7c8492;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.heading-readiness {
+  justify-content: space-between;
+}
+
+.heading-readiness > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.heading-readiness strong {
+  margin-top: 0;
+  color: #34795e;
+}
+
+.heading-progress {
+  width: 100%;
+  height: 5px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #ecece8;
+}
+
+.heading-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #3d8d6d;
+}
+
+.assignment-tabs {
+  display: flex;
+  align-items: stretch;
+  gap: 5px;
+  padding: 5px;
+  overflow-x: auto;
+  border: 1px solid #e2e3e0;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.assignment-tab {
+  display: flex;
+  flex: 0 0 auto;
+  min-width: 150px;
+  min-height: 58px;
+  padding: 10px 13px;
+  border-radius: 10px;
+  color: #717b8b;
+  flex-direction: column;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.assignment-tab:hover {
+  color: #263249;
+  background: #f7f7f4;
+}
+
+.assignment-tab strong {
+  font-size: 10px;
+}
+
+.assignment-tab small {
+  margin-top: 4px;
+  color: #969ca6;
+  font-size: 8px;
+}
+
+.assignment-tab--active {
+  color: #ffffff;
+  background: #101d35;
+}
+
+.assignment-tab--active:hover {
+  color: #ffffff;
+  background: #101d35;
+}
+
+.assignment-tab--active small {
+  color: #94a3bd;
+}
+
+.future-sections {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: max-content;
+  margin-left: auto;
+}
+
+.future-sections span {
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: #9ba1aa;
+  font-size: 8px;
+  font-weight: 700;
+  background: #f4f4f1;
+}
+
+.assignment-content {
+  min-width: 0;
+}
+
+.not-found {
+  padding: 60px 24px;
+  text-align: center;
+}
+
+.not-found p {
+  color: #747d8d;
+}
+
+.not-found a {
+  color: #345ec6;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+@media (max-width: 1050px) {
+  .workspace-heading {
+    flex-direction: column;
+  }
+
+  .heading-summary {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 650px) {
+  .heading-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .assignment-tabs {
+    align-items: flex-start;
+  }
+
+  .future-sections {
+    display: none;
+  }
+}

@@ -1,0 +1,355 @@
+<ng-container
+  *ngIf="assignment$ | async as assignment">
+
+  <section class="overview-page">
+    <section class="overview-grid">
+      <article class="overview-card overview-card--next">
+        <div class="card-heading">
+          <div>
+            <p class="eyebrow">What’s next</p>
+            <h2>Next assignment action</h2>
+          </div>
+
+          <span class="action-mark">→</span>
+        </div>
+
+        <ng-container
+          *ngIf="
+            getNextTask(assignment) as nextTask;
+            else assignmentComplete
+          ">
+
+          <strong class="next-action-title">
+            {{ nextTask.title }}
+          </strong>
+
+          <p>
+            {{ nextTask.description }}
+          </p>
+
+          <div class="next-action-meta">
+            <span>
+              Owner:
+              <strong>{{ nextTask.owner }}</strong>
+            </span>
+
+            <span>
+              Due:
+              <strong>
+                {{
+                  nextTask.dueDate
+                    | date:'MMM d, y'
+                }}
+              </strong>
+            </span>
+          </div>
+
+          <a
+            routerLink="../checklist"
+            class="card-action">
+
+            Open checklist
+            <span aria-hidden="true">→</span>
+          </a>
+        </ng-container>
+
+        <ng-template #assignmentComplete>
+          <strong class="next-action-title">
+            Assignment checklist complete
+          </strong>
+
+          <p>
+            Every current preparation item has been
+            completed.
+          </p>
+        </ng-template>
+      </article>
+
+      <article class="overview-card">
+        <div class="card-heading">
+          <div>
+            <p class="eyebrow">
+              Assignment coordinator
+            </p>
+
+            <h2>Primary owner</h2>
+          </div>
+
+          <span class="coordinator-avatar">
+            {{
+              assignment.coordinator.name
+                .charAt(0)
+            }}
+          </span>
+        </div>
+
+        <strong class="coordinator-name">
+          {{ assignment.coordinator.name }}
+        </strong>
+
+        <p class="coordinator-role">
+          {{ assignment.coordinator.role }}
+        </p>
+
+        <div
+          class="coordinator-contact"
+          *ngIf="
+            assignment.coordinator.email ||
+            assignment.coordinator.phone
+          ">
+
+          <a
+            *ngIf="assignment.coordinator.email"
+            [href]="
+              'mailto:' +
+              assignment.coordinator.email
+            ">
+
+            {{ assignment.coordinator.email }}
+          </a>
+
+          <a
+            *ngIf="assignment.coordinator.phone"
+            [href]="
+              'tel:' +
+              assignment.coordinator.phone
+            ">
+
+            {{ assignment.coordinator.phone }}
+          </a>
+        </div>
+
+        <p class="coordinator-note">
+          Responsible for keeping the assignment moving,
+          coordinating owners and resolving preparation
+          gaps.
+        </p>
+      </article>
+
+      <article class="overview-card">
+        <p class="eyebrow">
+          Current stage
+        </p>
+
+        <ng-container
+          *ngIf="
+            getCurrentStage(assignment) as currentStage
+          ">
+
+          <h2 class="current-stage-name">
+            {{ currentStage.name }}
+          </h2>
+
+          <p>
+            {{ currentStage.description }}
+          </p>
+
+          <div class="stage-status-row">
+            <span
+              [ngClass]="[
+                'stage-status',
+                'stage-status--' +
+                  currentStage.status
+              ]">
+
+              {{
+                currentStage.status === 'blocked'
+                  ? 'Needs attention'
+                  : currentStage.status === 'complete'
+                    ? 'Complete'
+                    : 'In progress'
+              }}
+            </span>
+
+            <strong>
+              {{
+                getStageReadiness(
+                  currentStage
+                )
+              }}%
+            </strong>
+          </div>
+        </ng-container>
+      </article>
+
+      <article class="overview-card">
+        <p class="eyebrow">
+          Event timing
+        </p>
+
+        <h2 class="event-countdown">
+          {{ getEventTimingLabel(assignment) }}
+        </h2>
+
+        <p>
+          {{
+            assignment.startDate
+              | date:'EEEE, MMMM d, y'
+          }}
+        </p>
+
+        <div class="event-location">
+          <strong>{{ assignment.venueName }}</strong>
+
+          <span>
+            {{ assignment.city }},
+            {{ assignment.state }}
+          </span>
+        </div>
+      </article>
+    </section>
+
+    <section class="overview-layout">
+      <article class="readiness-panel">
+        <header class="panel-heading">
+          <div>
+            <p class="eyebrow">
+              Readiness radar
+            </p>
+
+            <h2>Preparation by stage</h2>
+          </div>
+
+          <div class="overall-readiness">
+            <strong>
+              {{ assignment.readinessPercentage }}%
+            </strong>
+
+            <span>Overall</span>
+          </div>
+        </header>
+
+        <div class="readiness-list">
+          <div
+            class="readiness-row"
+            *ngFor="let stage of assignment.stages">
+
+            <div class="readiness-copy">
+              <strong>{{ stage.name }}</strong>
+
+              <span>
+                {{
+                  stage.status === 'complete'
+                    ? 'Complete'
+                    : stage.status === 'blocked'
+                      ? 'Needs attention'
+                      : stage.status === 'current'
+                        ? 'In progress'
+                        : 'Upcoming'
+                }}
+              </span>
+            </div>
+
+            <div class="readiness-progress">
+              <div class="progress-bar">
+                <span
+                  [style.width.%]="
+                    getStageReadiness(stage)
+                  ">
+                </span>
+              </div>
+
+              <strong>
+                {{ getStageReadiness(stage) }}%
+              </strong>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <aside class="brief-panel">
+        <p class="eyebrow">
+          Assignment brief
+        </p>
+
+        <h2>{{ assignment.eventName }}</h2>
+
+        <dl>
+          <div>
+            <dt>Host ministry</dt>
+            <dd>
+              {{ assignment.organizationName }}
+            </dd>
+          </div>
+
+          <div>
+            <dt>Assignment type</dt>
+            <dd>{{ assignment.eventType }}</dd>
+          </div>
+
+          <div>
+            <dt>Venue</dt>
+            <dd>{{ assignment.venueName }}</dd>
+          </div>
+
+          <div>
+            <dt>Location</dt>
+
+            <dd>
+              {{ assignment.city }},
+              {{ assignment.state }}
+            </dd>
+          </div>
+
+          <div>
+            <dt>Dates</dt>
+
+            <dd>
+              {{
+                assignment.startDate
+                  | date:'MMM d, y'
+              }}
+
+              <ng-container
+                *ngIf="
+                  assignment.endDate !==
+                  assignment.startDate
+                ">
+
+                –
+                {{
+                  assignment.endDate
+                    | date:'MMM d, y'
+                }}
+              </ng-container>
+            </dd>
+          </div>
+
+          <div>
+            <dt>Checklist</dt>
+
+            <dd>
+              {{
+                getCompletedTaskCount(
+                  assignment
+                )
+              }}
+              of
+              {{
+                getTotalTaskCount(
+                  assignment
+                )
+              }}
+              items complete
+            </dd>
+          </div>
+
+          <div>
+            <dt>Assignment reference</dt>
+            <dd>ASN-{{ assignment.id }}</dd>
+          </div>
+
+          <div>
+            <dt>Invitation reference</dt>
+
+            <dd>
+              ACT-{{
+                assignment.speakingRequestId
+              }}
+            </dd>
+          </div>
+        </dl>
+      </aside>
+    </section>
+  </section>
+</ng-container>

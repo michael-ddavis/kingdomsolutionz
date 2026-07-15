@@ -32,10 +32,18 @@ export interface SpeakerJourneyStage {
   tasks: SpeakerJourneyTask[];
 }
 
+export interface AssignmentCoordinator {
+  name: string;
+  role: string;
+  email?: string;
+  phone?: string;
+}
+
 export interface SpeakerJourney {
   id: number;
   speakingRequestId: number;
-
+  coordinator: AssignmentCoordinator;
+  
   eventName: string;
   organizationName: string;
   eventType: string;

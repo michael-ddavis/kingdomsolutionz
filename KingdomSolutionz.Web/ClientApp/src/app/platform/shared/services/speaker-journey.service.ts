@@ -450,6 +450,11 @@ export class SpeakerJourneyService {
       startDate: request.startDate,
       endDate: request.endDate,
 
+      coordinator: {
+        name: 'Michael Davis',
+        role: 'Assignment Coordinator'
+      },
+
       status: 'active',
       readinessPercentage: 0,
 

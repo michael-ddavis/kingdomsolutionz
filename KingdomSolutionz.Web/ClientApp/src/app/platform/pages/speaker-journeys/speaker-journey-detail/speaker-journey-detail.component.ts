@@ -24,7 +24,8 @@ import {
 export class SpeakerJourneyDetailComponent {
   private readonly journeyId =
     Number(
-      this.route.snapshot.paramMap.get('id')
+      this.route.parent
+        ?.snapshot.paramMap.get('id')
     );
 
   readonly journey$:

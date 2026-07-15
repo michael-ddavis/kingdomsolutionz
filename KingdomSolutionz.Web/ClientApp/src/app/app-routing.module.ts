@@ -31,6 +31,13 @@ import {
 import {
   SpeakerJourneyListComponent
 } from './platform/pages/speaker-journeys/speaker-journey-list/speaker-journey-list.component';
+import {
+  AssignmentWorkspaceComponent
+} from './platform/pages/speaker-journeys/assignment-workspace/assignment-workspace.component';
+
+import {
+  AssignmentOverviewComponent
+} from './platform/pages/speaker-journeys/assignment-overview/assignment-overview.component';
 
 const routes: Routes = [
   {
@@ -55,15 +62,26 @@ const routes: Routes = [
       },
       {
         path: 'speaker-journeys/:id',
-        component: SpeakerJourneyDetailComponent
+        component: AssignmentWorkspaceComponent,
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            redirectTo: 'overview'
+          },
+          {
+            path: 'overview',
+            component: AssignmentOverviewComponent
+          },
+          {
+            path: 'checklist',
+            component: SpeakerJourneyDetailComponent
+          }
+        ]
       },
       {
         path: 'speaker-journeys',
         component: SpeakerJourneyListComponent
-      },
-      {
-        path: 'speaker-journeys/:id',
-        component: SpeakerJourneyDetailComponent
       },
       {
         path: '',
