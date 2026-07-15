@@ -14,6 +14,8 @@ import {
 
 import {
   Assignment,
+  AssignmentContact,
+  AssignmentContactDirectory,
   AssignmentFlight,
   AssignmentGroundTransportation,
   AssignmentHotel,
@@ -36,7 +38,7 @@ export class AssignmentService {
 
   readonly assignments$:
     Observable<readonly Assignment[]> =
-      this.assignmentsSubject.asObservable();
+    this.assignmentsSubject.asObservable();
 
   getAssignment(
     assignmentId: number
@@ -104,49 +106,49 @@ export class AssignmentService {
   ): void {
     const updatedAssignments:
       Assignment[] =
-        this.assignmentsSubject.value.map(
-          assignment => {
-            if (
-              assignment.id !==
-              assignmentId
-            ) {
-              return assignment;
-            }
-
-            const updatedStages:
-              AssignmentStage[] =
-                assignment.stages.map(
-                  stage => {
-                    if (
-                      stage.id !== stageId
-                    ) {
-                      return stage;
-                    }
-
-                    return {
-                      ...stage,
-
-                      tasks:
-                        stage.tasks.map(
-                          task =>
-                            task.id === taskId
-                              ? {
-                                  ...task,
-                                  status
-                                }
-                              : task
-                        )
-                    };
-                  }
-                );
-
-            return this
-              .recalculateAssignment({
-                ...assignment,
-                stages: updatedStages
-              });
+      this.assignmentsSubject.value.map(
+        assignment => {
+          if (
+            assignment.id !==
+            assignmentId
+          ) {
+            return assignment;
           }
-        );
+
+          const updatedStages:
+            AssignmentStage[] =
+            assignment.stages.map(
+              stage => {
+                if (
+                  stage.id !== stageId
+                ) {
+                  return stage;
+                }
+
+                return {
+                  ...stage,
+
+                  tasks:
+                    stage.tasks.map(
+                      task =>
+                        task.id === taskId
+                          ? {
+                            ...task,
+                            status
+                          }
+                          : task
+                    )
+                };
+              }
+            );
+
+          return this
+            .recalculateAssignment({
+              ...assignment,
+              stages: updatedStages
+            });
+        }
+      );
 
     this.assignmentsSubject.next(
       updatedAssignments
@@ -196,9 +198,9 @@ export class AssignmentService {
 
     const nextStatus:
       AssignmentTaskStatus =
-        task.status === 'complete'
-          ? 'not-started'
-          : 'complete';
+      task.status === 'complete'
+        ? 'not-started'
+        : 'complete';
 
     this.updateTaskStatus(
       assignmentId,
@@ -215,51 +217,271 @@ export class AssignmentService {
   ): void {
     const updatedItinerary:
       AssignmentTravelItinerary = {
-        ...itinerary,
+      ...itinerary,
 
-        readinessPercentage:
-          this.calculateTravelReadiness(
-            itinerary
-          ),
+      readinessPercentage:
+        this.calculateTravelReadiness(
+          itinerary
+        ),
 
-        lastUpdatedUtc:
-          new Date().toISOString()
-      };
+      lastUpdatedUtc:
+        new Date().toISOString()
+    };
 
     const updatedAssignments:
       Assignment[] =
-        this.assignmentsSubject.value.map(
-          assignment => {
-            if (
-              assignment.id !==
-              assignmentId
-            ) {
-              return assignment;
-            }
-
-            const assignmentWithTravel:
-              Assignment = {
-                ...assignment,
-
-                travelItinerary:
-                  updatedItinerary
-              };
-
-            const assignmentWithChecklist =
-              this.syncTravelChecklist(
-                assignmentWithTravel
-              );
-
-            return this
-              .recalculateAssignment(
-                assignmentWithChecklist
-              );
+      this.assignmentsSubject.value.map(
+        assignment => {
+          if (
+            assignment.id !==
+            assignmentId
+          ) {
+            return assignment;
           }
-        );
+
+          const assignmentWithTravel:
+            Assignment = {
+            ...assignment,
+
+            travelItinerary:
+              updatedItinerary
+          };
+
+          const assignmentWithChecklist =
+            this.syncTravelChecklist(
+              assignmentWithTravel
+            );
+
+          return this
+            .recalculateAssignment(
+              assignmentWithChecklist
+            );
+        }
+      );
 
     this.assignmentsSubject.next(
       updatedAssignments
     );
+  }
+
+  updateContactDirectory(
+    assignmentId: number,
+    directory: AssignmentContactDirectory
+  ): void {
+    const updatedDirectory:
+      AssignmentContactDirectory = {
+      ...directory,
+
+      readinessPercentage:
+        this.calculateContactReadiness(
+          directory
+        ),
+
+      lastUpdatedUtc:
+        new Date().toISOString()
+    };
+
+    const updatedAssignments:
+      Assignment[] =
+      this.assignmentsSubject.value.map(
+        assignment => {
+          if (
+            assignment.id !==
+            assignmentId
+          ) {
+            return assignment;
+          }
+
+          const assignmentWithContacts:
+            Assignment = {
+            ...assignment,
+
+            contactDirectory:
+              updatedDirectory
+          };
+
+          const assignmentWithChecklist =
+            this.syncContactChecklist(
+              assignmentWithContacts
+            );
+
+          return this
+            .recalculateAssignment(
+              assignmentWithChecklist
+            );
+        }
+      );
+
+    this.assignmentsSubject.next(
+      updatedAssignments
+    );
+  }
+
+  private createEmptyContactDirectory():
+    AssignmentContactDirectory {
+    return {
+      hostPastor:
+        this.createEmptyContact(
+          'host-pastor'
+        ),
+
+      hostCoordinator:
+        this.createEmptyContact(
+          'host-coordinator'
+        ),
+
+      travelContact:
+        this.createEmptyContact(
+          'travel'
+        ),
+
+      mediaContact:
+        this.createEmptyContact(
+          'media'
+        ),
+
+      emergencyContact:
+        this.createEmptyContact(
+          'emergency'
+        ),
+
+      readinessPercentage: 0,
+      lastUpdatedUtc: null
+    };
+  }
+
+  private createEmptyContact(
+    category:
+      AssignmentContact['category']
+  ): AssignmentContact {
+    return {
+      category,
+
+      name: '',
+      role: '',
+      organization: '',
+
+      phone: '',
+      email: '',
+
+      preferredContactMethod: '',
+
+      notes: ''
+    };
+  }
+
+  private calculateContactReadiness(
+    directory:
+      AssignmentContactDirectory
+  ): number {
+    const contacts = [
+      directory.hostPastor,
+      directory.hostCoordinator,
+      directory.travelContact,
+      directory.mediaContact,
+      directory.emergencyContact
+    ];
+
+    const completedContacts =
+      contacts.filter(contact =>
+        this.isContactComplete(contact)
+      ).length;
+
+    return Math.round(
+      (
+        completedContacts /
+        contacts.length
+      ) * 100
+    );
+  }
+
+  private isContactComplete(
+    contact: AssignmentContact
+  ): boolean {
+    return Boolean(
+      contact.name.trim() &&
+      (
+        contact.phone.trim() ||
+        contact.email.trim()
+      )
+    );
+  }
+
+  private hasContactInformation(
+    contact: AssignmentContact
+  ): boolean {
+    return Boolean(
+      contact.name.trim() ||
+      contact.role.trim() ||
+      contact.organization.trim() ||
+      contact.phone.trim() ||
+      contact.email.trim() ||
+      contact.preferredContactMethod ||
+      contact.notes.trim()
+    );
+  }
+
+  private syncContactChecklist(
+    assignment: Assignment
+  ): Assignment {
+    const directory =
+      assignment.contactDirectory;
+
+    const contacts = [
+      directory.hostPastor,
+      directory.hostCoordinator,
+      directory.travelContact,
+      directory.mediaContact,
+      directory.emergencyContact
+    ];
+
+    const allContactsComplete =
+      contacts.every(contact =>
+        this.isContactComplete(contact)
+      );
+
+    const hasAnyContactInformation =
+      contacts.some(contact =>
+        this.hasContactInformation(contact)
+      );
+
+    const contactTaskStatus:
+      AssignmentTaskStatus =
+      allContactsComplete
+        ? 'complete'
+        : hasAnyContactInformation
+          ? 'in-progress'
+          : 'not-started';
+
+    const updatedStages:
+      AssignmentStage[] =
+      assignment.stages.map(stage => {
+        if (
+          stage.id !== 'host-readiness'
+        ) {
+          return stage;
+        }
+
+        return {
+          ...stage,
+
+          tasks: stage.tasks.map(task =>
+            task.title ===
+              'Confirm local contacts'
+              ? {
+                ...task,
+                status:
+                  contactTaskStatus
+              }
+              : task
+          )
+        };
+      });
+
+    return {
+      ...assignment,
+      stages: updatedStages
+    };
   }
 
   private buildAssignment(
@@ -311,6 +533,9 @@ export class AssignmentService {
         role:
           'Assignment Coordinator'
       },
+
+      contactDirectory:
+        this.createEmptyContactDirectory(),
 
       travelItinerary:
         this.createEmptyTravelItinerary(),
@@ -887,75 +1112,75 @@ export class AssignmentService {
       allTasks.length === 0
         ? 0
         : Math.round(
-            (
-              completedTaskCount /
-              allTasks.length
-            ) * 100
-          );
+          (
+            completedTaskCount /
+            allTasks.length
+          ) * 100
+        );
 
     let currentStageAssigned =
       false;
 
     const updatedStages:
       AssignmentStage[] =
-        assignment.stages.map(
-          stage => {
-            const allComplete =
-              stage.tasks.length > 0 &&
-              stage.tasks.every(
-                task =>
-                  task.status ===
-                  'complete'
-              );
+      assignment.stages.map(
+        stage => {
+          const allComplete =
+            stage.tasks.length > 0 &&
+            stage.tasks.every(
+              task =>
+                task.status ===
+                'complete'
+            );
 
-            const hasBlockedTask =
-              stage.tasks.some(
-                task =>
-                  task.status ===
-                  'blocked'
-              );
+          const hasBlockedTask =
+            stage.tasks.some(
+              task =>
+                task.status ===
+                'blocked'
+            );
 
-            if (allComplete) {
-              return {
-                ...stage,
-                status: 'complete'
-              };
-            }
+          if (allComplete) {
+            return {
+              ...stage,
+              status: 'complete'
+            };
+          }
 
-            if (hasBlockedTask) {
-              return {
-                ...stage,
-                status: 'blocked'
-              };
-            }
+          if (hasBlockedTask) {
+            return {
+              ...stage,
+              status: 'blocked'
+            };
+          }
 
-            if (!currentStageAssigned) {
-              currentStageAssigned = true;
-
-              return {
-                ...stage,
-                status: 'current'
-              };
-            }
+          if (!currentStageAssigned) {
+            currentStageAssigned = true;
 
             return {
               ...stage,
-              status: 'upcoming'
+              status: 'current'
             };
           }
-        );
+
+          return {
+            ...stage,
+            status: 'upcoming'
+          };
+        }
+      );
 
     const allAssignmentsComplete =
       allTasks.length > 0 &&
       completedTaskCount ===
-        allTasks.length;
+      allTasks.length;
 
     return {
       ...assignment,
 
       status:
         assignment.status ===
-        'cancelled'
+          'cancelled'
           ? 'cancelled'
           : allAssignmentsComplete
             ? 'completed'
@@ -1301,67 +1526,67 @@ export class AssignmentService {
 
     const updatedStages:
       AssignmentStage[] =
-        assignment.stages.map(
-          stage => {
-            if (
-              stage.id !== 'travel'
-            ) {
-              return stage;
-            }
-
-            return {
-              ...stage,
-
-              tasks:
-                stage.tasks.map(
-                  task => {
-                    let status:
-                      AssignmentTaskStatus =
-                        task.status;
-
-                    switch (task.title) {
-                      case 'Confirm transportation':
-                        status =
-                          determineStatus(
-                            flightsComplete,
-                            hasFlightInformation
-                          );
-                        break;
-
-                      case 'Confirm lodging':
-                        status =
-                          determineStatus(
-                            hotelComplete,
-                            hasHotelInformation
-                          );
-                        break;
-
-                      case 'Confirm ground transportation':
-                        status =
-                          determineStatus(
-                            groundTransportationComplete,
-                            hasGroundInformation
-                          );
-                        break;
-
-                      case 'Prepare final itinerary':
-                        status =
-                          determineStatus(
-                            finalItineraryComplete,
-                            hasAnyTravelInformation
-                          );
-                        break;
-                    }
-
-                    return {
-                      ...task,
-                      status
-                    };
-                  }
-                )
-            };
+      assignment.stages.map(
+        stage => {
+          if (
+            stage.id !== 'travel'
+          ) {
+            return stage;
           }
-        );
+
+          return {
+            ...stage,
+
+            tasks:
+              stage.tasks.map(
+                task => {
+                  let status:
+                    AssignmentTaskStatus =
+                    task.status;
+
+                  switch (task.title) {
+                    case 'Confirm transportation':
+                      status =
+                        determineStatus(
+                          flightsComplete,
+                          hasFlightInformation
+                        );
+                      break;
+
+                    case 'Confirm lodging':
+                      status =
+                        determineStatus(
+                          hotelComplete,
+                          hasHotelInformation
+                        );
+                      break;
+
+                    case 'Confirm ground transportation':
+                      status =
+                        determineStatus(
+                          groundTransportationComplete,
+                          hasGroundInformation
+                        );
+                      break;
+
+                    case 'Prepare final itinerary':
+                      status =
+                        determineStatus(
+                          finalItineraryComplete,
+                          hasAnyTravelInformation
+                        );
+                      break;
+                  }
+
+                  return {
+                    ...task,
+                    status
+                  };
+                }
+              )
+          };
+        }
+      );
 
     return {
       ...assignment,
@@ -1419,6 +1644,9 @@ export class AssignmentService {
         email:
           'michael@kingdomsolutionz.com'
       },
+
+      contactDirectory:
+        this.createEmptyContactDirectory(),
 
       travelItinerary:
         this.createEmptyTravelItinerary(),

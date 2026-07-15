@@ -63,6 +63,12 @@ export class AssignmentWorkspaceComponent {
         route: 'travel',
         description:
           'Flights, lodging and transportation'
+      },
+      {
+        label: 'Contacts',
+        route: 'contacts',
+        description:
+          'Host and assignment contacts'
       }
     ];
 

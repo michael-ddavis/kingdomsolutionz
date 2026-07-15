@@ -306,3 +306,20 @@ p {
     justify-self: start;
   }
 }
+
+.stage-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.stage-link {
+  color: #345ec6;
+  font-size: 8px;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.stage-link:hover {
+  text-decoration: underline;
+}

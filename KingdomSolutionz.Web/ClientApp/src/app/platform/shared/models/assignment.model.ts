@@ -122,6 +122,9 @@ export interface Assignment {
 
   coordinator: AssignmentCoordinator;
 
+  contactDirectory:
+  AssignmentContactDirectory;
+
   travelItinerary:
     AssignmentTravelItinerary;
 
@@ -130,4 +133,44 @@ export interface Assignment {
 
   createdUtc: string;
   stages: AssignmentStage[];
+}
+
+export type AssignmentContactCategory =
+  | 'host-pastor'
+  | 'host-coordinator'
+  | 'travel'
+  | 'media'
+  | 'emergency';
+
+export type AssignmentContactMethod =
+  | ''
+  | 'phone'
+  | 'text'
+  | 'email';
+
+export interface AssignmentContact {
+  category: AssignmentContactCategory;
+
+  name: string;
+  role: string;
+  organization: string;
+
+  phone: string;
+  email: string;
+
+  preferredContactMethod:
+    AssignmentContactMethod;
+
+  notes: string;
+}
+
+export interface AssignmentContactDirectory {
+  hostPastor: AssignmentContact;
+  hostCoordinator: AssignmentContact;
+  travelContact: AssignmentContact;
+  mediaContact: AssignmentContact;
+  emergencyContact: AssignmentContact;
+
+  readinessPercentage: number;
+  lastUpdatedUtc: string | null;
 }

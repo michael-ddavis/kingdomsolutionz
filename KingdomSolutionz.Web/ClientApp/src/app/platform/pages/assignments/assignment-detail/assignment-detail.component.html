@@ -1,5 +1,4 @@
-<ng-container
-  *ngIf="
+<ng-container *ngIf="
     assignment$ | async as assignment;
     else checklistNotFound
   ">
@@ -29,8 +28,7 @@
         <span>Items complete</span>
 
         <div class="progress-bar">
-          <span
-            [style.width.%]="
+          <span [style.width.%]="
               assignment.readinessPercentage
             ">
           </span>
@@ -39,27 +37,24 @@
     </header>
 
     <div class="stage-list">
-      <article
-        *ngFor="let stage of assignment.stages"
-        [ngClass]="[
+      <article *ngFor="let stage of assignment.stages" [ngClass]="[
           'stage-panel',
           'stage-panel--' + stage.status
         ]">
 
         <header class="stage-heading">
           <div class="stage-heading-copy">
-            <span
-              [ngClass]="[
+            <span [ngClass]="[
                 'stage-marker',
                 'stage-marker--' + stage.status
               ]">
 
               {{
-                stage.status === 'complete'
-                  ? '✓'
-                  : stage.status === 'blocked'
-                    ? '!'
-                    : stage.name.charAt(0)
+              stage.status === 'complete'
+              ? '✓'
+              : stage.status === 'blocked'
+              ? '!'
+              : stage.name.charAt(0)
               }}
             </span>
 
@@ -67,8 +62,7 @@
               <div class="stage-title-row">
                 <h3>{{ stage.name }}</h3>
 
-                <span
-                  [ngClass]="[
+                <span [ngClass]="[
                     'stage-status',
                     'stage-status--' + stage.status
                   ]">
@@ -81,22 +75,32 @@
             </div>
           </div>
 
-          <span class="stage-count">
-            {{ getCompletedStageTaskCount(stage) }}
-            /
-            {{ stage.tasks.length }}
-          </span>
+          <div class="stage-heading-actions">
+            <a *ngIf="stage.id === 'travel'" routerLink="../travel" class="stage-link">
+
+              Open travel itinerary
+              <span aria-hidden="true">→</span>
+            </a>
+
+            <a *ngIf="stage.id === 'host-readiness'" routerLink="../contacts" class="stage-link">
+
+              Open contacts
+              <span aria-hidden="true">→</span>
+            </a>
+
+            <span class="stage-count">
+              {{ getCompletedStageTaskCount(stage) }}
+              /
+              {{ stage.tasks.length }}
+            </span>
+          </div>
         </header>
 
         <div class="task-list">
-          <button
-            type="button"
-            *ngFor="let task of stage.tasks"
-            [ngClass]="[
+          <button type="button" *ngFor="let task of stage.tasks" [ngClass]="[
               'task-row',
               'task-row--' + task.status
-            ]"
-            (click)="
+            ]" (click)="
               toggleTask(
                 assignment.id,
                 stage.id,
@@ -106,9 +110,9 @@
 
             <span class="task-checkbox">
               {{
-                task.status === 'complete'
-                  ? '✓'
-                  : ''
+              task.status === 'complete'
+              ? '✓'
+              : ''
               }}
             </span>
 
@@ -121,14 +125,13 @@
                 ·
                 Due
                 {{
-                  task.dueDate
-                    | date:'MMM d, y'
+                task.dueDate
+                | date:'MMM d, y'
                 }}
               </small>
             </span>
 
-            <span
-              [ngClass]="[
+            <span [ngClass]="[
                 'task-status',
                 'task-status--' + task.status
               ]">

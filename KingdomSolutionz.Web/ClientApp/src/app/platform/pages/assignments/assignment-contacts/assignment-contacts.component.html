@@ -1,0 +1,382 @@
+<ng-container
+  *ngIf="
+    assignment$ | async as assignment;
+    else assignmentNotFound
+  ">
+
+  <form
+    class="contacts-page"
+    [formGroup]="form"
+    (ngSubmit)="saveContacts()">
+
+    <header class="contacts-heading">
+      <div>
+        <p class="eyebrow">
+          Assignment contacts
+        </p>
+
+        <h2>People and communication</h2>
+
+        <p>
+          Keep the primary host, travel, production and
+          emergency contacts available to the assignment
+          team.
+        </p>
+      </div>
+
+      <div class="contacts-readiness">
+        <div>
+          <span>Contact readiness</span>
+
+          <strong>
+            {{
+              assignment.contactDirectory
+                .readinessPercentage
+            }}%
+          </strong>
+        </div>
+
+        <div class="readiness-bar">
+          <span
+            [style.width.%]="
+              assignment.contactDirectory
+                .readinessPercentage
+            ">
+          </span>
+        </div>
+
+        <small
+          *ngIf="
+            assignment.contactDirectory
+              .lastUpdatedUtc
+          ">
+
+          Updated
+          {{
+            assignment.contactDirectory
+              .lastUpdatedUtc
+              | date:'MMM d, y, h:mm a'
+          }}
+        </small>
+      </div>
+    </header>
+
+    <section class="readiness-summary">
+      <article
+        class="readiness-item"
+        [class.readiness-item--complete]="
+          isContactComplete(
+            assignment.contactDirectory
+              .hostPastor
+          )
+        ">
+
+        <span>01</span>
+        <strong>Host pastor</strong>
+      </article>
+
+      <article
+        class="readiness-item"
+        [class.readiness-item--complete]="
+          isContactComplete(
+            assignment.contactDirectory
+              .hostCoordinator
+          )
+        ">
+
+        <span>02</span>
+        <strong>Host coordinator</strong>
+      </article>
+
+      <article
+        class="readiness-item"
+        [class.readiness-item--complete]="
+          isContactComplete(
+            assignment.contactDirectory
+              .travelContact
+          )
+        ">
+
+        <span>03</span>
+        <strong>Travel contact</strong>
+      </article>
+
+      <article
+        class="readiness-item"
+        [class.readiness-item--complete]="
+          isContactComplete(
+            assignment.contactDirectory
+              .mediaContact
+          )
+        ">
+
+        <span>04</span>
+        <strong>Media contact</strong>
+      </article>
+
+      <article
+        class="readiness-item"
+        [class.readiness-item--complete]="
+          isContactComplete(
+            assignment.contactDirectory
+              .emergencyContact
+          )
+        ">
+
+        <span>05</span>
+        <strong>Emergency contact</strong>
+      </article>
+    </section>
+
+    <section class="contact-grid">
+      <article
+        class="contact-card"
+        formGroupName="hostPastor">
+
+        <header class="contact-card-heading">
+          <span class="contact-number">01</span>
+
+          <div>
+            <p>Host leadership</p>
+            <h3>Host pastor</h3>
+          </div>
+        </header>
+
+        <ng-container
+          *ngTemplateOutlet="
+            contactFields;
+            context: {
+              rolePlaceholder:
+                'Senior Pastor'
+            }
+          ">
+        </ng-container>
+      </article>
+
+      <article
+        class="contact-card"
+        formGroupName="hostCoordinator">
+
+        <header class="contact-card-heading">
+          <span class="contact-number">02</span>
+
+          <div>
+            <p>Primary logistics</p>
+            <h3>Host coordinator</h3>
+          </div>
+        </header>
+
+        <ng-container
+          *ngTemplateOutlet="
+            contactFields;
+            context: {
+              rolePlaceholder:
+                'Executive Assistant'
+            }
+          ">
+        </ng-container>
+      </article>
+
+      <article
+        class="contact-card"
+        formGroupName="travelContact">
+
+        <header class="contact-card-heading">
+          <span class="contact-number">03</span>
+
+          <div>
+            <p>Local transportation</p>
+            <h3>Travel contact</h3>
+          </div>
+        </header>
+
+        <ng-container
+          *ngTemplateOutlet="
+            contactFields;
+            context: {
+              rolePlaceholder:
+                'Transportation Coordinator'
+            }
+          ">
+        </ng-container>
+
+        <p class="contact-help">
+          Store the person here. Keep pickup times and
+          instructions in the Travel tab.
+        </p>
+      </article>
+
+      <article
+        class="contact-card"
+        formGroupName="mediaContact">
+
+        <header class="contact-card-heading">
+          <span class="contact-number">04</span>
+
+          <div>
+            <p>Media and production</p>
+            <h3>Media contact</h3>
+          </div>
+        </header>
+
+        <ng-container
+          *ngTemplateOutlet="
+            contactFields;
+            context: {
+              rolePlaceholder:
+                'Media Director'
+            }
+          ">
+        </ng-container>
+      </article>
+
+      <article
+        class="contact-card contact-card--wide"
+        formGroupName="emergencyContact">
+
+        <header class="contact-card-heading">
+          <span class="contact-number">05</span>
+
+          <div>
+            <p>Urgent support</p>
+            <h3>Emergency contact</h3>
+          </div>
+        </header>
+
+        <ng-container
+          *ngTemplateOutlet="
+            contactFields;
+            context: {
+              rolePlaceholder:
+                'Emergency Contact'
+            }
+          ">
+        </ng-container>
+      </article>
+    </section>
+
+    <footer class="save-panel">
+      <div>
+        <strong>Save assignment contacts</strong>
+
+        <p>
+          A contact is considered ready when a name and
+          either a phone number or email address are
+          present.
+        </p>
+      </div>
+
+      <div class="save-actions">
+        <span
+          class="saved-message"
+          *ngIf="saved">
+
+          ✓ Contacts saved
+        </span>
+
+        <button
+          type="submit"
+          class="save-button">
+
+          Save contacts
+        </button>
+      </div>
+    </footer>
+  </form>
+</ng-container>
+
+<ng-template
+  #contactFields
+  let-rolePlaceholder="rolePlaceholder">
+
+  <div class="field-grid">
+    <label class="field">
+      <span>Name</span>
+
+      <input
+        type="text"
+        formControlName="name"
+        placeholder="Full name">
+    </label>
+
+    <label class="field">
+      <span>Role</span>
+
+      <input
+        type="text"
+        formControlName="role"
+        [placeholder]="rolePlaceholder">
+    </label>
+
+    <label class="field">
+      <span>Organization</span>
+
+      <input
+        type="text"
+        formControlName="organization"
+        placeholder="Church or organization">
+    </label>
+
+    <label class="field">
+      <span>Phone</span>
+
+      <input
+        type="tel"
+        formControlName="phone"
+        placeholder="(804) 555-0123">
+    </label>
+
+    <label class="field">
+      <span>Email</span>
+
+      <input
+        type="email"
+        formControlName="email"
+        placeholder="name@example.com">
+    </label>
+
+    <label class="field">
+      <span>Preferred method</span>
+
+      <select
+        formControlName="preferredContactMethod">
+
+        <option value="">
+          Not specified
+        </option>
+
+        <option value="phone">
+          Phone call
+        </option>
+
+        <option value="text">
+          Text message
+        </option>
+
+        <option value="email">
+          Email
+        </option>
+      </select>
+    </label>
+
+    <label class="field field--wide">
+      <span>Notes</span>
+
+      <textarea
+        rows="3"
+        formControlName="notes"
+        placeholder="Availability, responsibilities or communication notes.">
+      </textarea>
+    </label>
+  </div>
+</ng-template>
+
+<ng-template #assignmentNotFound>
+  <section class="not-found">
+    <h2>Assignment not found</h2>
+
+    <p>
+      This contact directory is no longer available.
+    </p>
+  </section>
+</ng-template>
