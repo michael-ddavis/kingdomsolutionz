@@ -9,10 +9,10 @@
         </p>
       </div>
 
-      <button type="button" class="primary-action">
+      <!-- <button type="button" class="primary-action">
         <span>+</span>
         New ministry item
-      </button>
+      </button> -->
     </header>
 
     <section class="metric-grid" aria-label="Ministry summary">
@@ -30,7 +30,7 @@
     </section>
 
     <section class="workspace-overview" *ngIf="vm.workspaceOverviews?.length">
-
+<!-- 
       <div class="section-heading">
         <div>
           <p class="section-eyebrow">Connected workspaces</p>
@@ -40,7 +40,7 @@
         <button type="button" class="text-button">
           View network
         </button>
-      </div>
+      </div> -->
 
       <div class="workspace-card-grid">
         <article *ngFor="let workspace of vm.workspaceOverviews" [ngClass]="[
@@ -82,7 +82,7 @@
             <h2>Today’s priorities</h2>
           </div>
 
-          <button type="button" class="text-button">
+          <button type="button" class="text-button" routerLink="/app/assignments">
             View all
           </button>
         </div>

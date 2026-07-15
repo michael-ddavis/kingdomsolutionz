@@ -52,7 +52,7 @@ export class AssignmentListComponent {
     this.selectedFilter = filter;
   }
 
-  getFilteredJourneys(
+  getFilteredAssignments(
     assignments: readonly Assignment[]
   ): readonly Assignment[] {
     if (this.selectedFilter === 'all') {
@@ -250,7 +250,7 @@ export class AssignmentListComponent {
     return `${daysUntilEvent} days until event`;
   }
 
-  trackByJourneyId(
+  trackByAssignmentId(
     index: number,
     journey: Assignment
   ): number {

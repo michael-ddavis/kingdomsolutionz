@@ -581,12 +581,12 @@ export class PlatformDashboardComponent {
             `Resolve ${blockedTask.task.title}`,
           description:
             `${assignment.eventName} · ${blockedTask.stage.name}`,
-          workspace: 'Speaker Journeys',
+          workspace: 'Assignments',
           due: 'Blocked',
           status: 'Needs attention',
           tone: 'amber',
           route:
-            `/app/speaker-assignments/${assignment.id}`
+            `/app/assignments/${assignment.id}`
         });
 
         continue;

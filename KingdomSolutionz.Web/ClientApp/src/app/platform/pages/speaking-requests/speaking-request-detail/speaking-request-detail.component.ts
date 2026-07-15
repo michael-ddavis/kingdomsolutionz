@@ -65,7 +65,7 @@ export class SpeakingRequestDetailComponent {
     private readonly speakingRequestService:
       SpeakingRequestService,
 
-    private readonly speakerAssignmentService:
+    private readonly assignmentService:
       AssignmentService
   ) { }
 
@@ -83,7 +83,7 @@ export class SpeakingRequestDetailComponent {
     }
 
     const journey =
-      this.speakerAssignmentService.createOrGetAssignment(
+      this.assignmentService.createOrGetAssignment(
         {
           ...request,
           status: 'approved'
@@ -91,7 +91,7 @@ export class SpeakingRequestDetailComponent {
       );
 
     this.router.navigate([
-      '/app/speaker-journeys',
+      '/app/assignments',
       journey.id
     ]);
   }
@@ -155,12 +155,12 @@ export class SpeakingRequestDetailComponent {
     request: SpeakingRequest
   ): void {
     const journey =
-      this.speakerAssignmentService.createOrGetAssignment(
+      this.assignmentService.createOrGetAssignment(
         request
       );
 
     this.router.navigate([
-      '/app/speaker-journeys',
+      '/app/assignments',
       journey.id
     ]);
   }

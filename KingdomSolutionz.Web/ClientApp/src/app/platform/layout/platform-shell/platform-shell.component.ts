@@ -14,7 +14,7 @@ export interface PlatformNavigationItem {
   label: string;
   description?: string;
   route: string;
-  icon: 'dashboard' | 'requests' | 'journeys';
+  icon: 'dashboard' | 'requests' | 'assignments';
   exact?: boolean;
 }
 
@@ -99,11 +99,11 @@ export class PlatformShellComponent {
             icon: 'requests'
           },
           {
-            label: 'Speaker Journeys',
+            label: 'Assignments',
             description:
               'Approved engagements and preparation',
-            route: '/app/speaker-journeys',
-            icon: 'journeys'
+            route: '/app/assignments',
+            icon: 'assignments'
           }
         ]
       }
@@ -137,11 +137,11 @@ export class PlatformShellComponent {
             icon: 'requests'
           },
           {
-            label: 'Speaker Journeys',
+            label: 'Assignments',
             description:
               'Travel, preparation and follow-up',
-            route: '/app/speaker-journeys',
-            icon: 'journeys'
+            route: '/app/assignments',
+            icon: 'assignments'
           }
         ]
       }

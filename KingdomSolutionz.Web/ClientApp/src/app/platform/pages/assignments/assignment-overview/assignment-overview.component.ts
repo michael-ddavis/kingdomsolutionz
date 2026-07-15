@@ -29,14 +29,14 @@ export class AssignmentOverviewComponent {
 
   readonly assignment$:
     Observable<Assignment | undefined> =
-      this.speakerAssignmentService.getAssignment(
+      this.assignmentService.getAssignment(
         this.assignmentId
       );
 
   constructor(
     private readonly route: ActivatedRoute,
 
-    private readonly speakerAssignmentService:
+    private readonly assignmentService:
       AssignmentService
   ) {}
 

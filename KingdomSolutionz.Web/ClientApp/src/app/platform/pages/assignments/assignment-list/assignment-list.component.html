@@ -147,7 +147,7 @@
     <section class="assignment-toolbar">
       <div
         class="filter-group"
-        aria-label="Filter speaker assignments">
+        aria-label="Filter assignments">
 
         <button
           type="button"
@@ -223,10 +223,10 @@
 
       <span class="result-count">
         {{
-          getFilteredJourneys(assignments).length
+          getFilteredAssignments(assignments).length
         }}
         {{
-          getFilteredJourneys(assignments).length === 1
+          getFilteredAssignments(assignments).length === 1
             ? 'assignment'
             : 'assignments'
         }}
@@ -236,18 +236,18 @@
     <section
       class="assignment-list"
       *ngIf="
-        getFilteredJourneys(assignments).length > 0;
-        else noJourneys
+        getFilteredAssignments(assignments).length > 0;
+        else noAssignments
       ">
 
       <a
         *ngFor="
           let assignment of
-            getFilteredJourneys(assignments);
-          trackBy: trackByJourneyId
+            getFilteredAssignments(assignments);
+          trackBy: trackByAssignmentId
         "
         [routerLink]="[
-          '/app/speaker-assignments',
+          '/app/assignments',
           assignment.id
         ]"
         class="assignment-card">
@@ -272,7 +272,7 @@
             </span>
 
             <span class="assignment-reference">
-              JRN-{{ assignment.id }}
+              ASN-{{ assignment.id }}
             </span>
           </div>
 
@@ -449,14 +449,14 @@
       </a>
     </section>
 
-    <ng-template #noJourneys>
+    <ng-template #noAssignments>
       <section class="empty-state">
         <div class="empty-mark">SJ</div>
 
         <h2>No assignments found</h2>
 
         <p>
-          There are no speaker assignments matching the
+          There are no assignments matching the
           selected filter.
         </p>
 
