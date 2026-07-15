@@ -84,6 +84,8 @@ export class AssignmentWorkspaceComponent {
       }
     ];
 
+  travelQuickViewOpen = false;
+
   constructor(
     private readonly route:
       ActivatedRoute,
@@ -91,6 +93,14 @@ export class AssignmentWorkspaceComponent {
     private readonly assignmentService:
       AssignmentService
   ) { }
+
+  openTravelQuickView(): void {
+    this.travelQuickViewOpen = true;
+  }
+
+  closeTravelQuickView(): void {
+    this.travelQuickViewOpen = false;
+  }
 
   getStatusLabel(
     assignment: Assignment

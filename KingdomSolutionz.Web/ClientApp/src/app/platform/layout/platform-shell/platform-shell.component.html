@@ -1,10 +1,8 @@
-<div
-  class="platform-shell"
-  [class.platform-shell--sidebar-open]="
+<div class="platform-shell" [class.platform-shell--sidebar-open]="
     sidebarOpen
   ">
 
-  <aside class="platform-sidebar">
+  <aside class="platform-sidebar" id="platform-sidebar">
     <div class="sidebar-brand">
       <div class="brand-mark">
         K
@@ -25,17 +23,12 @@
       </app-workspace-switcher>
     </section>
 
-    <nav
-      class="platform-navigation"
-      aria-label="KingdomOS navigation"
-      *ngIf="
+    <nav class="platform-navigation" aria-label="KingdomOS navigation" *ngIf="
         navigationSections$ | async
           as navigationSections
       ">
 
-      <section
-        class="navigation-section"
-        *ngFor="
+      <section class="navigation-section" *ngFor="
           let section of navigationSections
         ">
 
@@ -44,66 +37,31 @@
         </p>
 
         <div class="navigation-items">
-          <a
-            *ngFor="let item of section.items"
-            class="navigation-link"
-            [routerLink]="item.route"
-            routerLinkActive="navigation-link--active"
-            [routerLinkActiveOptions]="{
+          <a *ngFor="let item of section.items" class="navigation-link" [routerLink]="item.route"
+            routerLinkActive="navigation-link--active" [routerLinkActiveOptions]="{
               exact: item.exact === true
-            }"
-            ariaCurrentWhenActive="page"
-            (click)="closeSidebar()">
+            }" ariaCurrentWhenActive="page" (click)="closeSidebar()">
 
-            <span
-              class="navigation-icon"
-              [ngSwitch]="item.icon">
+            <span class="navigation-icon" [ngSwitch]="item.icon">
 
-              <svg
-                *ngSwitchCase="'dashboard'"
-                viewBox="0 0 24 24"
-                aria-hidden="true">
+              <svg *ngSwitchCase="'dashboard'" viewBox="0 0 24 24" aria-hidden="true">
 
-                <rect
-                  x="3"
-                  y="3"
-                  width="7"
-                  height="7"
-                  rx="1.5">
+                <rect x="3" y="3" width="7" height="7" rx="1.5">
                 </rect>
 
-                <rect
-                  x="14"
-                  y="3"
-                  width="7"
-                  height="7"
-                  rx="1.5">
+                <rect x="14" y="3" width="7" height="7" rx="1.5">
                 </rect>
 
-                <rect
-                  x="3"
-                  y="14"
-                  width="7"
-                  height="7"
-                  rx="1.5">
+                <rect x="3" y="14" width="7" height="7" rx="1.5">
                 </rect>
 
-                <rect
-                  x="14"
-                  y="14"
-                  width="7"
-                  height="7"
-                  rx="1.5">
+                <rect x="14" y="14" width="7" height="7" rx="1.5">
                 </rect>
               </svg>
 
-              <svg
-                *ngSwitchCase="'requests'"
-                viewBox="0 0 24 24"
-                aria-hidden="true">
+              <svg *ngSwitchCase="'requests'" viewBox="0 0 24 24" aria-hidden="true">
 
-                <path
-                  d="M7 3.75h10a2 2 0 0 1 2 2v14.5H5V5.75a2 2 0 0 1 2-2Z">
+                <path d="M7 3.75h10a2 2 0 0 1 2 2v14.5H5V5.75a2 2 0 0 1 2-2Z">
                 </path>
 
                 <path d="M8.5 8h7"></path>
@@ -111,16 +69,12 @@
                 <path d="M8.5 16h4"></path>
               </svg>
 
-              <svg
-                *ngSwitchCase="'journeys'"
-                viewBox="0 0 24 24"
-                aria-hidden="true">
+              <svg *ngSwitchCase="'journeys'" viewBox="0 0 24 24" aria-hidden="true">
 
                 <circle cx="5" cy="18" r="2"></circle>
                 <circle cx="19" cy="6" r="2"></circle>
 
-                <path
-                  d="M7 18h3.5a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h8">
+                <path d="M7 18h3.5a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h8">
                 </path>
               </svg>
 
@@ -146,9 +100,7 @@
 
     <div class="sidebar-spacer"></div>
 
-    <button
-      type="button"
-      class="support-card">
+    <button type="button" class="support-card">
 
       <span class="support-icon">
         ?
@@ -161,27 +113,18 @@
     </button>
   </aside>
 
-  <button
-    type="button"
-    class="sidebar-overlay"
-    aria-label="Close navigation"
-    (click)="closeSidebar()">
+  <button type="button" class="sidebar-overlay" aria-label="Close navigation" (click)="closeSidebar()"
+    [attr.aria-expanded]="sidebarOpen" aria-controls="platform-sidebar">
   </button>
 
   <div class="platform-main">
-    <header
-      class="platform-header"
-      *ngIf="
+    <header class="platform-header" *ngIf="
         selectedWorkspace$ | async
           as selectedWorkspace
       ">
 
       <div class="header-left">
-        <button
-          type="button"
-          class="mobile-menu-button"
-          aria-label="Open navigation"
-          (click)="toggleSidebar()">
+        <button type="button" class="mobile-menu-button" aria-label="Open navigation" (click)="toggleSidebar()">
 
           <span></span>
           <span></span>
@@ -194,21 +137,14 @@
       </div>
 
       <div class="header-right">
-        <button
-          type="button"
-          class="notification-button"
-          aria-label="Notifications">
+        <button type="button" class="notification-button" aria-label="Notifications">
 
-          <svg
-            viewBox="0 0 24 24"
-            aria-hidden="true">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
 
-            <path
-              d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9">
+            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9">
             </path>
 
-            <path
-              d="M10 21h4">
+            <path d="M10 21h4">
             </path>
           </svg>
 

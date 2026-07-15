@@ -1,0 +1,221 @@
+// Shared KingdomOS application primitives.
+// Use these classes in new pages. Existing pages can be migrated gradually.
+
+.kos-page {
+  display: grid;
+  width: min(100%, var(--kos-content-max));
+  margin: 0 auto;
+  gap: var(--kos-space-5);
+}
+
+.kos-card {
+  border: 1px solid var(--kos-border);
+  border-radius: var(--kos-radius-lg);
+  background: var(--kos-surface);
+  box-shadow: var(--kos-shadow-sm);
+}
+
+.kos-card--flat {
+  box-shadow: none;
+}
+
+.kos-eyebrow {
+  margin: 0;
+  color: var(--kos-violet-600);
+  font-size: var(--kos-text-xs);
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.kos-muted {
+  color: var(--kos-text-muted);
+}
+
+.kos-button {
+  display: inline-flex;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: var(--kos-radius-sm);
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #ffffff;
+  font: inherit;
+  font-size: var(--kos-text-md);
+  font-weight: 750;
+  text-decoration: none;
+  cursor: pointer;
+  background: var(--kos-navy-900);
+  transition:
+    background-color var(--kos-motion-fast) var(--kos-ease-standard),
+    border-color var(--kos-motion-fast) var(--kos-ease-standard),
+    box-shadow var(--kos-motion-fast) var(--kos-ease-standard),
+    transform var(--kos-motion-fast) var(--kos-ease-standard);
+}
+
+.kos-button:hover {
+  background: var(--kos-navy-800);
+  box-shadow: 0 5px 12px rgb(16 29 53 / 14%);
+  transform: translateY(-1px);
+}
+
+.kos-button:active {
+  box-shadow: none;
+  transform: translateY(0) scale(0.985);
+}
+
+.kos-button:focus-visible {
+  outline: 2px solid rgb(52 94 198 / 25%);
+  outline-offset: 3px;
+}
+
+.kos-button--secondary {
+  border-color: var(--kos-border-strong);
+  color: var(--kos-text);
+  background: var(--kos-surface);
+}
+
+.kos-button--secondary:hover {
+  border-color: #aeb7c5;
+  background: var(--kos-surface-soft);
+}
+
+.kos-button--ghost {
+  border-color: transparent;
+  color: var(--kos-text-secondary);
+  background: transparent;
+  box-shadow: none;
+}
+
+.kos-button--ghost:hover {
+  color: var(--kos-blue-600);
+  background: var(--kos-blue-100);
+  box-shadow: none;
+}
+
+.kos-icon-button {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid var(--kos-border);
+  border-radius: var(--kos-radius-md);
+  color: var(--kos-text-secondary);
+  cursor: pointer;
+  place-items: center;
+  background: var(--kos-surface);
+  transition:
+    background-color var(--kos-motion-fast) var(--kos-ease-standard),
+    border-color var(--kos-motion-fast) var(--kos-ease-standard),
+    color var(--kos-motion-fast) var(--kos-ease-standard),
+    transform var(--kos-motion-fast) var(--kos-ease-standard);
+}
+
+.kos-icon-button:hover {
+  border-color: #b6bfcc;
+  color: var(--kos-navy-900);
+  background: var(--kos-surface-soft);
+}
+
+.kos-icon-button:active {
+  transform: scale(0.96);
+}
+
+.kos-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.kos-field > span,
+.kos-field > label {
+  margin-bottom: 7px;
+  color: var(--kos-text-secondary);
+  font-size: var(--kos-text-sm);
+  font-weight: 700;
+}
+
+.kos-control {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--kos-border-strong);
+  border-radius: var(--kos-radius-sm);
+  outline: none;
+  color: var(--kos-text);
+  font: inherit;
+  font-size: var(--kos-text-base);
+  background: var(--kos-surface);
+  transition:
+    border-color var(--kos-motion-fast) var(--kos-ease-standard),
+    box-shadow var(--kos-motion-fast) var(--kos-ease-standard);
+}
+
+textarea.kos-control {
+  min-height: 94px;
+  padding: 11px 12px;
+  resize: vertical;
+}
+
+.kos-control:hover {
+  border-color: #b9c1cd;
+}
+
+.kos-control:focus {
+  border-color: var(--kos-blue-600);
+  box-shadow: 0 0 0 3px rgb(52 94 198 / 9%);
+}
+
+.kos-badge {
+  display: inline-flex;
+  min-height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  align-items: center;
+  color: var(--kos-blue-600);
+  font-size: var(--kos-text-xs);
+  font-weight: 750;
+  background: var(--kos-blue-100);
+}
+
+.kos-badge--success {
+  color: var(--kos-green-600);
+  background: var(--kos-green-100);
+}
+
+.kos-badge--attention {
+  color: var(--kos-red-600);
+  background: var(--kos-red-100);
+}
+
+// Temporary bridge: improve existing platform controls without touching public pages.
+.platform-shell {
+  color: var(--kos-text);
+  background: var(--kos-page);
+}
+
+.platform-shell .save-button,
+.platform-shell .upload-button {
+  transition:
+    background-color var(--kos-motion-fast) var(--kos-ease-standard),
+    box-shadow var(--kos-motion-fast) var(--kos-ease-standard),
+    transform var(--kos-motion-fast) var(--kos-ease-standard);
+}
+
+.platform-shell .save-button:hover,
+.platform-shell .upload-button:hover {
+  box-shadow: 0 5px 12px rgb(16 29 53 / 14%);
+  transform: translateY(-1px);
+}
+
+.platform-shell .save-button:active,
+.platform-shell .upload-button:active {
+  transform: scale(0.985);
+}
+
+.platform-shell a,
+.platform-shell button {
+  -webkit-tap-highlight-color: transparent;
+}

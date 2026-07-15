@@ -1,0 +1,262 @@
+<section class="travel-quick-view">
+  <div class="travel-readiness-card">
+    <div>
+      <span>Travel readiness</span>
+
+      <strong>
+        {{
+          assignment.travelItinerary
+            .readinessPercentage
+        }}%
+      </strong>
+    </div>
+
+    <div class="travel-progress">
+      <span
+        [style.width.%]="
+          assignment.travelItinerary
+            .readinessPercentage
+        ">
+      </span>
+    </div>
+
+    <small
+      *ngIf="
+        assignment.travelItinerary
+          .lastUpdatedUtc
+      ">
+
+      Updated
+      {{
+        assignment.travelItinerary
+          .lastUpdatedUtc
+          | date:'MMM d, y, h:mm a'
+      }}
+    </small>
+  </div>
+
+  <article class="travel-summary-card">
+    <header>
+      <span class="travel-number">01</span>
+
+      <div>
+        <p>Outbound</p>
+        <h3>
+          {{
+            getFlightName(
+              assignment.travelItinerary
+                .outboundFlight
+            )
+          }}
+        </h3>
+      </div>
+    </header>
+
+    <strong class="travel-route">
+      {{
+        getFlightRoute(
+          assignment.travelItinerary
+            .outboundFlight
+        )
+      }}
+    </strong>
+
+    <small>
+      {{
+        assignment.travelItinerary
+          .outboundFlight
+          .departureDate
+          ? (
+              assignment.travelItinerary
+                .outboundFlight
+                .departureDate
+                | date:'MMM d, y'
+            )
+          : 'Departure date not set'
+      }}
+
+      <ng-container
+        *ngIf="
+          assignment.travelItinerary
+            .outboundFlight
+            .departureTime
+        ">
+
+        ·
+        {{
+          assignment.travelItinerary
+            .outboundFlight
+            .departureTime
+        }}
+      </ng-container>
+    </small>
+  </article>
+
+  <article class="travel-summary-card">
+    <header>
+      <span class="travel-number">02</span>
+
+      <div>
+        <p>Return</p>
+        <h3>
+          {{
+            getFlightName(
+              assignment.travelItinerary
+                .returnFlight
+            )
+          }}
+        </h3>
+      </div>
+    </header>
+
+    <strong class="travel-route">
+      {{
+        getFlightRoute(
+          assignment.travelItinerary
+            .returnFlight
+        )
+      }}
+    </strong>
+
+    <small>
+      {{
+        assignment.travelItinerary
+          .returnFlight
+          .departureDate
+          ? (
+              assignment.travelItinerary
+                .returnFlight
+                .departureDate
+                | date:'MMM d, y'
+            )
+          : 'Return date not set'
+      }}
+
+      <ng-container
+        *ngIf="
+          assignment.travelItinerary
+            .returnFlight
+            .departureTime
+        ">
+
+        ·
+        {{
+          assignment.travelItinerary
+            .returnFlight
+            .departureTime
+        }}
+      </ng-container>
+    </small>
+  </article>
+
+  <article class="travel-summary-card">
+    <header>
+      <span class="travel-number">03</span>
+
+      <div>
+        <p>Lodging</p>
+        <h3>
+          {{
+            assignment.travelItinerary
+              .hotel.hotelName ||
+            'Hotel not confirmed'
+          }}
+        </h3>
+      </div>
+    </header>
+
+    <strong class="travel-route">
+      {{
+        assignment.travelItinerary
+          .hotel.city ||
+        'Location not set'
+      }}
+
+      <ng-container
+        *ngIf="
+          assignment.travelItinerary
+            .hotel.state
+        ">
+
+        ,
+        {{
+          assignment.travelItinerary
+            .hotel.state
+        }}
+      </ng-container>
+    </strong>
+
+    <small>
+      Check-in:
+      {{
+        assignment.travelItinerary
+          .hotel.checkInDate
+          ? (
+              assignment.travelItinerary
+                .hotel.checkInDate
+                | date:'MMM d, y'
+            )
+          : 'Not set'
+      }}
+
+      · Check-out:
+      {{
+        assignment.travelItinerary
+          .hotel.checkOutDate
+          ? (
+              assignment.travelItinerary
+                .hotel.checkOutDate
+                | date:'MMM d, y'
+            )
+          : 'Not set'
+      }}
+    </small>
+  </article>
+
+  <article class="travel-summary-card">
+    <header>
+      <span class="travel-number">04</span>
+
+      <div>
+        <p>Ground transportation</p>
+        <h3>Pickup contacts</h3>
+      </div>
+    </header>
+
+    <div class="pickup-grid">
+      <div>
+        <span>Arrival</span>
+
+        <strong>
+          {{
+            assignment.travelItinerary
+              .groundTransportation
+              .arrivalPickupContact ||
+            'Not confirmed'
+          }}
+        </strong>
+      </div>
+
+      <div>
+        <span>Departure</span>
+
+        <strong>
+          {{
+            assignment.travelItinerary
+              .groundTransportation
+              .departurePickupContact ||
+            'Not confirmed'
+          }}
+        </strong>
+      </div>
+    </div>
+  </article>
+
+  <a
+    class="travel-open-link kos-clickable"
+    routerLink="travel">
+
+    Open full Travel workspace
+    <span aria-hidden="true">→</span>
+  </a>
+</section>

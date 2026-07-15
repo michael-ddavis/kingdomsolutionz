@@ -25,6 +25,16 @@
 
             {{ getStatusLabel(assignment) }}
           </span>
+
+          <button type="button" class="travel-quick-button kos-clickable" (click)="openTravelQuickView()">
+
+            <span class="travel-quick-button-icon" aria-hidden="true">
+
+              ✈
+            </span>
+
+            Travel quick view
+          </button>
         </div>
 
         <h1>{{ assignment.eventName }}</h1>
@@ -96,16 +106,29 @@
     <nav class="assignment-tabs" aria-label="Assignment sections">
 
       <a *ngFor="let tab of tabs" [routerLink]="tab.route" routerLinkActive="assignment-tab--active"
-        class="assignment-tab">
+        [routerLinkActiveOptions]="{
+      exact: true
+    }" ariaCurrentWhenActive="page" class="assignment-tab">
 
-        <strong>{{ tab.label }}</strong>
-        <small>{{ tab.description }}</small>
+        <strong>
+          {{ tab.label }}
+        </strong>
+
+        <small>
+          {{ tab.description }}
+        </small>
       </a>
     </nav>
 
     <div class="assignment-content">
       <router-outlet></router-outlet>
     </div>
+    <app-kos-drawer [open]="travelQuickViewOpen" eyebrow="Assignment travel" title="Travel quick view" width="md"
+      (closed)="closeTravelQuickView()">
+
+      <app-assignment-travel-quick-view [assignment]="assignment">
+      </app-assignment-travel-quick-view>
+    </app-kos-drawer>
   </section>
 </ng-container>
 

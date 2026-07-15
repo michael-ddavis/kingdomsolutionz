@@ -1,0 +1,74 @@
+:root {
+  // KingdomOS brand
+  --kos-navy-950: #0d1830;
+  --kos-navy-900: #101d35;
+  --kos-navy-800: #182a4a;
+  --kos-blue-600: #345ec6;
+  --kos-blue-100: #e9eefc;
+  --kos-violet-600: #7656b5;
+  --kos-violet-100: #f1ecfa;
+  --kos-gold-500: #e7bd54;
+  --kos-gold-100: #fff6dc;
+  --kos-green-600: #34795e;
+  --kos-green-100: #e8f3ed;
+  --kos-red-600: #a8514c;
+  --kos-red-100: #f8eae9;
+
+  // Surfaces
+  --kos-page: #f5f4f0;
+  --kos-surface: #ffffff;
+  --kos-surface-soft: #f8f9fb;
+  --kos-surface-muted: #f1f3f6;
+
+  // Text
+  --kos-text: #202c42;
+  --kos-text-secondary: #657084;
+  --kos-text-muted: #7c8696;
+  --kos-text-faint: #9299a5;
+
+  // Borders
+  --kos-border: #dde1e7;
+  --kos-border-strong: #ccd2dc;
+
+  // Typography
+  --kos-text-xs: 0.625rem;   // 10px
+  --kos-text-sm: 0.6875rem;  // 11px
+  --kos-text-md: 0.75rem;    // 12px
+  --kos-text-base: 0.8125rem;// 13px
+  --kos-text-lg: 1rem;       // 16px
+  --kos-text-xl: 1.25rem;    // 20px
+  --kos-text-2xl: 1.625rem;  // 26px
+
+  // Spacing
+  --kos-space-1: 4px;
+  --kos-space-2: 8px;
+  --kos-space-3: 12px;
+  --kos-space-4: 16px;
+  --kos-space-5: 20px;
+  --kos-space-6: 24px;
+  --kos-space-7: 32px;
+
+  // Shape
+  --kos-radius-sm: 7px;
+  --kos-radius-md: 10px;
+  --kos-radius-lg: 13px;
+  --kos-radius-xl: 16px;
+
+  // Shadows
+  --kos-shadow-sm: 0 2px 7px rgb(16 29 53 / 4%);
+  --kos-shadow-md: 0 10px 28px rgb(16 29 53 / 10%);
+  --kos-shadow-drawer: -18px 0 48px rgb(6 14 29 / 18%);
+
+  // Motion
+  --kos-motion-fast: 120ms;
+  --kos-motion-base: 180ms;
+  --kos-motion-slow: 260ms;
+  --kos-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --kos-ease-enter: cubic-bezier(0, 0, 0.2, 1);
+  --kos-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  // Layout
+  --kos-sidebar-width: 272px;
+  --kos-header-height: 74px;
+  --kos-content-max: 1420px;
+}

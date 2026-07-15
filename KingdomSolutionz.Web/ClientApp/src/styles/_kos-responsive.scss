@@ -1,0 +1,88 @@
+// Shared platform responsiveness. Component-specific layout remains in component SCSS.
+
+@media (max-width: 1100px) {
+  .platform-shell .assignment-tabs {
+    display: flex;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+    scroll-snap-type: inline proximity;
+  }
+
+  .platform-shell .assignment-tab {
+    flex: 0 0 160px;
+    scroll-snap-align: start;
+  }
+}
+
+@media (max-width: 900px) {
+  .platform-shell .platform-content {
+    padding:
+      24px
+      clamp(16px, 4vw, 28px)
+      40px;
+  }
+
+  .platform-shell .workspace-heading,
+  .platform-shell .contacts-heading,
+  .platform-shell .travel-heading,
+  .platform-shell .documents-heading,
+  .platform-shell .activity-heading,
+  .platform-shell .checklist-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .platform-shell .heading-summary,
+  .platform-shell .contacts-readiness,
+  .platform-shell .travel-readiness,
+  .platform-shell .documents-readiness,
+  .platform-shell .activity-summary {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .platform-shell .contact-grid,
+  .platform-shell .field-grid,
+  .platform-shell .overview-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .platform-shell .platform-content {
+    padding: 18px 14px 86px;
+  }
+
+  .platform-shell h1 {
+    font-size: clamp(1.8rem, 9vw, 2.25rem);
+  }
+
+  .platform-shell .assignment-workspace,
+  .platform-shell .overview-page,
+  .platform-shell .checklist-page,
+  .platform-shell .travel-page,
+  .platform-shell .contacts-page,
+  .platform-shell .documents-page,
+  .platform-shell .activity-page {
+    gap: 14px;
+  }
+
+  .platform-shell .heading-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .platform-shell .save-panel {
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .platform-shell .save-actions,
+  .platform-shell .save-button,
+  .platform-shell .upload-button {
+    width: 100%;
+  }
+}

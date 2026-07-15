@@ -280,3 +280,277 @@ h1 {
     display: none;
   }
 }
+
+// ---------------------------------------------------------
+// KingdomOS compact assignment workspace
+// ---------------------------------------------------------
+
+.assignment-workspace {
+  gap: 20px;
+}
+
+.back-link {
+  min-height: 30px;
+  padding: 0 2px;
+  color: #5e697b;
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+
+.back-link:hover {
+  color: #345ec6;
+}
+
+.heading-meta {
+  margin-bottom: 8px;
+}
+
+.eyebrow {
+  color: #7656b5;
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+}
+
+.assignment-status {
+  padding: 5px 9px;
+  font-size: 0.625rem;
+}
+
+h1 {
+  max-width: 850px;
+  margin-bottom: 8px;
+  color: #101d35;
+  font-size: clamp(2rem, 2.8vw, 2.625rem);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+
+.assignment-subtitle {
+  color: #657084;
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.event-date,
+.heading-readiness {
+  min-height: 88px;
+  padding: 15px 17px;
+  border: 1px solid #dde1e7;
+  border-radius: 12px;
+  box-shadow: 0 2px 7px rgb(16 29 53 / 4%);
+}
+
+.event-date small,
+.heading-readiness small {
+  color: #7c8696;
+  font-size: 0.625rem;
+  font-weight: 750;
+}
+
+.event-date strong,
+.heading-readiness strong {
+  margin-top: 7px;
+  color: #263249;
+  font-size: 0.8125rem;
+}
+
+.event-date span {
+  margin-top: 5px;
+  color: #7c8696;
+  font-size: 0.625rem;
+}
+
+.heading-readiness strong {
+  color: #34795e;
+  font-size: 1rem;
+}
+
+.heading-progress {
+  height: 5px;
+}
+
+// Compact segmented navigation
+.assignment-tabs {
+  display: grid;
+  grid-template-columns:
+    repeat(6, minmax(0, 1fr));
+
+  gap: 6px;
+  padding: 6px;
+
+  border: 1px solid #dde1e7;
+  border-radius: 13px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 3px 10px rgb(16 29 53 / 5%);
+}
+
+.assignment-tab {
+  position: relative;
+
+  display: flex;
+  min-width: 0;
+  min-height: 58px;
+
+  align-items: center;
+
+  padding: 10px 12px;
+
+  border: 1px solid transparent;
+  border-radius: 9px;
+
+  color: #5f697b;
+
+  cursor: pointer;
+
+  background: transparent;
+
+  transition:
+    border-color 140ms ease,
+    background 140ms ease,
+    color 140ms ease;
+}
+
+.assignment-tab-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.assignment-tab strong {
+  overflow: hidden;
+  color: #3f4a5d;
+  font-size: 0.75rem;
+  font-weight: 750;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.assignment-tab small {
+  margin-top: 4px;
+
+  overflow: hidden;
+
+  color: #8b93a1;
+  font-size: 0.625rem;
+  line-height: 1.25;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// The arrow made the tabs feel oversized and less refined.
+.assignment-tab-arrow {
+  display: none;
+}
+
+.assignment-tab:hover {
+  border-color: #d4d9e2;
+  background: #f7f8fa;
+}
+
+.assignment-tab:hover strong {
+  color: #263249;
+}
+
+.assignment-tab:focus-visible {
+  outline: 2px solid rgb(52 94 198 / 22%);
+  outline-offset: 2px;
+}
+
+.assignment-tab--active {
+  border-color: #101d35;
+  color: #ffffff;
+
+  background: #101d35;
+
+  box-shadow:
+    0 3px 8px rgb(16 29 53 / 16%);
+}
+
+.assignment-tab--active::after {
+  position: absolute;
+
+  right: 12px;
+  bottom: 0;
+  left: 12px;
+
+  height: 2px;
+
+  border-radius: 999px 999px 0 0;
+
+  content: '';
+
+  background: #e7bd54;
+}
+
+.assignment-tab--active strong {
+  color: #ffffff;
+}
+
+.assignment-tab--active small {
+  color: #b9c3d6;
+}
+
+.assignment-tab--active:hover {
+  border-color: #101d35;
+  background: #101d35;
+}
+
+@media (max-width: 1100px) {
+  .assignment-tabs {
+    display: flex;
+    overflow-x: auto;
+  }
+
+  .assignment-tab {
+    flex: 0 0 160px;
+  }
+}
+
+.travel-quick-button {
+  display: inline-flex;
+  min-height: 28px;
+  padding: 0 10px;
+  border: 1px solid #d5dae3;
+  border-radius: 7px;
+  align-items: center;
+  gap: 6px;
+  color: #4f5b6f;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 750;
+  cursor: pointer;
+  background: #ffffff;
+}
+
+.travel-quick-button:hover {
+  border-color: #aeb8c8;
+  color: #101d35;
+  background: #f8f9fb;
+}
+
+.travel-quick-button:focus-visible {
+  outline: 2px solid rgb(52 94 198 / 22%);
+  outline-offset: 2px;
+}
+
+.travel-quick-button-icon {
+  color: #7656b5;
+  font-size: 11px;
+}
+
+@media (max-width: 520px) {
+  .heading-meta {
+    flex-wrap: wrap;
+  }
+
+  .travel-quick-button {
+    flex-basis: 100%;
+    justify-content: center;
+  }
+}

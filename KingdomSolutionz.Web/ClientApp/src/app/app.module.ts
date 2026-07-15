@@ -21,14 +21,15 @@ import { SpeakingRequestListComponent } from './platform/pages/speaking-requests
 import { SpeakingRequestDetailComponent } from './platform/pages/speaking-requests/speaking-request-detail/speaking-request-detail.component';
 import { SpeakingRequestFormComponent } from './platform/pages/speaking-requests/speaking-request-form/speaking-request-form.component';
 import { AssignmentDetailComponent } from './platform/pages/assignments/assignment-detail/assignment-detail.component';
-import {
-  AssignmentListComponent
-} from './platform/pages/assignments/assignment-list/assignment-list.component';import { AssignmentWorkspaceComponent } from './platform/pages/assignments/assignment-workspace/assignment-workspace.component';
+import { AssignmentListComponent } from './platform/pages/assignments/assignment-list/assignment-list.component'; 
+import { AssignmentWorkspaceComponent } from './platform/pages/assignments/assignment-workspace/assignment-workspace.component';
 import { AssignmentOverviewComponent } from './platform/pages/assignments/assignment-overview/assignment-overview.component';
 import { AssignmentTravelComponent } from './platform/pages/assignments/assignment-travel/assignment-travel.component';
 import { AssignmentContactsComponent } from './platform/pages/assignments/assignment-contacts/assignment-contacts.component';
 import { AssignmentDocumentsComponent } from './platform/pages/assignments/assignment-documents/assignment-documents.component';
 import { AssignmentActivityComponent } from './platform/pages/assignments/assignment-activity/assignment-activity.component';
+import { KosDrawerComponent } from './platform/shared/components/kos-drawer/kos-drawer.component';
+import { AssignmentTravelQuickViewComponent } from './platform/pages/assignments/assignment-travel-quick-view/assignment-travel-quick-view.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,10 @@ import { AssignmentActivityComponent } from './platform/pages/assignments/assign
     AssignmentTravelComponent,
     AssignmentContactsComponent,
     AssignmentDocumentsComponent,
-    AssignmentActivityComponent
+    AssignmentActivityComponent,
+
+    KosDrawerComponent,
+    AssignmentTravelQuickViewComponent
   ],
   imports: [
     BrowserModule,

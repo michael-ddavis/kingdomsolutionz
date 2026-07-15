@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -28,25 +28,32 @@ interface PlatformNavigationSection {
   templateUrl: './platform-shell.component.html',
   styleUrls: ['./platform-shell.component.scss']
 })
+@HostListener(
+  'document:keydown.escape'
+)
 export class PlatformShellComponent {
   sidebarOpen = false;
 
   readonly selectedWorkspace$:
     Observable<Workspace> =
-      this.workspaceService.selectedWorkspace$;
+    this.workspaceService.selectedWorkspace$;
 
   readonly navigationSections$:
     Observable<PlatformNavigationSection[]> =
-      this.selectedWorkspace$.pipe(
-        map(workspace =>
-          this.buildNavigationSections(workspace)
-        )
-      );
+    this.selectedWorkspace$.pipe(
+      map(workspace =>
+        this.buildNavigationSections(workspace)
+      )
+    );
 
   constructor(
     private readonly workspaceService:
       WorkspaceService
-  ) {}
+  ) { }
+
+  onEscape(): void {
+    this.closeSidebar();
+  }
 
   toggleSidebar(): void {
     this.sidebarOpen = !this.sidebarOpen;

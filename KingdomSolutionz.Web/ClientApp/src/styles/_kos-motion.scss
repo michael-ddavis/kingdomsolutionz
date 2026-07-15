@@ -1,0 +1,65 @@
+@keyframes kos-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes kos-soft-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// Angular places the activated routed component immediately after router-outlet.
+// This gives every public and platform route the same restrained entrance.
+router-outlet + * {
+  animation:
+    kos-page-enter
+    var(--kos-motion-base)
+    var(--kos-ease-enter)
+    both;
+}
+
+.kos-clickable {
+  transition:
+    background-color var(--kos-motion-fast) var(--kos-ease-standard),
+    border-color var(--kos-motion-fast) var(--kos-ease-standard),
+    box-shadow var(--kos-motion-fast) var(--kos-ease-standard),
+    color var(--kos-motion-fast) var(--kos-ease-standard),
+    transform var(--kos-motion-fast) var(--kos-ease-standard);
+}
+
+.kos-clickable:hover {
+  transform: translateY(-1px);
+}
+
+.kos-clickable:active {
+  transform: translateY(0) scale(0.985);
+}
+
+body.kos-overlay-open {
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
