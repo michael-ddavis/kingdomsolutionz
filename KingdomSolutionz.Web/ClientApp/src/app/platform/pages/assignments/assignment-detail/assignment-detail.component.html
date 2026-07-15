@@ -88,6 +88,15 @@
               <span aria-hidden="true">→</span>
             </a>
 
+            <a *ngIf="
+    stage.id === 'promotion' ||
+    stage.id === 'host-readiness'
+  " routerLink="../documents" class="stage-link">
+
+              Open documents
+              <span aria-hidden="true">→</span>
+            </a>
+
             <span class="stage-count">
               {{ getCompletedStageTaskCount(stage) }}
               /

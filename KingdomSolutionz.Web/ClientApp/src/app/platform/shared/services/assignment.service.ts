@@ -22,7 +22,10 @@ import {
   AssignmentStage,
   AssignmentTask,
   AssignmentTaskStatus,
-  AssignmentTravelItinerary
+  AssignmentTravelItinerary,
+  AssignmentDocument,
+  AssignmentDocumentCategory,
+  AssignmentDocumentLibrary,
 } from '../models/assignment.model';
 
 @Injectable({
@@ -317,6 +320,285 @@ export class AssignmentService {
     );
   }
 
+  addDocument(
+    assignmentId: number,
+    document: Omit<
+      AssignmentDocument,
+      'id' | 'uploadedUtc'
+    >
+  ): void {
+    const uploadedDocument:
+      AssignmentDocument = {
+      ...document,
+      id: this.getNextDocumentId(),
+      uploadedUtc: new Date().toISOString()
+    };
+
+    const updatedAssignments:
+      Assignment[] =
+      this.assignmentsSubject.value.map(
+        assignment => {
+          if (
+            assignment.id !== assignmentId
+          ) {
+            return assignment;
+          }
+
+          const documents = [
+            ...assignment
+              .documentLibrary
+              .documents,
+
+            uploadedDocument
+          ];
+
+          const documentLibrary:
+            AssignmentDocumentLibrary = {
+            documents,
+
+            readinessPercentage:
+              this.calculateDocumentReadiness(
+                documents
+              ),
+
+            lastUpdatedUtc:
+              new Date().toISOString()
+          };
+
+          const assignmentWithDocuments:
+            Assignment = {
+            ...assignment,
+            documentLibrary
+          };
+
+          const assignmentWithChecklist =
+            this.syncDocumentChecklist(
+              assignmentWithDocuments
+            );
+
+          return this.recalculateAssignment(
+            assignmentWithChecklist
+          );
+        }
+      );
+
+    this.assignmentsSubject.next(
+      updatedAssignments
+    );
+  }
+
+  removeDocument(
+    assignmentId: number,
+    documentId: number
+  ): void {
+    const updatedAssignments:
+      Assignment[] =
+      this.assignmentsSubject.value.map(
+        assignment => {
+          if (
+            assignment.id !== assignmentId
+          ) {
+            return assignment;
+          }
+
+          const documents =
+            assignment.documentLibrary
+              .documents
+              .filter(
+                document =>
+                  document.id !== documentId
+              );
+
+          const documentLibrary:
+            AssignmentDocumentLibrary = {
+            documents,
+
+            readinessPercentage:
+              this.calculateDocumentReadiness(
+                documents
+              ),
+
+            lastUpdatedUtc:
+              new Date().toISOString()
+          };
+
+          const assignmentWithDocuments:
+            Assignment = {
+            ...assignment,
+            documentLibrary
+          };
+
+          const assignmentWithChecklist =
+            this.syncDocumentChecklist(
+              assignmentWithDocuments
+            );
+
+          return this.recalculateAssignment(
+            assignmentWithChecklist
+          );
+        }
+      );
+
+    this.assignmentsSubject.next(
+      updatedAssignments
+    );
+  }
+
+  private createEmptyDocumentLibrary():
+  AssignmentDocumentLibrary {
+  return {
+    documents: [],
+    readinessPercentage: 0,
+    lastUpdatedUtc: null
+  };
+}
+
+private calculateDocumentReadiness(
+  documents: readonly AssignmentDocument[]
+): number {
+  const requiredCategories:
+    AssignmentDocumentCategory[] = [
+      'contract',
+      'event-schedule',
+      'travel-confirmation',
+      'promotional-asset',
+      'response-resource',
+      'host-packet'
+    ];
+
+  const completedCategories =
+    requiredCategories.filter(category =>
+      documents.some(
+        document =>
+          document.category === category
+      )
+    ).length;
+
+  return Math.round(
+    (
+      completedCategories /
+      requiredCategories.length
+    ) * 100
+  );
+}
+
+private hasDocumentCategory(
+  assignment: Assignment,
+  category: AssignmentDocumentCategory
+): boolean {
+  return assignment
+    .documentLibrary
+    .documents
+    .some(
+      document =>
+        document.category === category
+    );
+}
+
+private syncDocumentChecklist(
+  assignment: Assignment
+): Assignment {
+  const eventScheduleComplete =
+    this.hasDocumentCategory(
+      assignment,
+      'event-schedule'
+    );
+
+  const promotionalAssetsComplete =
+    this.hasDocumentCategory(
+      assignment,
+      'promotional-asset'
+    );
+
+  const responseResourcesComplete =
+    this.hasDocumentCategory(
+      assignment,
+      'response-resource'
+    );
+
+  const updatedStages:
+    AssignmentStage[] =
+      assignment.stages.map(stage => {
+        return {
+          ...stage,
+
+          tasks: stage.tasks.map(task => {
+            if (
+              task.title ===
+              'Confirm event schedule'
+            ) {
+              return {
+                ...task,
+
+                status:
+                  eventScheduleComplete
+                    ? 'complete'
+                    : 'not-started'
+              };
+            }
+
+            if (
+              task.title ===
+              'Deliver approved assets'
+            ) {
+              return {
+                ...task,
+
+                status:
+                  promotionalAssetsComplete
+                    ? 'complete'
+                    : 'not-started'
+              };
+            }
+
+            if (
+              task.title ===
+              'Confirm response resources'
+            ) {
+              return {
+                ...task,
+
+                status:
+                  responseResourcesComplete
+                    ? 'complete'
+                    : 'not-started'
+              };
+            }
+
+            return task;
+          })
+        };
+      });
+
+  return {
+    ...assignment,
+    stages: updatedStages
+  };
+}
+
+private getNextDocumentId(): number {
+  const documentIds =
+    this.assignmentsSubject.value
+      .flatMap(
+        assignment =>
+          assignment
+            .documentLibrary
+            .documents
+            .map(
+              document =>
+                document.id
+            )
+      );
+
+  if (documentIds.length === 0) {
+    return 1;
+  }
+
+  return Math.max(
+    ...documentIds
+  ) + 1;
+}
+
   private createEmptyContactDirectory():
     AssignmentContactDirectory {
     return {
@@ -539,6 +821,9 @@ export class AssignmentService {
 
       travelItinerary:
         this.createEmptyTravelItinerary(),
+
+      documentLibrary:
+        this.createEmptyDocumentLibrary(),
 
       status: 'active',
       readinessPercentage: 0,
@@ -1650,6 +1935,9 @@ export class AssignmentService {
 
       travelItinerary:
         this.createEmptyTravelItinerary(),
+
+      documentLibrary:
+        this.createEmptyDocumentLibrary(),
 
       status:
         'active',

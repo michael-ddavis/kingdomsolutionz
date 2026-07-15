@@ -1,0 +1,370 @@
+<ng-container
+  *ngIf="
+    assignment$ | async as assignment;
+    else assignmentNotFound
+  ">
+
+  <section class="documents-page">
+    <header class="documents-heading">
+      <div>
+        <p class="eyebrow">
+          Assignment documents
+        </p>
+
+        <h2>Files and resources</h2>
+
+        <p>
+          Keep important assignment documents organized
+          and available to the ministry team.
+        </p>
+      </div>
+
+      <div class="documents-readiness">
+        <div>
+          <span>Document readiness</span>
+
+          <strong>
+            {{
+              assignment.documentLibrary
+                .readinessPercentage
+            }}%
+          </strong>
+        </div>
+
+        <div class="readiness-bar">
+          <span
+            [style.width.%]="
+              assignment.documentLibrary
+                .readinessPercentage
+            ">
+          </span>
+        </div>
+
+        <small
+          *ngIf="
+            assignment.documentLibrary
+              .lastUpdatedUtc
+          ">
+
+          Updated
+          {{
+            assignment.documentLibrary
+              .lastUpdatedUtc
+              | date:'MMM d, y, h:mm a'
+          }}
+        </small>
+      </div>
+    </header>
+
+    <section class="readiness-summary">
+      <article
+        *ngFor="
+          let requirement of
+            requiredDocumentTypes
+        "
+        class="readiness-item"
+        [class.readiness-item--complete]="
+          hasCategory(
+            assignment,
+            requirement.category
+          )
+        ">
+
+        <span class="readiness-icon">
+          {{
+            hasCategory(
+              assignment,
+              requirement.category
+            )
+              ? '✓'
+              : '—'
+          }}
+        </span>
+
+        <div>
+          <strong>
+            {{ requirement.label }}
+          </strong>
+
+          <small>
+            {{ requirement.description }}
+          </small>
+        </div>
+      </article>
+    </section>
+
+    <section class="documents-layout">
+      <form
+        class="upload-panel"
+        [formGroup]="uploadForm"
+        (ngSubmit)="uploadDocument()">
+
+        <header class="panel-heading">
+          <div>
+            <p class="eyebrow">
+              Add document
+            </p>
+
+            <h3>Upload a file</h3>
+          </div>
+
+          <span class="upload-mark">
+            ↑
+          </span>
+        </header>
+
+        <label class="field">
+          <span>Document category</span>
+
+          <select
+            formControlName="category">
+
+            <option value="contract">
+              Contract
+            </option>
+
+            <option value="event-schedule">
+              Event schedule
+            </option>
+
+            <option value="travel-confirmation">
+              Travel confirmation
+            </option>
+
+            <option value="promotional-asset">
+              Promotional asset
+            </option>
+
+            <option value="response-resource">
+              Response resource
+            </option>
+
+            <option value="host-packet">
+              Host packet
+            </option>
+
+            <option value="sermon-notes">
+              Sermon notes
+            </option>
+
+            <option value="other">
+              Other
+            </option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Document title</span>
+
+          <input
+            type="text"
+            formControlName="title"
+            placeholder="Final event schedule">
+
+          <small
+            class="field-error"
+            *ngIf="
+              uploadForm.controls
+                .title.touched &&
+              uploadForm.controls
+                .title.invalid
+            ">
+
+            Enter a document title.
+          </small>
+        </label>
+
+        <label class="file-picker">
+          <input
+            #fileInput
+            type="file"
+            accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.ppt,.pptx,.xls,.xlsx"
+            (change)="
+              onFileSelected($event)
+            ">
+
+          <span class="file-picker-icon">
+            +
+          </span>
+
+          <span class="file-picker-copy">
+            <strong>
+              {{
+                selectedFile
+                  ? selectedFile.name
+                  : 'Choose a file'
+              }}
+            </strong>
+
+            <small>
+              PDF, Office document or image.
+              Maximum 25 MB.
+            </small>
+          </span>
+        </label>
+
+        <label class="field">
+          <span>Notes</span>
+
+          <textarea
+            rows="4"
+            formControlName="notes"
+            placeholder="Describe the file or add instructions for the team.">
+          </textarea>
+        </label>
+
+        <p
+          class="upload-error"
+          *ngIf="uploadError">
+
+          {{ uploadError }}
+        </p>
+
+        <p
+          class="upload-success"
+          *ngIf="uploaded">
+
+          ✓ Document uploaded
+        </p>
+
+        <button
+          type="submit"
+          class="upload-button">
+
+          Upload document
+        </button>
+      </form>
+
+      <section class="library-panel">
+        <header class="panel-heading">
+          <div>
+            <p class="eyebrow">
+              Document library
+            </p>
+
+            <h3>
+              {{
+                assignment.documentLibrary
+                  .documents.length
+              }}
+              files
+            </h3>
+          </div>
+        </header>
+
+        <div
+          class="document-list"
+          *ngIf="
+            assignment.documentLibrary
+              .documents.length > 0;
+            else emptyLibrary
+          ">
+
+          <article
+            *ngFor="
+              let document of
+                getSortedDocuments(
+                  assignment
+                );
+              trackBy: trackByDocumentId
+            "
+            class="document-row">
+
+            <span class="document-icon">
+              {{
+                document.fileName
+                  .split('.')
+                  .pop()
+                  ?.slice(0, 4)
+                  ?.toUpperCase()
+              }}
+            </span>
+
+            <div class="document-copy">
+              <div class="document-title-row">
+                <strong>
+                  {{ document.title }}
+                </strong>
+
+                <span class="document-category">
+                  {{
+                    categoryLabels[
+                      document.category
+                    ]
+                  }}
+                </span>
+              </div>
+
+              <span class="document-file-name">
+                {{ document.fileName }}
+              </span>
+
+              <small>
+                {{
+                  formatFileSize(
+                    document.fileSizeBytes
+                  )
+                }}
+                · Uploaded by
+                {{ document.uploadedBy }}
+                ·
+                {{
+                  document.uploadedUtc
+                    | date:'MMM d, y, h:mm a'
+                }}
+              </small>
+
+              <p *ngIf="document.notes">
+                {{ document.notes }}
+              </p>
+            </div>
+
+            <div class="document-actions">
+              <button
+                type="button"
+                (click)="
+                  openDocument(document)
+                ">
+
+                Open
+              </button>
+
+              <button
+                type="button"
+                class="remove-button"
+                (click)="
+                  removeDocument(document)
+                ">
+
+                Remove
+              </button>
+            </div>
+          </article>
+        </div>
+
+        <ng-template #emptyLibrary>
+          <div class="empty-library">
+            <span>▱</span>
+
+            <h4>No documents yet</h4>
+
+            <p>
+              Upload the first document using the panel
+              on the left.
+            </p>
+          </div>
+        </ng-template>
+      </section>
+    </section>
+  </section>
+</ng-container>
+
+<ng-template #assignmentNotFound>
+  <section class="not-found">
+    <h2>Assignment not found</h2>
+
+    <p>
+      This document library is no longer available.
+    </p>
+  </section>
+</ng-template>

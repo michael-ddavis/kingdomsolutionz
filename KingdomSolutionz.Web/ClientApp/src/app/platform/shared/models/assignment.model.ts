@@ -97,7 +97,7 @@ export interface AssignmentTravelItinerary {
   hotel: AssignmentHotel;
 
   groundTransportation:
-    AssignmentGroundTransportation;
+  AssignmentGroundTransportation;
 
   generalNotes: string;
 
@@ -105,34 +105,44 @@ export interface AssignmentTravelItinerary {
   lastUpdatedUtc: string | null;
 }
 
-export interface Assignment {
+export type AssignmentDocumentCategory =
+  | 'contract'
+  | 'event-schedule'
+  | 'travel-confirmation'
+  | 'promotional-asset'
+  | 'response-resource'
+  | 'host-packet'
+  | 'sermon-notes'
+  | 'other';
+
+export interface AssignmentDocument {
   id: number;
-  speakingRequestId: number;
 
-  eventName: string;
-  organizationName: string;
-  eventType: string;
+  category: AssignmentDocumentCategory;
 
-  city: string;
-  state: string;
-  venueName: string;
+  title: string;
+  fileName: string;
+  fileSizeBytes: number;
+  mimeType: string;
 
-  startDate: string;
-  endDate: string;
+  uploadedBy: string;
+  uploadedUtc: string;
 
-  coordinator: AssignmentCoordinator;
+  notes: string;
 
-  contactDirectory:
-  AssignmentContactDirectory;
+  /**
+   * Temporary browser URL for the demo.
+   * This will eventually be replaced by a permanent
+   * Azure Blob Storage URL.
+   */
+  objectUrl: string;
+}
 
-  travelItinerary:
-    AssignmentTravelItinerary;
+export interface AssignmentDocumentLibrary {
+  documents: AssignmentDocument[];
 
-  status: AssignmentStatus;
   readinessPercentage: number;
-
-  createdUtc: string;
-  stages: AssignmentStage[];
+  lastUpdatedUtc: string | null;
 }
 
 export type AssignmentContactCategory =
@@ -159,7 +169,7 @@ export interface AssignmentContact {
   email: string;
 
   preferredContactMethod:
-    AssignmentContactMethod;
+  AssignmentContactMethod;
 
   notes: string;
 }
@@ -173,4 +183,37 @@ export interface AssignmentContactDirectory {
 
   readinessPercentage: number;
   lastUpdatedUtc: string | null;
+}
+
+export interface Assignment {
+  id: number;
+  speakingRequestId: number;
+
+  eventName: string;
+  organizationName: string;
+  eventType: string;
+
+  city: string;
+  state: string;
+  venueName: string;
+
+  startDate: string;
+  endDate: string;
+
+  coordinator: AssignmentCoordinator;
+
+  contactDirectory:
+  AssignmentContactDirectory;
+
+  travelItinerary:
+  AssignmentTravelItinerary;
+
+  documentLibrary:
+  AssignmentDocumentLibrary;
+
+  status: AssignmentStatus;
+  readinessPercentage: number;
+
+  createdUtc: string;
+  stages: AssignmentStage[];
 }

@@ -1,10 +1,13 @@
 import {
   Component,
+  OnDestroy,
   OnInit
 } from '@angular/core';
 
 import {
-  FormBuilder
+  FormBuilder,
+  FormControl,
+  FormGroup
 } from '@angular/forms';
 
 import {
@@ -21,31 +24,62 @@ import {
   Assignment,
   AssignmentContact,
   AssignmentContactCategory,
-  AssignmentContactDirectory
+  AssignmentContactDirectory,
+  AssignmentContactMethod
 } from '../../../shared/models/assignment.model';
 
 import {
   AssignmentService
 } from '../../../shared/services/assignment.service';
 
-type ContactFormValue =
-  Omit<AssignmentContact, 'category'>;
+interface ContactFormValue {
+  name: string;
+  role: string;
+  organization: string;
+  phone: string;
+  email: string;
+
+  preferredContactMethod:
+    AssignmentContactMethod;
+
+  notes: string;
+}
+
+type ContactFormGroup =
+  FormGroup<{
+    name: FormControl<string>;
+    role: FormControl<string>;
+    organization: FormControl<string>;
+    phone: FormControl<string>;
+    email: FormControl<string>;
+
+    preferredContactMethod:
+      FormControl<AssignmentContactMethod>;
+
+    notes: FormControl<string>;
+  }>;
 
 @Component({
   selector: 'app-assignment-contacts',
+
   templateUrl:
     './assignment-contacts.component.html',
+
   styleUrls: [
     './assignment-contacts.component.scss'
   ]
 })
 export class AssignmentContactsComponent
-  implements OnInit {
+  implements OnInit, OnDestroy {
   private readonly assignmentId =
     Number(
       this.route.parent
         ?.snapshot.paramMap.get('id')
     );
+
+  private savedMessageTimer:
+    ReturnType<typeof setTimeout> | null =
+      null;
 
   saved = false;
 
@@ -91,8 +125,9 @@ export class AssignmentContactsComponent
           (
             assignment
           ): assignment is Assignment =>
-            Boolean(assignment)
+            assignment !== undefined
         ),
+
         take(1)
       )
       .subscribe(assignment => {
@@ -100,22 +135,152 @@ export class AssignmentContactsComponent
           assignment.contactDirectory;
 
         this.form.patchValue({
-          hostPastor:
-            directory.hostPastor,
+          hostPastor: {
+            name:
+              directory.hostPastor.name,
 
-          hostCoordinator:
-            directory.hostCoordinator,
+            role:
+              directory.hostPastor.role,
 
-          travelContact:
-            directory.travelContact,
+            organization:
+              directory.hostPastor
+                .organization,
 
-          mediaContact:
-            directory.mediaContact,
+            phone:
+              directory.hostPastor.phone,
 
-          emergencyContact:
-            directory.emergencyContact
+            email:
+              directory.hostPastor.email,
+
+            preferredContactMethod:
+              directory.hostPastor
+                .preferredContactMethod,
+
+            notes:
+              directory.hostPastor.notes
+          },
+
+          hostCoordinator: {
+            name:
+              directory.hostCoordinator
+                .name,
+
+            role:
+              directory.hostCoordinator
+                .role,
+
+            organization:
+              directory.hostCoordinator
+                .organization,
+
+            phone:
+              directory.hostCoordinator
+                .phone,
+
+            email:
+              directory.hostCoordinator
+                .email,
+
+            preferredContactMethod:
+              directory.hostCoordinator
+                .preferredContactMethod,
+
+            notes:
+              directory.hostCoordinator
+                .notes
+          },
+
+          travelContact: {
+            name:
+              directory.travelContact.name,
+
+            role:
+              directory.travelContact.role,
+
+            organization:
+              directory.travelContact
+                .organization,
+
+            phone:
+              directory.travelContact.phone,
+
+            email:
+              directory.travelContact.email,
+
+            preferredContactMethod:
+              directory.travelContact
+                .preferredContactMethod,
+
+            notes:
+              directory.travelContact.notes
+          },
+
+          mediaContact: {
+            name:
+              directory.mediaContact.name,
+
+            role:
+              directory.mediaContact.role,
+
+            organization:
+              directory.mediaContact
+                .organization,
+
+            phone:
+              directory.mediaContact.phone,
+
+            email:
+              directory.mediaContact.email,
+
+            preferredContactMethod:
+              directory.mediaContact
+                .preferredContactMethod,
+
+            notes:
+              directory.mediaContact.notes
+          },
+
+          emergencyContact: {
+            name:
+              directory.emergencyContact
+                .name,
+
+            role:
+              directory.emergencyContact
+                .role,
+
+            organization:
+              directory.emergencyContact
+                .organization,
+
+            phone:
+              directory.emergencyContact
+                .phone,
+
+            email:
+              directory.emergencyContact
+                .email,
+
+            preferredContactMethod:
+              directory.emergencyContact
+                .preferredContactMethod,
+
+            notes:
+              directory.emergencyContact
+                .notes
+          }
         });
+
+        this.form.markAsPristine();
       });
+  }
+
+  ngOnDestroy(): void {
+    if (this.savedMessageTimer) {
+      clearTimeout(
+        this.savedMessageTimer
+      );
+    }
   }
 
   saveContacts(): void {
@@ -165,11 +330,8 @@ export class AssignmentContactsComponent
       );
 
     this.form.markAsPristine();
-    this.saved = true;
 
-    window.setTimeout(() => {
-      this.saved = false;
-    }, 2500);
+    this.showSavedMessage();
   }
 
   isContactComplete(
@@ -184,16 +346,67 @@ export class AssignmentContactsComponent
     );
   }
 
-  private createContactForm() {
+  getCompletedContactCount(
+    directory:
+      AssignmentContactDirectory
+  ): number {
+    const contacts:
+      AssignmentContact[] = [
+        directory.hostPastor,
+        directory.hostCoordinator,
+        directory.travelContact,
+        directory.mediaContact,
+        directory.emergencyContact
+      ];
+
+    return contacts.filter(
+      contact =>
+        this.isContactComplete(
+          contact
+        )
+    ).length;
+  }
+
+  private createContactForm():
+    ContactFormGroup {
     return this.formBuilder
       .nonNullable.group({
-        name: '',
-        role: '',
-        organization: '',
-        phone: '',
-        email: '',
-        preferredContactMethod: '',
-        notes: ''
+        name:
+          this.formBuilder
+            .nonNullable
+            .control(''),
+
+        role:
+          this.formBuilder
+            .nonNullable
+            .control(''),
+
+        organization:
+          this.formBuilder
+            .nonNullable
+            .control(''),
+
+        phone:
+          this.formBuilder
+            .nonNullable
+            .control(''),
+
+        email:
+          this.formBuilder
+            .nonNullable
+            .control(''),
+
+        preferredContactMethod:
+          this.formBuilder
+            .nonNullable
+            .control<AssignmentContactMethod>(
+              ''
+            ),
+
+        notes:
+          this.formBuilder
+            .nonNullable
+            .control('')
       });
   }
 
@@ -230,5 +443,21 @@ export class AssignmentContactsComponent
       notes:
         contact.notes.trim()
     };
+  }
+
+  private showSavedMessage(): void {
+    if (this.savedMessageTimer) {
+      clearTimeout(
+        this.savedMessageTimer
+      );
+    }
+
+    this.saved = true;
+
+    this.savedMessageTimer =
+      setTimeout(() => {
+        this.saved = false;
+        this.savedMessageTimer = null;
+      }, 2500);
   }
 }

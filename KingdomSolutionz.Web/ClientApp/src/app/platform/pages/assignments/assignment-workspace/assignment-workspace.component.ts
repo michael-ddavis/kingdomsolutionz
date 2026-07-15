@@ -69,6 +69,12 @@ export class AssignmentWorkspaceComponent {
         route: 'contacts',
         description:
           'Host and assignment contacts'
+      },
+      {
+        label: 'Documents',
+        route: 'documents',
+        description:
+          'Files, schedules and resources'
       }
     ];
 
