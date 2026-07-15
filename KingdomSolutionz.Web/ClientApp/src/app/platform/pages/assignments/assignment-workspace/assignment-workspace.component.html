@@ -1,13 +1,10 @@
-<ng-container
-  *ngIf="
+<ng-container *ngIf="
     assignment$ | async as assignment;
     else assignmentNotFound
   ">
 
   <section class="assignment-workspace">
-    <a
-      routerLink="/app/speaker-journeys"
-      class="back-link">
+    <a routerLink="/app/speaker-journeys" class="back-link">
 
       <span aria-hidden="true">←</span>
       Back to assignments
@@ -20,8 +17,7 @@
             Ministry assignment
           </p>
 
-          <span
-            [ngClass]="[
+          <span [ngClass]="[
               'assignment-status',
               'assignment-status--' +
                 assignment.status
@@ -47,32 +43,30 @@
 
           <strong>
             {{
-              assignment.startDate
-                | date:'MMM d'
+            assignment.startDate
+            | date:'MMM d'
             }}
 
-            <ng-container
-              *ngIf="
+            <ng-container *ngIf="
                 assignment.endDate !==
                 assignment.startDate
               ">
 
               –
               {{
-                assignment.endDate
-                  | date:'MMM d, y'
+              assignment.endDate
+              | date:'MMM d, y'
               }}
             </ng-container>
 
-            <ng-container
-              *ngIf="
+            <ng-container *ngIf="
                 assignment.endDate ===
                 assignment.startDate
               ">
 
               {{
-                assignment.startDate
-                  | date:'y'
+              assignment.startDate
+              | date:'y'
               }}
             </ng-container>
           </strong>
@@ -90,8 +84,7 @@
           </div>
 
           <div class="heading-progress">
-            <span
-              [style.width.%]="
+            <span [style.width.%]="
                 assignment.readinessPercentage
               ">
             </span>
@@ -100,25 +93,17 @@
       </div>
     </header>
 
-    <nav
-      class="assignment-tabs"
-      aria-label="Assignment sections">
+    <nav class="assignment-tabs" aria-label="Assignment sections">
 
-      <a
-        *ngFor="let tab of tabs"
-        [routerLink]="tab.route"
-        routerLinkActive="assignment-tab--active"
+      <a *ngFor="let tab of tabs" [routerLink]="tab.route" routerLinkActive="assignment-tab--active"
         class="assignment-tab">
 
         <strong>{{ tab.label }}</strong>
         <small>{{ tab.description }}</small>
       </a>
 
-      <div
-        class="future-sections"
-        aria-label="Upcoming assignment sections">
+      <div class="future-sections" aria-label="Upcoming assignment sections">
 
-        <span>Travel</span>
         <span>Contacts</span>
         <span>Documents</span>
         <span>Ministry Log</span>

@@ -1,0 +1,693 @@
+<ng-container
+  *ngIf="
+    assignment$ | async as assignment;
+    else assignmentNotFound
+  ">
+
+  <form
+    class="travel-page"
+    [formGroup]="form"
+    (ngSubmit)="saveItinerary()">
+
+    <header class="travel-heading">
+      <div>
+        <p class="eyebrow">
+          Travel itinerary
+        </p>
+
+        <h2>Travel arrangements</h2>
+
+        <p>
+          Record flights, lodging and local
+          transportation. Partial information can be
+          saved while arrangements are still being
+          finalized.
+        </p>
+      </div>
+
+      <div class="travel-readiness">
+        <div class="readiness-heading">
+          <span>Travel readiness</span>
+
+          <strong>
+            {{
+              assignment.travelItinerary
+                .readinessPercentage
+            }}%
+          </strong>
+        </div>
+
+        <div class="readiness-bar">
+          <span
+            [style.width.%]="
+              assignment.travelItinerary
+                .readinessPercentage
+            ">
+          </span>
+        </div>
+
+        <small
+          *ngIf="
+            assignment.travelItinerary
+              .lastUpdatedUtc
+          ">
+
+          Updated
+          {{
+            assignment.travelItinerary
+              .lastUpdatedUtc
+              | date:'MMM d, y, h:mm a'
+          }}
+        </small>
+      </div>
+    </header>
+
+    <section class="readiness-summary">
+      <article
+        [class.readiness-item--complete]="
+          isFlightComplete(
+            assignment.travelItinerary
+              .outboundFlight
+          )
+        "
+        class="readiness-item">
+
+        <span class="readiness-icon">
+          {{
+            isFlightComplete(
+              assignment.travelItinerary
+                .outboundFlight
+            )
+              ? '✓'
+              : '1'
+          }}
+        </span>
+
+        <div>
+          <strong>Outbound flight</strong>
+          <small>Airline and arrival details</small>
+        </div>
+      </article>
+
+      <article
+        [class.readiness-item--complete]="
+          isFlightComplete(
+            assignment.travelItinerary
+              .returnFlight
+          )
+        "
+        class="readiness-item">
+
+        <span class="readiness-icon">
+          {{
+            isFlightComplete(
+              assignment.travelItinerary
+                .returnFlight
+            )
+              ? '✓'
+              : '2'
+          }}
+        </span>
+
+        <div>
+          <strong>Return flight</strong>
+          <small>Departure and return details</small>
+        </div>
+      </article>
+
+      <article
+        [class.readiness-item--complete]="
+          isHotelComplete(
+            assignment.travelItinerary.hotel
+          )
+        "
+        class="readiness-item">
+
+        <span class="readiness-icon">
+          {{
+            isHotelComplete(
+              assignment.travelItinerary.hotel
+            )
+              ? '✓'
+              : '3'
+          }}
+        </span>
+
+        <div>
+          <strong>Hotel</strong>
+          <small>Reservation and stay details</small>
+        </div>
+      </article>
+
+      <article
+        [class.readiness-item--complete]="
+          isArrivalPickupComplete(
+            assignment.travelItinerary
+              .groundTransportation
+          )
+        "
+        class="readiness-item">
+
+        <span class="readiness-icon">
+          {{
+            isArrivalPickupComplete(
+              assignment.travelItinerary
+                .groundTransportation
+            )
+              ? '✓'
+              : '4'
+          }}
+        </span>
+
+        <div>
+          <strong>Arrival pickup</strong>
+          <small>Contact and instructions</small>
+        </div>
+      </article>
+
+      <article
+        [class.readiness-item--complete]="
+          isDeparturePickupComplete(
+            assignment.travelItinerary
+              .groundTransportation
+          )
+        "
+        class="readiness-item">
+
+        <span class="readiness-icon">
+          {{
+            isDeparturePickupComplete(
+              assignment.travelItinerary
+                .groundTransportation
+            )
+              ? '✓'
+              : '5'
+          }}
+        </span>
+
+        <div>
+          <strong>Departure pickup</strong>
+          <small>Return transportation details</small>
+        </div>
+      </article>
+    </section>
+
+    <section
+      class="travel-section"
+      formGroupName="outboundFlight">
+
+      <header class="section-heading">
+        <span class="section-number">01</span>
+
+        <div>
+          <p>Flight information</p>
+          <h3>Outbound flight</h3>
+        </div>
+      </header>
+
+      <div class="field-grid">
+        <label class="field">
+          <span>Airline</span>
+
+          <input
+            type="text"
+            formControlName="airline"
+            placeholder="Delta Air Lines">
+        </label>
+
+        <label class="field">
+          <span>Flight number</span>
+
+          <input
+            type="text"
+            formControlName="flightNumber"
+            placeholder="DL 2176">
+        </label>
+
+        <label class="field">
+          <span>Confirmation number</span>
+
+          <input
+            type="text"
+            formControlName="confirmationNumber"
+            placeholder="ABC123">
+        </label>
+
+        <label class="field">
+          <span>Seat</span>
+
+          <input
+            type="text"
+            formControlName="seat"
+            placeholder="12A">
+        </label>
+
+        <label class="field">
+          <span>Departure airport</span>
+
+          <input
+            type="text"
+            maxlength="4"
+            formControlName="departureAirport"
+            placeholder="RIC">
+        </label>
+
+        <label class="field">
+          <span>Arrival airport</span>
+
+          <input
+            type="text"
+            maxlength="4"
+            formControlName="arrivalAirport"
+            placeholder="ATL">
+        </label>
+
+        <label class="field">
+          <span>Departure date</span>
+
+          <input
+            type="date"
+            formControlName="departureDate">
+        </label>
+
+        <label class="field">
+          <span>Departure time</span>
+
+          <input
+            type="time"
+            formControlName="departureTime">
+        </label>
+
+        <label class="field">
+          <span>Arrival date</span>
+
+          <input
+            type="date"
+            formControlName="arrivalDate">
+        </label>
+
+        <label class="field">
+          <span>Arrival time</span>
+
+          <input
+            type="time"
+            formControlName="arrivalTime">
+        </label>
+
+        <label class="field field--wide">
+          <span>Flight notes</span>
+
+          <textarea
+            rows="3"
+            formControlName="notes"
+            placeholder="Baggage, accessibility or other flight instructions.">
+          </textarea>
+        </label>
+      </div>
+    </section>
+
+    <section
+      class="travel-section"
+      formGroupName="returnFlight">
+
+      <header class="section-heading">
+        <span class="section-number">02</span>
+
+        <div>
+          <p>Flight information</p>
+          <h3>Return flight</h3>
+        </div>
+      </header>
+
+      <div class="field-grid">
+        <label class="field">
+          <span>Airline</span>
+
+          <input
+            type="text"
+            formControlName="airline"
+            placeholder="Delta Air Lines">
+        </label>
+
+        <label class="field">
+          <span>Flight number</span>
+
+          <input
+            type="text"
+            formControlName="flightNumber"
+            placeholder="DL 1985">
+        </label>
+
+        <label class="field">
+          <span>Confirmation number</span>
+
+          <input
+            type="text"
+            formControlName="confirmationNumber"
+            placeholder="ABC123">
+        </label>
+
+        <label class="field">
+          <span>Seat</span>
+
+          <input
+            type="text"
+            formControlName="seat"
+            placeholder="14C">
+        </label>
+
+        <label class="field">
+          <span>Departure airport</span>
+
+          <input
+            type="text"
+            maxlength="4"
+            formControlName="departureAirport"
+            placeholder="ATL">
+        </label>
+
+        <label class="field">
+          <span>Arrival airport</span>
+
+          <input
+            type="text"
+            maxlength="4"
+            formControlName="arrivalAirport"
+            placeholder="RIC">
+        </label>
+
+        <label class="field">
+          <span>Departure date</span>
+
+          <input
+            type="date"
+            formControlName="departureDate">
+        </label>
+
+        <label class="field">
+          <span>Departure time</span>
+
+          <input
+            type="time"
+            formControlName="departureTime">
+        </label>
+
+        <label class="field">
+          <span>Arrival date</span>
+
+          <input
+            type="date"
+            formControlName="arrivalDate">
+        </label>
+
+        <label class="field">
+          <span>Arrival time</span>
+
+          <input
+            type="time"
+            formControlName="arrivalTime">
+        </label>
+
+        <label class="field field--wide">
+          <span>Flight notes</span>
+
+          <textarea
+            rows="3"
+            formControlName="notes"
+            placeholder="Return travel or checkout instructions.">
+          </textarea>
+        </label>
+      </div>
+    </section>
+
+    <section
+      class="travel-section"
+      formGroupName="hotel">
+
+      <header class="section-heading">
+        <span class="section-number">03</span>
+
+        <div>
+          <p>Lodging</p>
+          <h3>Hotel information</h3>
+        </div>
+      </header>
+
+      <div class="field-grid">
+        <label class="field">
+          <span>Hotel name</span>
+
+          <input
+            type="text"
+            formControlName="hotelName"
+            placeholder="Hyatt Regency Atlanta">
+        </label>
+
+        <label class="field">
+          <span>Confirmation number</span>
+
+          <input
+            type="text"
+            formControlName="confirmationNumber"
+            placeholder="HTL78421">
+        </label>
+
+        <label class="field field--wide">
+          <span>Street address</span>
+
+          <input
+            type="text"
+            formControlName="address"
+            placeholder="265 Peachtree Street NE">
+        </label>
+
+        <label class="field">
+          <span>City</span>
+
+          <input
+            type="text"
+            formControlName="city"
+            placeholder="Atlanta">
+        </label>
+
+        <label class="field">
+          <span>State</span>
+
+          <input
+            type="text"
+            maxlength="2"
+            formControlName="state"
+            placeholder="GA">
+        </label>
+
+        <label class="field">
+          <span>Postal code</span>
+
+          <input
+            type="text"
+            formControlName="postalCode"
+            placeholder="30303">
+        </label>
+
+        <label class="field">
+          <span>Hotel phone</span>
+
+          <input
+            type="tel"
+            formControlName="phone"
+            placeholder="(404) 555-0123">
+        </label>
+
+        <label class="field">
+          <span>Check-in date</span>
+
+          <input
+            type="date"
+            formControlName="checkInDate">
+        </label>
+
+        <label class="field">
+          <span>Check-in time</span>
+
+          <input
+            type="time"
+            formControlName="checkInTime">
+        </label>
+
+        <label class="field">
+          <span>Check-out date</span>
+
+          <input
+            type="date"
+            formControlName="checkOutDate">
+        </label>
+
+        <label class="field">
+          <span>Check-out time</span>
+
+          <input
+            type="time"
+            formControlName="checkOutTime">
+        </label>
+
+        <label class="field field--wide">
+          <span>Hotel notes</span>
+
+          <textarea
+            rows="3"
+            formControlName="notes"
+            placeholder="Early check-in, room preferences or reservation notes.">
+          </textarea>
+        </label>
+      </div>
+    </section>
+
+    <section
+      class="travel-section"
+      formGroupName="groundTransportation">
+
+      <header class="section-heading">
+        <span class="section-number">04</span>
+
+        <div>
+          <p>Local transportation</p>
+          <h3>Pickup and transportation</h3>
+        </div>
+      </header>
+
+      <div class="transportation-grid">
+        <div class="transportation-panel">
+          <h4>Arrival pickup</h4>
+
+          <label class="field">
+            <span>Pickup contact</span>
+
+            <input
+              type="text"
+              formControlName="arrivalPickupContact"
+              placeholder="Michael Johnson">
+          </label>
+
+          <label class="field">
+            <span>Phone number</span>
+
+            <input
+              type="tel"
+              formControlName="arrivalPickupPhone"
+              placeholder="(404) 555-0199">
+          </label>
+
+          <label class="field">
+            <span>Pickup instructions</span>
+
+            <textarea
+              rows="4"
+              formControlName="arrivalPickupInstructions"
+              placeholder="Meet at baggage claim near Door 4.">
+            </textarea>
+          </label>
+        </div>
+
+        <div class="transportation-panel">
+          <h4>Departure pickup</h4>
+
+          <label class="field">
+            <span>Pickup contact</span>
+
+            <input
+              type="text"
+              formControlName="departurePickupContact"
+              placeholder="Michael Johnson">
+          </label>
+
+          <label class="field">
+            <span>Phone number</span>
+
+            <input
+              type="tel"
+              formControlName="departurePickupPhone"
+              placeholder="(404) 555-0199">
+          </label>
+
+          <label class="field">
+            <span>Pickup instructions</span>
+
+            <textarea
+              rows="4"
+              formControlName="departurePickupInstructions"
+              placeholder="Pickup from the hotel lobby at 7:15 AM.">
+            </textarea>
+          </label>
+        </div>
+
+        <label class="field field--wide">
+          <span>Local transportation details</span>
+
+          <textarea
+            rows="4"
+            formControlName="localTransportationDetails"
+            placeholder="Transportation between the hotel, venue and other assignment locations.">
+          </textarea>
+        </label>
+      </div>
+    </section>
+
+    <section class="travel-section">
+      <header class="section-heading">
+        <span class="section-number">05</span>
+
+        <div>
+          <p>Internal notes</p>
+          <h3>General travel notes</h3>
+        </div>
+      </header>
+
+      <label class="field">
+        <span>Notes for the ministry team</span>
+
+        <textarea
+          rows="5"
+          formControlName="generalNotes"
+          placeholder="Special travel considerations, schedule changes or instructions.">
+        </textarea>
+      </label>
+    </section>
+
+    <footer class="save-panel">
+      <div>
+        <strong>Save travel itinerary</strong>
+
+        <p>
+          Saving updates travel readiness and the related
+          assignment checklist items.
+        </p>
+      </div>
+
+      <div class="save-actions">
+        <span
+          class="saved-message"
+          *ngIf="saved">
+
+          ✓ Itinerary saved
+        </span>
+
+        <button
+          type="submit"
+          class="save-button">
+
+          Save itinerary
+        </button>
+      </div>
+    </footer>
+  </form>
+</ng-container>
+
+<ng-template #assignmentNotFound>
+  <section class="not-found">
+    <h2>Assignment not found</h2>
+
+    <p>
+      This travel itinerary is no longer available.
+    </p>
+  </section>
+</ng-template>

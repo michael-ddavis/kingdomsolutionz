@@ -25,6 +25,7 @@ import {
   AssignmentListComponent
 } from './platform/pages/assignments/assignment-list/assignment-list.component';import { AssignmentWorkspaceComponent } from './platform/pages/assignments/assignment-workspace/assignment-workspace.component';
 import { AssignmentOverviewComponent } from './platform/pages/assignments/assignment-overview/assignment-overview.component';
+import { AssignmentTravelComponent } from './platform/pages/assignments/assignment-travel/assignment-travel.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +48,8 @@ import { AssignmentOverviewComponent } from './platform/pages/assignments/assign
     AssignmentDetailComponent,
     AssignmentListComponent,
     AssignmentWorkspaceComponent,
-    AssignmentOverviewComponent
+    AssignmentOverviewComponent,
+    AssignmentTravelComponent
   ],
   imports: [
     BrowserModule,

@@ -40,9 +40,9 @@ export class AssignmentWorkspaceComponent {
 
   readonly assignment$:
     Observable<Assignment | undefined> =
-      this.assignmentService.getAssignment(
-        this.assignmentId
-      );
+    this.assignmentService.getAssignment(
+      this.assignmentId
+    );
 
   readonly tabs:
     AssignmentWorkspaceTab[] = [
@@ -57,6 +57,12 @@ export class AssignmentWorkspaceComponent {
         route: 'checklist',
         description:
           'Preparation responsibilities'
+      },
+      {
+        label: 'Travel',
+        route: 'travel',
+        description:
+          'Flights, lodging and transportation'
       }
     ];
 
@@ -66,7 +72,7 @@ export class AssignmentWorkspaceComponent {
 
     private readonly assignmentService:
       AssignmentService
-  ) {}
+  ) { }
 
   getStatusLabel(
     assignment: Assignment

@@ -38,6 +38,7 @@ import {
 import {
   AssignmentOverviewComponent
 } from './platform/pages/assignments/assignment-overview/assignment-overview.component';
+import { AssignmentTravelComponent } from './platform/pages/assignments/assignment-travel/assignment-travel.component';
 
 const routes: Routes = [
   {
@@ -76,6 +77,10 @@ const routes: Routes = [
           {
             path: 'checklist',
             component: AssignmentDetailComponent
+          },
+          {
+            path: 'travel',
+            component: AssignmentTravelComponent
           }
         ]
       },

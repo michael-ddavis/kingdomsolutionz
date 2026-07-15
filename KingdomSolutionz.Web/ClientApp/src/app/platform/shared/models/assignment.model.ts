@@ -39,11 +39,76 @@ export interface AssignmentCoordinator {
   phone?: string;
 }
 
+export interface AssignmentFlight {
+  type: 'outbound' | 'return';
+
+  airline: string;
+  flightNumber: string;
+  confirmationNumber: string;
+
+  departureAirport: string;
+  arrivalAirport: string;
+
+  departureDate: string;
+  departureTime: string;
+
+  arrivalDate: string;
+  arrivalTime: string;
+
+  seat: string;
+  notes: string;
+}
+
+export interface AssignmentHotel {
+  hotelName: string;
+  confirmationNumber: string;
+
+  address: string;
+  city: string;
+  state: string;
+  postalCode: string;
+
+  checkInDate: string;
+  checkInTime: string;
+
+  checkOutDate: string;
+  checkOutTime: string;
+
+  phone: string;
+  notes: string;
+}
+
+export interface AssignmentGroundTransportation {
+  arrivalPickupContact: string;
+  arrivalPickupPhone: string;
+  arrivalPickupInstructions: string;
+
+  localTransportationDetails: string;
+
+  departurePickupContact: string;
+  departurePickupPhone: string;
+  departurePickupInstructions: string;
+}
+
+export interface AssignmentTravelItinerary {
+  outboundFlight: AssignmentFlight;
+  returnFlight: AssignmentFlight;
+
+  hotel: AssignmentHotel;
+
+  groundTransportation:
+    AssignmentGroundTransportation;
+
+  generalNotes: string;
+
+  readinessPercentage: number;
+  lastUpdatedUtc: string | null;
+}
+
 export interface Assignment {
   id: number;
   speakingRequestId: number;
-  coordinator: AssignmentCoordinator;
-  
+
   eventName: string;
   organizationName: string;
   eventType: string;
@@ -54,6 +119,11 @@ export interface Assignment {
 
   startDate: string;
   endDate: string;
+
+  coordinator: AssignmentCoordinator;
+
+  travelItinerary:
+    AssignmentTravelItinerary;
 
   status: AssignmentStatus;
   readinessPercentage: number;
