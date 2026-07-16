@@ -241,4 +241,51 @@ describe('AssignmentService invitation prefill', () => {
         expect(updated?.contactDirectory.travelContact.name).toBe('Jordan Ellis');
       });
   });
+
+  it('allows multiple partially completed stages to remain in progress', async () => {
+    const assignment =
+      service.createOrGetAssignment({
+        ...SEEDED_SPEAKING_REQUESTS[0],
+        status: 'approved'
+      });
+
+    service.updateTaskStatus(
+      assignment.id,
+      'host-readiness',
+      8,
+      'complete'
+    );
+
+    service.updateTaskStatus(
+      assignment.id,
+      'promotion',
+      11,
+      'complete'
+    );
+
+    const updated =
+      await firstValueFrom(
+        service
+          .getAssignment(assignment.id)
+          .pipe(take(1))
+      );
+
+    expect(
+      updated?.stages.find(
+        stage => stage.id === 'travel'
+      )?.status
+    ).toBe('current');
+
+    expect(
+      updated?.stages.find(
+        stage => stage.id === 'host-readiness'
+      )?.status
+    ).toBe('current');
+
+    expect(
+      updated?.stages.find(
+        stage => stage.id === 'promotion'
+      )?.status
+    ).toBe('current');
+  });
 });
