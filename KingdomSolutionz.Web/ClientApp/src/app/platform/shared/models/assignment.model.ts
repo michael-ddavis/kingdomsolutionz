@@ -60,6 +60,31 @@ export interface AssignmentInvitationSnapshot {
   lodgingCovered: boolean;
   honorariumProvided: boolean;
 
+  travelCoverageStatus:
+    import('./speaking-request.model')
+      .SpeakingRequestConfirmation;
+  lodgingCoverageStatus:
+    import('./speaking-request.model')
+      .SpeakingRequestConfirmation;
+  honorariumStatus:
+    import('./speaking-request.model')
+      .SpeakingRequestConfirmation;
+
+  travelBookedBy:
+    import('./speaking-request.model')
+      .TravelBookingOwner;
+  honorariumAmount: number;
+  honorariumCurrency: string;
+  paymentStatus:
+    import('./speaking-request.model')
+      .PaymentStatus;
+  agreementStatus:
+    import('./speaking-request.model')
+      .AgreementStatus;
+  engagementStatus:
+    import('./speaking-request.model')
+      .SpeakingRequestEngagementStatus;
+
   submittedUtc: string;
 }
 
@@ -127,6 +152,43 @@ export interface AssignmentTravelItinerary {
 
   readinessPercentage: number;
   lastUpdatedUtc: string | null;
+}
+
+export type AssignmentHostCoordinationStatus =
+  | 'not-requested'
+  | 'requested'
+  | 'submitted'
+  | 'reviewed';
+
+export interface AssignmentHostCoordination {
+  status: AssignmentHostCoordinationStatus;
+  requestedUtc: string | null;
+  submittedUtc: string | null;
+  reviewedUtc: string | null;
+  eventSchedule: string;
+  prayerFocus: string;
+  promotionalRequirements: string;
+  hostNotes: string;
+}
+
+export interface AssignmentHostCoordinationInput {
+  hotel: AssignmentHotel;
+  groundTransportation:
+    AssignmentGroundTransportation;
+  eventSchedule: string;
+  prayerFocus: string;
+  promotionalRequirements: string;
+  hostNotes: string;
+  travelContact: AssignmentHostLocalContact;
+  mediaContact: AssignmentHostLocalContact;
+  emergencyContact: AssignmentHostLocalContact;
+}
+
+export interface AssignmentHostLocalContact {
+  name: string;
+  role: string;
+  phone: string;
+  email: string;
 }
 
 export type AssignmentDocumentCategory =
@@ -224,6 +286,10 @@ export type AssignmentActivityType =
   | 'referral-accepted'
   | 'referral-declined'
   | 'person-connected'
+  | 'host-coordination-requested'
+  | 'host-coordination-submitted'
+  | 'host-coordination-reviewed'
+  | 'assignment-closed'
   | 'note-added';
 
 export type AssignmentActivityTone =
@@ -261,6 +327,24 @@ export interface AssignmentActivityLog {
   lastUpdatedUtc: string | null;
 }
 
+export type AssignmentCloseoutStatus =
+  | 'not-started'
+  | 'in-progress'
+  | 'closed';
+
+export interface AssignmentCloseout {
+  status: AssignmentCloseoutStatus;
+  actualAttendance: number;
+  ministryOutcomes: string;
+  testimonies: string;
+  outstandingExpenses: string;
+  honorariumReconciled: boolean;
+  hostFeedback: string;
+  thankYouSent: boolean;
+  archivedUtc: string | null;
+  lastUpdatedUtc: string | null;
+}
+
 export interface Assignment {
   id: number;
   speakingRequestId: number;
@@ -271,6 +355,10 @@ export interface Assignment {
 
   city: string;
   state: string;
+  country: string;
+  region: string;
+  timeZone: string;
+  venueAddress: string;
   venueName: string;
 
   startDate: string;
@@ -287,11 +375,16 @@ export interface Assignment {
   travelItinerary:
   AssignmentTravelItinerary;
 
+  hostCoordination:
+  AssignmentHostCoordination;
+
   documentLibrary:
   AssignmentDocumentLibrary;
 
   activityLog:
   AssignmentActivityLog;
+
+  closeout: AssignmentCloseout;
 
   status: AssignmentStatus;
   readinessPercentage: number;

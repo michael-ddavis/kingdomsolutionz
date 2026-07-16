@@ -14,6 +14,7 @@ import {
   CarePartner,
   CareReferral,
   CareReferralContext,
+  CreateMinistryResponseInput,
   MinistryResponse
 } from '../models/care-referral.model';
 
@@ -162,8 +163,49 @@ export class CareReferralService {
     return state.referrals.find(
       referral =>
         referral.responseId === responseId &&
-        referral.status !== 'declined'
+        !['declined', 'expired'].includes(
+          referral.status
+        )
     );
+  }
+
+  addMinistryResponse(
+    input: CreateMinistryResponseInput
+  ): MinistryResponse {
+    const state = this.stateSubject.value;
+    const ids = state.responses.map(
+      response => response.id
+    );
+    const response: MinistryResponse = {
+      ...input,
+      id: ids.length
+        ? Math.max(...ids) + 1
+        : 4101,
+      receivedUtc: new Date().toISOString(),
+      status: input.consentToShare
+        ? 'ready-to-refer'
+        : 'needs-review'
+    };
+
+    this.publish({
+      ...state,
+      responses: [response, ...state.responses]
+    });
+
+    this.assignmentService.addCareReferralActivity(
+      input.assignmentId,
+      {
+        type: 'note-added',
+        tone: 'attention',
+        title: 'New ministry response received',
+        description:
+          `${response.personName} submitted a ${response.responseType.toLowerCase()} request through the event response form.`,
+        actor: response.personName,
+        section: 'responses'
+      }
+    );
+
+    return response;
   }
 
   sendReferral(
@@ -427,6 +469,80 @@ export class CareReferralService {
       );
   }
 
+  expireReferral(
+    referralId: number
+  ): void {
+    const state = this.stateSubject.value;
+    const context = this.getContextFromState(
+      referralId,
+      state
+    );
+
+    if (
+      !context ||
+      !['sent', 'viewed'].includes(
+        context.referral.status
+      )
+    ) {
+      return;
+    }
+
+    const respondedUtc = new Date().toISOString();
+
+    this.publish({
+      ...state,
+      responses: state.responses.map(response =>
+        response.id === context.response.id
+          ? { ...response, status: 'ready-to-refer' }
+          : response
+      ),
+      referrals: state.referrals.map(referral =>
+        referral.id === referralId
+          ? {
+              ...referral,
+              status: 'expired',
+              respondedUtc,
+              declineReason:
+                'No response within the requested service window.'
+            }
+          : referral
+      )
+    });
+
+    this.assignmentService.addCareReferralActivity(
+      context.referral.assignmentId,
+      {
+        type: 'referral-declined',
+        tone: 'attention',
+        title: 'Referral expired and reassignment needed',
+        description:
+          `${context.partner.name} did not respond in time. ${context.response.personName} returned to the care queue for reassignment.`,
+        actor: 'Michael Davis',
+        section: 'follow-up'
+      }
+    );
+  }
+
+  markResponseUnreachable(
+    responseId: number
+  ): void {
+    this.updateResponseException(
+      responseId,
+      'unreachable',
+      'Person marked unreachable'
+    );
+  }
+
+  withdrawConsent(
+    responseId: number
+  ): void {
+    this.updateResponseException(
+      responseId,
+      'withdrawn',
+      'Consent withdrawn'
+    );
+  }
+
   confirmConnected(
     referralId: number
   ): void {
@@ -522,6 +638,50 @@ export class CareReferralService {
       response,
       partner
     };
+  }
+
+  private updateResponseException(
+    responseId: number,
+    status: 'unreachable' | 'withdrawn',
+    title: string
+  ): void {
+    const state = this.stateSubject.value;
+    const response = state.responses.find(
+      item => item.id === responseId
+    );
+
+    if (!response) {
+      return;
+    }
+
+    this.publish({
+      ...state,
+      responses: state.responses.map(item =>
+        item.id === responseId
+          ? {
+              ...item,
+              status,
+              consentToShare:
+                status === 'withdrawn'
+                  ? false
+                  : item.consentToShare
+            }
+          : item
+      )
+    });
+
+    this.assignmentService.addCareReferralActivity(
+      response.assignmentId,
+      {
+        type: 'note-added',
+        tone: 'attention',
+        title,
+        description:
+          `${response.personName}'s care record was updated to ${status}.`,
+        actor: 'Michael Davis',
+        section: 'follow-up'
+      }
+    );
   }
 
   private getNextPartnerId(
@@ -664,6 +824,7 @@ export class CareReferralService {
           personName: 'Jasmine Lee',
           email: 'jasmine.lee@example.com',
           phone: '(404) 555-0186',
+          preferredContactMethod: 'text',
           city: 'Decatur',
           state: 'GA',
           postalCode: '30030',
@@ -681,6 +842,7 @@ export class CareReferralService {
           personName: 'Daniel Carter',
           email: 'daniel.carter@example.com',
           phone: '(678) 555-0142',
+          preferredContactMethod: 'phone',
           city: 'Marietta',
           state: 'GA',
           postalCode: '30060',
@@ -698,6 +860,7 @@ export class CareReferralService {
           personName: 'Aisha Morgan',
           email: 'aisha.morgan@example.com',
           phone: '(470) 555-0117',
+          preferredContactMethod: 'email',
           city: 'Atlanta',
           state: 'GA',
           postalCode: '30308',

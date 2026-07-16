@@ -108,39 +108,6 @@ h1 {
   background: var(--kos-red-100);
 }
 
-.travel-quick-button {
-  display: inline-flex;
-  min-height: var(--kos-control-height);
-  padding: 0 14px;
-  border: 1px solid var(--kos-border-strong);
-  border-radius: var(--kos-radius-sm);
-  align-items: center;
-  gap: var(--kos-space-2);
-  color: var(--kos-text-secondary);
-  font: inherit;
-  font-size: var(--kos-text-md);
-  font-weight: 750;
-  cursor: pointer;
-  background:
-    linear-gradient(
-      145deg,
-      var(--kos-surface-elevated),
-      var(--kos-surface-soft)
-    );
-  box-shadow: var(--kos-shadow-xs);
-}
-
-.travel-quick-button:hover {
-  border-color: var(--kos-champagne-500);
-  color: var(--kos-navy-900);
-  background: var(--kos-champagne-100);
-}
-
-.travel-quick-button-icon {
-  color: var(--kos-champagne-700);
-  font-size: var(--kos-text-lg);
-}
-
 .heading-summary {
   display: grid;
   grid-template-columns:
@@ -235,57 +202,6 @@ h1 {
   height: 100%;
   border-radius: inherit;
   background: var(--kos-green-600);
-}
-
-.workspace-principles {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  border: 1px solid var(--kos-border);
-  border-radius: var(--kos-radius-lg);
-  overflow: hidden;
-  background: var(--kos-surface-elevated);
-  box-shadow: var(--kos-shadow-sm);
-}
-
-.workspace-principles article {
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
-  padding: 13px 16px;
-  border-left: 1px solid var(--kos-border);
-  align-items: center;
-  gap: 10px;
-}
-
-.workspace-principles article:first-child {
-  border-left: 0;
-}
-
-.workspace-principles article > span {
-  display: grid;
-  width: 34px;
-  height: 34px;
-  border-radius: var(--kos-radius-sm);
-  color: var(--kos-blue-600);
-  font-weight: 800;
-  place-items: center;
-  background: var(--kos-blue-100);
-}
-
-.workspace-principles strong,
-.workspace-principles small {
-  display: block;
-}
-
-.workspace-principles strong {
-  color: var(--kos-text);
-  font-size: var(--kos-text-sm);
-}
-
-.workspace-principles small {
-  margin-top: 3px;
-  color: var(--kos-text-muted);
-  font-size: var(--kos-text-xs);
-  line-height: 1.35;
 }
 
 .assignment-tabs {
@@ -465,21 +381,6 @@ h1 {
   }
 }
 
-@media (max-width: 800px) {
-  .workspace-principles {
-    grid-template-columns: 1fr;
-  }
-
-  .workspace-principles article {
-    border-top: 1px solid var(--kos-border);
-    border-left: 0;
-  }
-
-  .workspace-principles article:first-child {
-    border-top: 0;
-  }
-}
-
 @media (max-width: 650px) {
   .assignment-workspace {
     gap: var(--kos-space-4);
@@ -493,8 +394,4 @@ h1 {
     flex-basis: 174px;
   }
 
-  .travel-quick-button {
-    flex-basis: 100%;
-    justify-content: center;
-  }
 }

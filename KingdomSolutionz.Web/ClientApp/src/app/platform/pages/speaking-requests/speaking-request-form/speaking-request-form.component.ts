@@ -9,7 +9,12 @@ import {
 
 import {
   CreateSpeakingRequestInput,
-  SpeakingRequest
+  SpeakingRequest,
+  SpeakingRequestConfirmation,
+  TravelBookingOwner,
+  PaymentStatus,
+  AgreementStatus,
+  SpeakingRequestEngagementStatus
 } from '../../../shared/models/speaking-request.model';
 
 import {
@@ -99,9 +104,25 @@ export class SpeakingRequestFormComponent {
     state: [
       '',
       [
-        Validators.required,
-        Validators.pattern(/^[a-zA-Z]{2}$/)
+        Validators.maxLength(100)
       ]
+    ],
+
+    country: [
+      'United States',
+      Validators.required
+    ],
+
+    region: '',
+
+    timeZone: [
+      'America/New_York',
+      Validators.required
+    ],
+
+    venueAddress: [
+      '',
+      Validators.required
     ],
 
     venueName: [
@@ -139,9 +160,36 @@ export class SpeakingRequestFormComponent {
       ]
     ],
 
-    travelCovered: false,
-    lodgingCovered: false,
-    honorariumProvided: false
+    travelCoverageStatus:
+      this.formBuilder.nonNullable.control<
+        SpeakingRequestConfirmation
+      >('not-determined', Validators.required),
+    lodgingCoverageStatus:
+      this.formBuilder.nonNullable.control<
+        SpeakingRequestConfirmation
+      >('not-determined', Validators.required),
+    honorariumStatus:
+      this.formBuilder.nonNullable.control<
+        SpeakingRequestConfirmation
+      >('not-determined', Validators.required),
+    travelBookedBy:
+      this.formBuilder.nonNullable.control<
+        TravelBookingOwner
+      >('not-determined', Validators.required),
+    honorariumAmount: 0,
+    honorariumCurrency: 'USD',
+    paymentStatus:
+      this.formBuilder.nonNullable.control<
+        PaymentStatus
+      >('not-due'),
+    agreementStatus:
+      this.formBuilder.nonNullable.control<
+        AgreementStatus
+      >('not-started'),
+    engagementStatus:
+      this.formBuilder.nonNullable.control<
+        SpeakingRequestEngagementStatus
+      >('proposed')
   });
 
   constructor(
@@ -198,9 +246,12 @@ export class SpeakingRequestFormComponent {
     const readinessChecks = [
       this.eventDetailsComplete,
       this.contactDetailsComplete,
-      this.controls.travelCovered.value,
-      this.controls.lodgingCovered.value,
-      this.controls.honorariumProvided.value,
+      this.controls.travelCoverageStatus.value !==
+        'not-determined',
+      this.controls.lodgingCoverageStatus.value !==
+        'not-determined',
+      this.controls.honorariumStatus.value !==
+        'not-determined',
       this.ministryRequestComplete,
       this.attendanceComplete
     ];
@@ -222,9 +273,7 @@ export class SpeakingRequestFormComponent {
   normalizeState(): void {
     const normalizedState =
       this.controls.state.value
-        .trim()
-        .toUpperCase()
-        .slice(0, 2);
+        .trim();
 
     this.controls.state.setValue(
       normalizedState,
@@ -273,7 +322,19 @@ export class SpeakingRequestFormComponent {
         value.city.trim(),
 
       state:
-        value.state.trim().toUpperCase(),
+        value.state.trim(),
+
+      country:
+        value.country.trim(),
+
+      region:
+        value.region.trim(),
+
+      timeZone:
+        value.timeZone.trim(),
+
+      venueAddress:
+        value.venueAddress.trim(),
 
       venueName:
         value.venueName.trim(),
@@ -291,13 +352,40 @@ export class SpeakingRequestFormComponent {
         Number(value.expectedAttendance),
 
       travelCovered:
-        value.travelCovered,
+        value.travelCoverageStatus === 'yes',
 
       lodgingCovered:
-        value.lodgingCovered,
+        value.lodgingCoverageStatus === 'yes',
 
       honorariumProvided:
-        value.honorariumProvided
+        value.honorariumStatus === 'yes',
+
+      travelCoverageStatus:
+        value.travelCoverageStatus,
+
+      lodgingCoverageStatus:
+        value.lodgingCoverageStatus,
+
+      honorariumStatus:
+        value.honorariumStatus,
+
+      travelBookedBy:
+        value.travelBookedBy,
+
+      honorariumAmount:
+        Number(value.honorariumAmount),
+
+      honorariumCurrency:
+        value.honorariumCurrency.trim().toUpperCase(),
+
+      paymentStatus:
+        value.paymentStatus,
+
+      agreementStatus:
+        value.agreementStatus,
+
+      engagementStatus:
+        value.engagementStatus
     };
 
     this.submittedRequest =
@@ -321,14 +409,24 @@ export class SpeakingRequestFormComponent {
       contactPhone: '',
       city: '',
       state: '',
+      country: 'United States',
+      region: '',
+      timeZone: 'America/New_York',
+      venueAddress: '',
       venueName: '',
       startDate: '',
       endDate: '',
       ministryRequest: '',
       expectedAttendance: 0,
-      travelCovered: false,
-      lodgingCovered: false,
-      honorariumProvided: false
+      travelCoverageStatus: 'not-determined',
+      lodgingCoverageStatus: 'not-determined',
+      honorariumStatus: 'not-determined',
+      travelBookedBy: 'not-determined',
+      honorariumAmount: 0,
+      honorariumCurrency: 'USD',
+      paymentStatus: 'not-due',
+      agreementStatus: 'not-started',
+      engagementStatus: 'proposed'
     });
 
     this.submitted = false;

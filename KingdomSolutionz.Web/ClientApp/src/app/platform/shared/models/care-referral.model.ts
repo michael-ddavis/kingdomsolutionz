@@ -6,7 +6,9 @@ export type MinistryResponseStatus =
   | 'needs-review'
   | 'ready-to-refer'
   | 'referred'
-  | 'connected';
+  | 'connected'
+  | 'unreachable'
+  | 'withdrawn';
 
 export type CareReferralStatus =
   | 'draft'
@@ -14,6 +16,7 @@ export type CareReferralStatus =
   | 'viewed'
   | 'accepted'
   | 'declined'
+  | 'expired'
   | 'connected';
 
 export interface CarePartner {
@@ -48,6 +51,8 @@ export interface MinistryResponse {
   personName: string;
   email: string;
   phone: string;
+  preferredContactMethod:
+    'email' | 'phone' | 'text';
 
   city: string;
   state: string;
@@ -60,6 +65,11 @@ export interface MinistryResponse {
   receivedUtc: string;
   status: MinistryResponseStatus;
 }
+
+export type CreateMinistryResponseInput = Omit<
+  MinistryResponse,
+  'id' | 'receivedUtc' | 'status'
+>;
 
 export interface CareReferral {
   id: number;

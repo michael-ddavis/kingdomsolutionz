@@ -22,6 +22,7 @@ import {
   AssignmentFlight,
   AssignmentGroundTransportation,
   AssignmentHotel,
+  AssignmentInvitationSnapshot,
   AssignmentTravelItinerary
 } from '../../../shared/models/assignment.model';
 
@@ -325,6 +326,32 @@ export class AssignmentTravelComponent
     window.setTimeout(() => {
       this.saved = false;
     }, 2500);
+  }
+
+  requestHostDetails(): void {
+    this.assignmentService.requestHostCoordination(
+      this.assignmentId
+    );
+  }
+
+  markHostDetailsReviewed(): void {
+    this.assignmentService.reviewHostCoordination(
+      this.assignmentId
+    );
+  }
+
+  getCoverageLabel(
+    status:
+      AssignmentInvitationSnapshot['travelCoverageStatus']
+  ): string {
+    switch (status) {
+      case 'yes':
+        return 'Yes';
+      case 'no':
+        return 'No';
+      default:
+        return 'Not determined';
+    }
   }
 
   isFlightComplete(

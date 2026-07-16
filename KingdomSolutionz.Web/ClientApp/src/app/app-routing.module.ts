@@ -11,6 +11,33 @@ const routes: Routes = [
         .then(module => module.PlatformModule)
   },
   {
+    path: 'respond/assignments/:id',
+    loadComponent: () =>
+      import(
+        './platform/pages/assignments/assignment-ministry-response/assignment-ministry-response.component'
+      ).then(module =>
+        module.AssignmentMinistryResponseComponent
+      )
+  },
+  {
+    path: 'coordinate/assignments/:id',
+    loadComponent: () =>
+      import(
+        './platform/pages/assignments/assignment-host-coordination/assignment-host-coordination.component'
+      ).then(module =>
+        module.AssignmentHostCoordinationComponent
+      )
+  },
+  {
+    path: 'invite/apostle-cynthia/requests/:id/update',
+    loadComponent: () =>
+      import(
+        './platform/pages/speaking-requests/speaking-request-host-response/speaking-request-host-response.component'
+      ).then(module =>
+        module.SpeakingRequestHostResponseComponent
+      )
+  },
+  {
     path: 'invite/apostle-cynthia',
     loadComponent: () =>
       import(

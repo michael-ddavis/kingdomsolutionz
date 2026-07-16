@@ -31,13 +31,13 @@
       <div class="heading-actions">
         <button type="button" class="action-button action-button--secondary" [class.selected]="
             request.status === 'information-needed'
-          " (click)="updateStatus('information-needed', request)">
+          " (click)="beginAction('information')">
 
           Request information
         </button>
 
         <button type="button" class="action-button action-button--danger"
-          [class.selected]="request.status === 'declined'" (click)="updateStatus('declined', request)">
+          [class.selected]="request.status === 'declined'" (click)="beginAction('decline')">
 
           Decline
         </button>
@@ -61,6 +61,112 @@
         </button>
       </div>
     </header>
+
+    <form
+      class="decision-composer"
+      *ngIf="actionMode"
+      [formGroup]="decisionForm"
+      (ngSubmit)="submitDecisionAction()">
+
+      <div>
+        <p class="section-eyebrow">
+          {{
+            actionMode === 'information'
+              ? 'Host communication'
+              : 'Decision reason'
+          }}
+        </p>
+
+        <h2>
+          {{
+            actionMode === 'information'
+              ? 'What information is needed?'
+              : 'Why is this invitation being declined?'
+          }}
+        </h2>
+
+        <p>
+          This message becomes part of the request history and
+          appears on the host response page.
+        </p>
+      </div>
+
+      <label>
+        <span>Message to host</span>
+
+        <textarea
+          rows="4"
+          formControlName="message"
+          [placeholder]="
+            actionMode === 'information'
+              ? 'Please confirm the final event schedule and who will arrange ground transportation.'
+              : 'Thank the host and provide a concise reason.'
+          ">
+        </textarea>
+
+        <small
+          *ngIf="
+            decisionForm.controls.message.touched &&
+            decisionForm.controls.message.invalid
+          ">
+          Enter a message before continuing.
+        </small>
+      </label>
+
+      <div class="decision-composer-actions">
+        <button
+          type="button"
+          class="action-button"
+          (click)="cancelAction()">
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="action-button action-button--primary">
+          {{
+            actionMode === 'information'
+              ? 'Send information request'
+              : 'Decline invitation'
+          }}
+        </button>
+      </div>
+    </form>
+
+    <section
+      class="host-response-banner"
+      *ngIf="
+        request.status === 'information-needed' &&
+        getLatestInformationRequest(request)
+          as informationRequest
+      ">
+
+      <div>
+        <span aria-hidden="true">→</span>
+
+        <div>
+          <strong>Waiting for the host</strong>
+          <p>{{ informationRequest.message }}</p>
+        </div>
+      </div>
+
+      <a
+        [routerLink]="[
+          '/invite/apostle-cynthia/requests',
+          request.id,
+          'update'
+        ]">
+        Open host response page
+      </a>
+    </section>
+
+    <section class="decision-notice" *ngIf="request.status === 'approved' || request.status === 'declined'">
+      <span>{{ request.status === 'approved' ? '✓' : '×' }}</span>
+      <div>
+        <strong>{{ request.status === 'approved' ? 'Approval confirmation recorded' : 'Decline notification recorded' }}</strong>
+        <p>The decision and message are in the communication history for {{ request.contactEmail }}.</p>
+      </div>
+    </section>
 
     <section class="summary-grid">
       <article class="summary-card">
@@ -205,6 +311,57 @@
             </div>
           </div>
         </article>
+
+        <article class="content-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-eyebrow">
+                Communication history
+              </p>
+
+              <h2>Request conversation</h2>
+            </div>
+          </div>
+
+          <div class="communication-list">
+            <article
+              *ngFor="
+                let communication of
+                  getCommunicationHistory(request)
+              ">
+
+              <span
+                [class.communication-mark--host]="
+                  communication.type === 'host-responded'
+                "
+                class="communication-mark">
+                {{
+                  communication.type === 'host-responded'
+                    ? 'H'
+                    : 'A'
+                }}
+              </span>
+
+              <div>
+                <header>
+                  <strong>
+                    {{ getCommunicationLabel(communication) }}
+                  </strong>
+
+                  <time>
+                    {{
+                      communication.createdUtc
+                        | date:'MMM d, y, h:mm a'
+                    }}
+                  </time>
+                </header>
+
+                <p>{{ communication.message }}</p>
+                <small>{{ communication.actor }}</small>
+              </div>
+            </article>
+          </div>
+        </article>
       </div>
 
       <aside class="side-column">
@@ -270,10 +427,10 @@
           <div class="coverage-list">
             <div>
               <span [class.coverage-icon--complete]="
-                  request.travelCovered
+                  request.travelCoverageStatus !== 'not-determined'
                 " class="coverage-icon">
 
-                {{ request.travelCovered ? '✓' : '!' }}
+                {{ request.travelCoverageStatus !== 'not-determined' ? '✓' : '!' }}
               </span>
 
               <span>
@@ -281,9 +438,8 @@
 
                 <small>
                   {{
-                  request.travelCovered
-                  ? 'Covered by host'
-                  : 'Needs clarification'
+                  getConfirmationLabel(request.travelCoverageStatus)
+                  + ' · Booked by ' + request.travelBookedBy
                   }}
                 </small>
               </span>
@@ -291,10 +447,10 @@
 
             <div>
               <span [class.coverage-icon--complete]="
-                  request.lodgingCovered
+                  request.lodgingCoverageStatus !== 'not-determined'
                 " class="coverage-icon">
 
-                {{ request.lodgingCovered ? '✓' : '!' }}
+                {{ request.lodgingCoverageStatus !== 'not-determined' ? '✓' : '!' }}
               </span>
 
               <span>
@@ -302,9 +458,7 @@
 
                 <small>
                   {{
-                  request.lodgingCovered
-                  ? 'Covered by host'
-                  : 'Needs clarification'
+                  getConfirmationLabel(request.lodgingCoverageStatus)
                   }}
                 </small>
               </span>
@@ -312,13 +466,12 @@
 
             <div>
               <span [class.coverage-icon--complete]="
-                  request.honorariumProvided
+                  request.honorariumStatus !== 'not-determined'
                 " class="coverage-icon">
 
                 {{
-                request.honorariumProvided
-                ? '✓'
-                : '!'
+                request.honorariumStatus !== 'not-determined'
+                ? '✓' : '!'
                 }}
               </span>
 
@@ -327,14 +480,26 @@
 
                 <small>
                   {{
-                  request.honorariumProvided
-                  ? 'Arrangement confirmed'
-                  : 'Needs clarification'
+                  getConfirmationLabel(request.honorariumStatus)
+                  + (request.honorariumAmount > 0
+                    ? ' · ' + (request.honorariumAmount | number) + ' ' + request.honorariumCurrency
+                    : '')
                   }}
                 </small>
               </span>
             </div>
           </div>
+
+          <dl class="detail-list">
+            <div>
+              <dt>Agreement</dt>
+              <dd>{{ request.agreementStatus }}</dd>
+            </div>
+            <div>
+              <dt>Payment</dt>
+              <dd>{{ request.paymentStatus }}</dd>
+            </div>
+          </dl>
         </article>
 
         <article class="decision-panel">

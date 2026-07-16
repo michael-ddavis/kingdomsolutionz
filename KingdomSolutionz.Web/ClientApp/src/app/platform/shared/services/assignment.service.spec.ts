@@ -19,6 +19,9 @@ describe('AssignmentService invitation prefill', () => {
   let service: AssignmentService;
 
   beforeEach(() => {
+    window.localStorage.removeItem(
+      'kingdomos-demo-assignments-v2'
+    );
     service = new AssignmentService();
   });
 
@@ -61,6 +64,7 @@ describe('AssignmentService invitation prefill', () => {
   it('carries the primary host contact into the assignment once', () => {
     const request:
       SpeakingRequest = {
+      ...SEEDED_SPEAKING_REQUESTS[0],
       id: 1099,
       organizationName:
         'Hope Community Church',
@@ -84,7 +88,8 @@ describe('AssignmentService invitation prefill', () => {
       readinessPercentage: 86,
       status: 'approved',
       submittedUtc:
-        '2026-07-16T12:00:00.000Z'
+        '2026-07-16T12:00:00.000Z',
+      communications: []
     };
 
     const assignment =
@@ -113,6 +118,7 @@ describe('AssignmentService invitation prefill', () => {
   it('preserves every approved invitation commitment', () => {
     const assignment =
       service.createOrGetAssignment({
+        ...SEEDED_SPEAKING_REQUESTS[0],
         id: 1100,
         organizationName: 'City Church',
         eventName: 'Prayer Summit',
@@ -135,11 +141,12 @@ describe('AssignmentService invitation prefill', () => {
         readinessPercentage: 80,
         status: 'approved',
         submittedUtc:
-          '2026-07-16T13:00:00.000Z'
+          '2026-07-16T13:00:00.000Z',
+        communications: []
       });
 
     expect(assignment.invitation)
-      .toEqual({
+      .toEqual(jasmine.objectContaining({
         ministryRequest:
           'Friday keynote and prayer ministry.',
         expectedAttendance: 500,
@@ -148,6 +155,60 @@ describe('AssignmentService invitation prefill', () => {
         honorariumProvided: true,
         submittedUtc:
           '2026-07-16T13:00:00.000Z'
+      }));
+  });
+
+  it('writes host coordination details into travel and contacts', () => {
+    const assignment = service.createOrGetAssignment({
+      ...SEEDED_SPEAKING_REQUESTS[0],
+      status: 'approved'
+    });
+
+    service.requestHostCoordination(assignment.id);
+    service.submitHostCoordination(assignment.id, {
+      hotel: {
+        hotelName: 'Hyatt Regency',
+        confirmationNumber: 'HTL123',
+        address: '265 Peachtree Street NE',
+        city: 'Atlanta',
+        state: 'GA',
+        postalCode: '30303',
+        checkInDate: '2026-08-27',
+        checkInTime: '15:00',
+        checkOutDate: '2026-08-31',
+        checkOutTime: '11:00',
+        phone: '+1 404 555 0190',
+        notes: ''
+      },
+      groundTransportation: {
+        arrivalPickupContact: 'Jordan Ellis',
+        arrivalPickupPhone: '+1 404 555 0100',
+        arrivalPickupInstructions: 'Meet at baggage claim.',
+        localTransportationDetails: 'Host vehicle',
+        departurePickupContact: 'Jordan Ellis',
+        departurePickupPhone: '+1 404 555 0100',
+        departurePickupInstructions: 'Hotel lobby at 8:00 AM.'
+      },
+      travelContact: {
+        name: 'Jordan Ellis',
+        role: 'Travel coordinator',
+        phone: '+1 404 555 0100',
+        email: 'jordan@example.com'
+      },
+      mediaContact: { name: '', role: '', phone: '', email: '' },
+      emergencyContact: { name: '', role: '', phone: '', email: '' },
+      eventSchedule: 'Friday arrival; Sunday ministry.',
+      prayerFocus: 'Leaders and families',
+      promotionalRequirements: 'Use approved photo.',
+      hostNotes: ''
+    });
+
+    service.getAssignment(assignment.id)
+      .pipe(take(1))
+      .subscribe(updated => {
+        expect(updated?.hostCoordination.status).toBe('submitted');
+        expect(updated?.travelItinerary.hotel.hotelName).toBe('Hyatt Regency');
+        expect(updated?.contactDirectory.travelContact.name).toBe('Jordan Ellis');
       });
   });
 });

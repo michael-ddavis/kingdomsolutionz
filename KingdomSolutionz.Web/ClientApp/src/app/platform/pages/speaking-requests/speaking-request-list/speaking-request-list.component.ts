@@ -9,6 +9,9 @@ import {
 import {
   SpeakingRequestService
 } from '../../../shared/services/speaking-request.service';
+import {
+  AssignmentService
+} from '../../../shared/services/assignment.service';
 
 type StatusTone =
   | 'blue'
@@ -45,10 +48,17 @@ export class SpeakingRequestListComponent {
 
   constructor(
     private readonly speakingRequestService:
-      SpeakingRequestService
+      SpeakingRequestService,
+    private readonly assignmentService:
+      AssignmentService
   ) {
     this.speakingRequests$ =
       this.speakingRequestService.speakingRequests$;
+  }
+
+  resetDemo(): void {
+    this.assignmentService.resetDemoAssignments();
+    this.speakingRequestService.resetDemoRequests();
   }
 
   getReadinessTone(

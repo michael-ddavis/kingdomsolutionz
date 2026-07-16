@@ -41,6 +41,12 @@ export class AssignmentOverviewComponent {
       AssignmentService
   ) {}
 
+  requestHostDetails(): void {
+    this.assignmentService.requestHostCoordination(
+      this.assignmentId
+    );
+  }
+
   getTotalTaskCount(
     assignment: Assignment
   ): number {

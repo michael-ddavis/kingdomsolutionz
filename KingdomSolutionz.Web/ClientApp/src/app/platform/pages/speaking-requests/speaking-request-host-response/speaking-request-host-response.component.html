@@ -1,0 +1,148 @@
+<main class="host-response-page">
+  <header class="public-header">
+    <div class="brand-mark">A</div>
+
+    <div>
+      <strong>Apostle Cynthia Ministries</strong>
+      <span>Speaking invitation coordination</span>
+    </div>
+  </header>
+
+  <ng-container
+    *ngIf="request$ | async as request; else requestNotFound">
+
+    <section class="response-shell">
+      <header class="response-heading">
+        <p>Invitation ACT-{{ request.id }}</p>
+        <h1>Additional information requested</h1>
+        <span>
+          {{ request.eventName }} · {{ request.organizationName }}
+        </span>
+      </header>
+
+      <section
+        class="request-message"
+        *ngIf="
+          getLatestInformationRequest(request)
+            as informationRequest
+        ">
+
+        <small>Message from the ministry team</small>
+        <blockquote>{{ informationRequest.message }}</blockquote>
+
+        <span>
+          Sent
+          {{
+            informationRequest.createdUtc
+              | date:'MMM d, y, h:mm a'
+          }}
+        </span>
+      </section>
+
+      <section class="request-summary">
+        <div>
+          <small>Event dates</small>
+          <strong>
+            {{ request.startDate | date:'MMM d, y' }}
+            –
+            {{ request.endDate | date:'MMM d, y' }}
+          </strong>
+        </div>
+
+        <div>
+          <small>Location</small>
+          <strong>{{ request.city }}, {{ request.state }}</strong>
+        </div>
+
+        <div>
+          <small>Primary contact</small>
+          <strong>{{ request.contactName }}</strong>
+        </div>
+      </section>
+
+      <section
+        class="response-recorded"
+        *ngIf="submitted || request.status !== 'information-needed'; else responseFormTemplate">
+
+        <span aria-hidden="true">✓</span>
+        <div>
+          <p>Response received</p>
+          <h2>The invitation is back with the ministry team.</h2>
+          <small>
+            Your response was added to the request history for review.
+          </small>
+        </div>
+
+        <a
+          [routerLink]="[
+            '/app/speaking-requests',
+            request.id
+          ]">
+          Return to team review
+        </a>
+      </section>
+
+      <ng-template #responseFormTemplate>
+        <form
+          class="response-form"
+          [formGroup]="responseForm"
+          (ngSubmit)="submitResponse()">
+
+          <div class="edit-heading">
+            <small>Review and correct</small>
+            <h2>Invitation details</h2>
+            <p>Update any information that changed, then explain your response below.</p>
+          </div>
+
+          <div class="edit-grid">
+            <label><span>Phone</span><input type="tel" formControlName="contactPhone"></label>
+            <label><span>Country</span><input formControlName="country"></label>
+            <label><span>State / region</span><input formControlName="region"></label>
+            <label><span>Timezone</span><input formControlName="timeZone"></label>
+            <label class="wide"><span>Venue address</span><input formControlName="venueAddress"></label>
+            <label><span>Travel covered?</span><select formControlName="travelCoverageStatus"><option value="yes">Yes</option><option value="no">No</option><option value="not-determined">Not determined</option></select></label>
+            <label><span>Lodging provided?</span><select formControlName="lodgingCoverageStatus"><option value="yes">Yes</option><option value="no">No</option><option value="not-determined">Not determined</option></select></label>
+            <label><span>Honorarium provided?</span><select formControlName="honorariumStatus"><option value="yes">Yes</option><option value="no">No</option><option value="not-determined">Not determined</option></select></label>
+            <label><span>Who books travel?</span><select formControlName="travelBookedBy"><option value="host">Host ministry</option><option value="ministry-team">Ministry team</option><option value="shared">Shared</option><option value="not-determined">Not determined</option></select></label>
+          </div>
+
+          <label>
+            <span>Response and corrections</span>
+
+            <textarea
+              rows="7"
+              formControlName="message"
+              placeholder="Provide the requested information, corrections, or confirmation for the ministry team.">
+            </textarea>
+
+            <small
+              *ngIf="
+                responseForm.controls.message.touched &&
+                responseForm.controls.message.invalid
+              ">
+              Enter a response before submitting.
+            </small>
+          </label>
+
+          <footer>
+            <p>
+              Submitting returns this invitation to Awaiting review.
+            </p>
+
+            <button type="submit">
+              Send response
+              <span aria-hidden="true">→</span>
+            </button>
+          </footer>
+        </form>
+      </ng-template>
+    </section>
+  </ng-container>
+</main>
+
+<ng-template #requestNotFound>
+  <section class="not-found">
+    <h1>Invitation not found</h1>
+    <p>This host response link is not available.</p>
+  </section>
+</ng-template>

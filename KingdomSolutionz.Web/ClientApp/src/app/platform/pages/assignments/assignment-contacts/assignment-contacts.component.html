@@ -99,260 +99,117 @@
       </a>
     </section>
 
-    <section class="readiness-summary">
-      <article
-        class="readiness-item"
-        [class.readiness-item--complete]="
-          isContactComplete(
-            assignment.contactDirectory
-              .hostPastor
-          )
-        ">
-
-        <span>01</span>
-        <strong>Host pastor</strong>
-      </article>
-
-      <article
-        class="readiness-item"
-        [class.readiness-item--complete]="
-          isContactComplete(
-            assignment.contactDirectory
-              .hostCoordinator
-          )
-        ">
-
-        <span>02</span>
-        <strong>Host coordinator</strong>
-      </article>
-
-      <article
-        class="readiness-item"
-        [class.readiness-item--complete]="
-          isContactComplete(
-            assignment.contactDirectory
-              .travelContact
-          )
-        ">
-
-        <span>03</span>
-        <strong>Travel contact</strong>
-      </article>
-
-      <article
-        class="readiness-item"
-        [class.readiness-item--complete]="
-          isContactComplete(
-            assignment.contactDirectory
-              .mediaContact
-          )
-        ">
-
-        <span>04</span>
-        <strong>Media contact</strong>
-      </article>
-
-      <article
-        class="readiness-item"
-        [class.readiness-item--complete]="
-          isContactComplete(
-            assignment.contactDirectory
-              .emergencyContact
-          )
-        ">
-
-        <span>05</span>
-        <strong>Emergency contact</strong>
-      </article>
-    </section>
-
     <section class="contact-grid">
-      <article
+      <details
         class="contact-card"
-        formGroupName="hostPastor">
+        formGroupName="hostCoordinator"
+        open>
 
-        <header class="contact-card-heading">
+        <summary class="contact-card-heading">
           <span class="contact-number">01</span>
-
-          <div>
-            <p>Host leadership</p>
-            <h3>Host pastor</h3>
-          </div>
-
-          <button
-            type="button"
-            class="reuse-contact-button"
-            [disabled]="!canReuseHostContact()"
-            (click)="
-              reuseHostContact(
-                'hostPastor',
-                'Host pastor'
-              )
-            ">
-            Use primary contact
-          </button>
-        </header>
-
-        <ng-container
-          *ngTemplateOutlet="
-            contactFields;
-            context: {
-              rolePlaceholder:
-                'Senior Pastor'
-            }
-          ">
-        </ng-container>
-      </article>
-
-      <article
-        class="contact-card"
-        formGroupName="hostCoordinator">
-
-        <header class="contact-card-heading">
-          <span class="contact-number">02</span>
 
           <div>
             <p>Primary logistics</p>
             <h3>Host coordinator</h3>
+            <small>
+              {{ form.controls.hostCoordinator.controls.name.value }}
+            </small>
           </div>
 
-          <span
-            class="source-badge"
-            *ngIf="
-              assignment.contactDirectory
-                .hostCoordinator.source ===
-                'speaking-request'
-            ">
-            Prefilled
-          </span>
-        </header>
+          <span class="source-badge">Prefilled from invitation</span>
+        </summary>
 
-        <ng-container
-          *ngTemplateOutlet="
-            contactFields;
-            context: {
-              rolePlaceholder:
-                'Executive Assistant'
-            }
-          ">
-        </ng-container>
-      </article>
+        <div class="contact-card-body">
+          <ng-container
+            *ngTemplateOutlet="contactFields; context: { rolePlaceholder: 'Executive Assistant' }">
+          </ng-container>
+        </div>
+      </details>
 
-      <article
+      <details
+        class="contact-card"
+        formGroupName="hostPastor">
+
+        <summary class="contact-card-heading">
+          <span class="contact-number">02</span>
+
+          <div>
+            <p>Host leadership</p>
+            <h3>Host pastor</h3>
+            <small>{{ form.controls.hostPastor.controls.name.value || 'Add if different' }}</small>
+          </div>
+        </summary>
+
+        <div class="contact-card-body">
+          <button type="button" class="reuse-contact-button" [disabled]="!canReuseHostContact()"
+            (click)="reuseHostContact('hostPastor', 'Host pastor')">Use primary contact</button>
+          <ng-container *ngTemplateOutlet="contactFields; context: { rolePlaceholder: 'Senior Pastor' }"></ng-container>
+        </div>
+      </details>
+
+      <details
         class="contact-card"
         formGroupName="travelContact">
 
-        <header class="contact-card-heading">
+        <summary class="contact-card-heading">
           <span class="contact-number">03</span>
 
           <div>
             <p>Local transportation</p>
             <h3>Travel contact</h3>
+            <small>{{ form.controls.travelContact.controls.name.value || 'Add when assigned' }}</small>
           </div>
+        </summary>
 
-          <button
-            type="button"
-            class="reuse-contact-button"
-            [disabled]="!canReuseHostContact()"
-            (click)="
-              reuseHostContact(
-                'travelContact',
-                'Travel contact'
-              )
-            ">
-            Use primary contact
-          </button>
-        </header>
+        <div class="contact-card-body">
+          <button type="button" class="reuse-contact-button" [disabled]="!canReuseHostContact()"
+            (click)="reuseHostContact('travelContact', 'Travel contact')">Use primary contact</button>
+          <ng-container *ngTemplateOutlet="contactFields; context: { rolePlaceholder: 'Transportation Coordinator' }"></ng-container>
+          <p class="contact-help">Keep pickup times and instructions in Travel.</p>
+        </div>
+      </details>
 
-        <ng-container
-          *ngTemplateOutlet="
-            contactFields;
-            context: {
-              rolePlaceholder:
-                'Transportation Coordinator'
-            }
-          ">
-        </ng-container>
-
-        <p class="contact-help">
-          Store the person here. Keep pickup times and
-          instructions in the Travel tab.
-        </p>
-      </article>
-
-      <article
+      <details
         class="contact-card"
         formGroupName="mediaContact">
 
-        <header class="contact-card-heading">
+        <summary class="contact-card-heading">
           <span class="contact-number">04</span>
 
           <div>
             <p>Media and production</p>
             <h3>Media contact</h3>
+            <small>{{ form.controls.mediaContact.controls.name.value || 'Add when assigned' }}</small>
           </div>
+        </summary>
 
-          <button
-            type="button"
-            class="reuse-contact-button"
-            [disabled]="!canReuseHostContact()"
-            (click)="
-              reuseHostContact(
-                'mediaContact',
-                'Media contact'
-              )
-            ">
-            Use primary contact
-          </button>
-        </header>
+        <div class="contact-card-body">
+          <button type="button" class="reuse-contact-button" [disabled]="!canReuseHostContact()"
+            (click)="reuseHostContact('mediaContact', 'Media contact')">Use primary contact</button>
+          <ng-container *ngTemplateOutlet="contactFields; context: { rolePlaceholder: 'Media Director' }"></ng-container>
+        </div>
+      </details>
 
-        <ng-container
-          *ngTemplateOutlet="
-            contactFields;
-            context: {
-              rolePlaceholder:
-                'Media Director'
-            }
-          ">
-        </ng-container>
-      </article>
-
-      <article
-        class="contact-card contact-card--wide"
+      <details
+        class="contact-card"
         formGroupName="emergencyContact">
 
-        <header class="contact-card-heading">
+        <summary class="contact-card-heading">
           <span class="contact-number">05</span>
 
           <div>
             <p>Urgent support</p>
             <h3>Emergency contact</h3>
+            <small>{{ form.controls.emergencyContact.controls.name.value || 'Add before travel' }}</small>
           </div>
+        </summary>
 
-          <button
-            type="button"
-            class="reuse-contact-button"
-            [disabled]="!canReuseHostContact()"
-            (click)="
-              reuseHostContact(
-                'emergencyContact',
-                'Emergency contact'
-              )
-            ">
-            Use primary contact
-          </button>
-        </header>
-
-        <ng-container
-          *ngTemplateOutlet="
-            contactFields;
-            context: {
-              rolePlaceholder:
-                'Emergency Contact'
-            }
-          ">
-        </ng-container>
-      </article>
+        <div class="contact-card-body">
+          <button type="button" class="reuse-contact-button" [disabled]="!canReuseHostContact()"
+            (click)="reuseHostContact('emergencyContact', 'Emergency contact')">Use primary contact</button>
+          <ng-container *ngTemplateOutlet="contactFields; context: { rolePlaceholder: 'Emergency Contact' }"></ng-container>
+        </div>
+      </details>
     </section>
 
     <footer class="save-panel">

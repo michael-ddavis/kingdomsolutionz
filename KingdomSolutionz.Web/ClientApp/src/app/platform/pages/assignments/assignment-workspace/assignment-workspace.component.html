@@ -26,15 +26,6 @@
             {{ getStatusLabel(assignment) }}
           </span>
 
-          <button type="button" class="travel-quick-button kos-clickable" (click)="openTravelQuickView()">
-
-            <span class="travel-quick-button-icon" aria-hidden="true">
-
-              ✈
-            </span>
-
-            Travel quick view
-          </button>
         </div>
 
         <h1>{{ assignment.eventName }}</h1>
@@ -111,35 +102,6 @@
       </div>
     </header>
 
-    <section
-      class="workspace-principles"
-      aria-label="How this assignment workspace works">
-
-      <article>
-        <span aria-hidden="true">↳</span>
-        <div>
-          <strong>Prefilled from invitation</strong>
-          <small>Known details follow the assignment automatically.</small>
-        </div>
-      </article>
-
-      <article>
-        <span aria-hidden="true">◎</span>
-        <div>
-          <strong>Owned by the team</strong>
-          <small>Each coordinator maintains only their section.</small>
-        </div>
-      </article>
-
-      <article>
-        <span aria-hidden="true">→</span>
-        <div>
-          <strong>Completed in stages</strong>
-          <small>Work becomes relevant as the event progresses.</small>
-        </div>
-      </article>
-    </section>
-
     <nav class="assignment-tabs" aria-label="Assignment sections">
 
       <section
@@ -174,14 +136,6 @@
     <div class="assignment-content">
       <router-outlet></router-outlet>
     </div>
-    <app-kos-drawer [open]="travelQuickViewOpen" eyebrow="Assignment travel" title="Travel quick view" width="md"
-      (closed)="closeTravelQuickView()">
-
-      <app-assignment-travel-quick-view
-        [assignment]="assignment"
-        (openFull)="closeTravelQuickView()">
-      </app-assignment-travel-quick-view>
-    </app-kos-drawer>
   </section>
 </ng-container>
 

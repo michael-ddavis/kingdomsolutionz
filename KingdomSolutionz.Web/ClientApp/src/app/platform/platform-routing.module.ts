@@ -17,6 +17,9 @@ import {
   AssignmentCareNetworkComponent
 } from './pages/assignments/assignment-care-network/assignment-care-network.component';
 import {
+  AssignmentCloseoutComponent
+} from './pages/assignments/assignment-closeout/assignment-closeout.component';
+import {
   AssignmentDetailComponent
 } from './pages/assignments/assignment-detail/assignment-detail.component';
 import {
@@ -49,6 +52,9 @@ import {
 import {
   SpeakingRequestListComponent
 } from './pages/speaking-requests/speaking-request-list/speaking-request-list.component';
+import {
+  SpeakerProfileComponent
+} from './pages/speaker-profile/speaker-profile.component';
 
 const routes: Routes = [
   {
@@ -70,6 +76,10 @@ const routes: Routes = [
       {
         path: 'speaking-requests',
         component: SpeakingRequestListComponent
+      },
+      {
+        path: 'speaker-profile',
+        component: SpeakerProfileComponent
       },
       {
         path: 'speaking-requests/:id',
@@ -111,6 +121,10 @@ const routes: Routes = [
           {
             path: 'activity',
             component: AssignmentActivityComponent
+          },
+          {
+            path: 'closeout',
+            component: AssignmentCloseoutComponent
           }
         ]
       },

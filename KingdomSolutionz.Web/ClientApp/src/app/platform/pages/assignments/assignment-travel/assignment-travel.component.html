@@ -87,192 +87,101 @@
       <div class="coverage-statuses">
         <span
           [class.coverage-status--pending]="
-            !assignment.invitation.travelCovered
+            assignment.invitation.travelCoverageStatus === 'not-determined'
           ">
           Travel
           <strong>
             {{
-              assignment.invitation.travelCovered
-                ? 'Confirmed'
-                : 'Needs agreement'
+              getCoverageLabel(assignment.invitation.travelCoverageStatus)
             }}
           </strong>
         </span>
 
         <span
           [class.coverage-status--pending]="
-            !assignment.invitation.lodgingCovered
+            assignment.invitation.lodgingCoverageStatus === 'not-determined'
           ">
           Lodging
           <strong>
             {{
-              assignment.invitation.lodgingCovered
-                ? 'Confirmed'
-                : 'Needs agreement'
+              getCoverageLabel(assignment.invitation.lodgingCoverageStatus)
             }}
           </strong>
         </span>
 
         <span
           [class.coverage-status--pending]="
-            !assignment.invitation
-              .honorariumProvided
+            assignment.invitation.honorariumStatus === 'not-determined'
           ">
           Honorarium
           <strong>
             {{
-              assignment.invitation
-                .honorariumProvided
-                ? 'Confirmed'
-                : 'Needs agreement'
+              getCoverageLabel(assignment.invitation.honorariumStatus)
             }}
           </strong>
         </span>
       </div>
     </section>
 
-    <section class="readiness-summary">
-      <article
-        [class.readiness-item--complete]="
-          isFlightComplete(
-            assignment.travelItinerary
-              .outboundFlight
-          )
-        "
-        class="readiness-item">
+    <section class="host-coordination">
+      <div class="host-coordination-mark">H</div>
 
-        <span class="readiness-icon">
+      <div>
+        <p class="eyebrow">Host coordination</p>
+        <h3>
           {{
-            isFlightComplete(
-              assignment.travelItinerary
-                .outboundFlight
-            )
-              ? '✓'
-              : '1'
+            assignment.hostCoordination.status === 'not-requested'
+              ? 'Ask the host for final logistics'
+              : assignment.hostCoordination.status === 'requested'
+                ? 'Waiting for host details'
+                : assignment.hostCoordination.status === 'submitted'
+                  ? 'Host details received'
+                  : 'Host details reviewed'
           }}
-        </span>
+        </h3>
+        <p>
+          One link collects hotel, pickup, local contacts, schedule,
+          promotion, prayer focus and documents. Responses populate this assignment.
+        </p>
+      </div>
 
-        <div>
-          <strong>Outbound flight</strong>
-          <small>Airline and arrival details</small>
-        </div>
-      </article>
+      <div class="host-coordination-actions">
+        <button
+          *ngIf="assignment.hostCoordination.status === 'not-requested'"
+          type="button"
+          (click)="requestHostDetails()">
+          Create host link
+        </button>
 
-      <article
-        [class.readiness-item--complete]="
-          isFlightComplete(
-            assignment.travelItinerary
-              .returnFlight
-          )
-        "
-        class="readiness-item">
+        <a
+          *ngIf="assignment.hostCoordination.status !== 'not-requested'"
+          [routerLink]="['/coordinate/assignments', assignment.id]">
+          Open host link
+        </a>
 
-        <span class="readiness-icon">
-          {{
-            isFlightComplete(
-              assignment.travelItinerary
-                .returnFlight
-            )
-              ? '✓'
-              : '2'
-          }}
-        </span>
-
-        <div>
-          <strong>Return flight</strong>
-          <small>Departure and return details</small>
-        </div>
-      </article>
-
-      <article
-        [class.readiness-item--complete]="
-          isHotelComplete(
-            assignment.travelItinerary.hotel
-          )
-        "
-        class="readiness-item">
-
-        <span class="readiness-icon">
-          {{
-            isHotelComplete(
-              assignment.travelItinerary.hotel
-            )
-              ? '✓'
-              : '3'
-          }}
-        </span>
-
-        <div>
-          <strong>Hotel</strong>
-          <small>Reservation and stay details</small>
-        </div>
-      </article>
-
-      <article
-        [class.readiness-item--complete]="
-          isArrivalPickupComplete(
-            assignment.travelItinerary
-              .groundTransportation
-          )
-        "
-        class="readiness-item">
-
-        <span class="readiness-icon">
-          {{
-            isArrivalPickupComplete(
-              assignment.travelItinerary
-                .groundTransportation
-            )
-              ? '✓'
-              : '4'
-          }}
-        </span>
-
-        <div>
-          <strong>Arrival pickup</strong>
-          <small>Contact and instructions</small>
-        </div>
-      </article>
-
-      <article
-        [class.readiness-item--complete]="
-          isDeparturePickupComplete(
-            assignment.travelItinerary
-              .groundTransportation
-          )
-        "
-        class="readiness-item">
-
-        <span class="readiness-icon">
-          {{
-            isDeparturePickupComplete(
-              assignment.travelItinerary
-                .groundTransportation
-            )
-              ? '✓'
-              : '5'
-          }}
-        </span>
-
-        <div>
-          <strong>Departure pickup</strong>
-          <small>Return transportation details</small>
-        </div>
-      </article>
+        <button
+          *ngIf="assignment.hostCoordination.status === 'submitted'"
+          type="button"
+          class="review-button"
+          (click)="markHostDetailsReviewed()">
+          Mark reviewed
+        </button>
+      </div>
     </section>
 
-    <section
+    <details
       class="travel-section"
-      formGroupName="outboundFlight">
+      formGroupName="outboundFlight"
+      open>
 
-      <header class="section-heading">
+      <summary class="section-heading">
         <span class="section-number">01</span>
 
         <div>
           <p>Flight information</p>
           <h3>Outbound flight</h3>
         </div>
-      </header>
+      </summary>
 
       <div class="field-grid">
         <label class="field">
@@ -373,20 +282,20 @@
           </textarea>
         </label>
       </div>
-    </section>
+    </details>
 
-    <section
+    <details
       class="travel-section"
       formGroupName="returnFlight">
 
-      <header class="section-heading">
+      <summary class="section-heading">
         <span class="section-number">02</span>
 
         <div>
           <p>Flight information</p>
           <h3>Return flight</h3>
         </div>
-      </header>
+      </summary>
 
       <div class="field-grid">
         <label class="field">
@@ -487,20 +396,20 @@
           </textarea>
         </label>
       </div>
-    </section>
+    </details>
 
-    <section
+    <details
       class="travel-section"
       formGroupName="hotel">
 
-      <header class="section-heading">
+      <summary class="section-heading">
         <span class="section-number">03</span>
 
         <div>
           <p>Lodging</p>
           <h3>Hotel information</h3>
         </div>
-      </header>
+      </summary>
 
       <div class="field-grid">
         <label class="field">
@@ -609,13 +518,13 @@
           </textarea>
         </label>
       </div>
-    </section>
+    </details>
 
-    <section
+    <details
       class="travel-section"
       formGroupName="groundTransportation">
 
-      <header class="section-heading">
+      <summary class="section-heading">
         <span class="section-number">04</span>
 
         <div>
@@ -628,7 +537,7 @@
           class="prefill-badge">
           Contact reused from Contacts
         </span>
-      </header>
+      </summary>
 
       <div class="transportation-grid">
         <div class="transportation-panel">
@@ -705,17 +614,17 @@
           </textarea>
         </label>
       </div>
-    </section>
+    </details>
 
-    <section class="travel-section">
-      <header class="section-heading">
+    <details class="travel-section">
+      <summary class="section-heading">
         <span class="section-number">05</span>
 
         <div>
           <p>Internal notes</p>
           <h3>General travel notes</h3>
         </div>
-      </header>
+      </summary>
 
       <label class="field">
         <span>Notes for the ministry team</span>
@@ -726,7 +635,7 @@
           placeholder="Special travel considerations, schedule changes or instructions.">
         </textarea>
       </label>
-    </section>
+    </details>
 
     <footer class="save-panel">
       <div>

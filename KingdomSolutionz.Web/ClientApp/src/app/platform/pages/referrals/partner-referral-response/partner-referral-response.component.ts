@@ -238,6 +238,9 @@ export class PartnerReferralResponseComponent
       case 'declined':
         return 'Declined';
 
+      case 'expired':
+        return 'Response window expired';
+
       case 'connected':
         return 'Connection confirmed';
     }

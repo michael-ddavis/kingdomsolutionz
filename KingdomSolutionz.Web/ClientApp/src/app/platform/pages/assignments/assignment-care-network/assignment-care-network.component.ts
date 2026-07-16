@@ -198,6 +198,30 @@ export class AssignmentCareNetworkComponent {
       .confirmConnected(referral.id);
   }
 
+  expireReferral(
+    referral: CareReferral
+  ): void {
+    this.careReferralService.expireReferral(
+      referral.id
+    );
+  }
+
+  markUnreachable(
+    response: MinistryResponse
+  ): void {
+    this.careReferralService.markResponseUnreachable(
+      response.id
+    );
+  }
+
+  withdrawConsent(
+    response: MinistryResponse
+  ): void {
+    this.careReferralService.withdrawConsent(
+      response.id
+    );
+  }
+
   resetDemo(): void {
     this.careReferralService.resetDemo();
     this.selectedResponseId = 4101;
@@ -231,7 +255,9 @@ export class AssignmentCareNetworkComponent {
     return network.referrals.find(
       referral =>
         referral.responseId === response.id &&
-        referral.status !== 'declined'
+        !['declined', 'expired'].includes(
+          referral.status
+        )
     );
   }
 
@@ -279,6 +305,12 @@ export class AssignmentCareNetworkComponent {
 
       case 'connected':
         return 'Connected';
+
+      case 'unreachable':
+        return 'Person unreachable';
+
+      case 'withdrawn':
+        return 'Consent withdrawn';
     }
   }
 
@@ -300,6 +332,9 @@ export class AssignmentCareNetworkComponent {
 
       case 'declined':
         return 'Declined';
+
+      case 'expired':
+        return 'Expired · reassignment needed';
 
       case 'connected':
         return 'Connected';

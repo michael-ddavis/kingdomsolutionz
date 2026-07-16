@@ -116,8 +116,8 @@
                             <dt>Location</dt>
 
                             <dd>
-                                {{ request.city }},
-                                {{ request.state }}
+                                {{ request.city }}<ng-container *ngIf="request.state">, {{ request.state }}</ng-container>,
+                                {{ request.country }}
                             </dd>
                         </div>
 
@@ -417,19 +417,38 @@
 
                         <label class="form-field">
                             <span>
-                                State
-                                <em>*</em>
+                                State, province or territory
                             </span>
 
-                            <input type="text" maxlength="2" formControlName="state" placeholder="NC"
+                            <input type="text" maxlength="100" formControlName="state" placeholder="Georgia"
                                 (blur)="normalizeState()" [class.is-invalid]="
                   isInvalid(controls.state)
                 ">
 
                             <small class="field-error" *ngIf="isInvalid(controls.state)">
 
-                                Enter a two-letter state abbreviation.
+                                Enter a valid region name.
                             </small>
+                        </label>
+
+                        <label class="form-field">
+                            <span>Country <em>*</em></span>
+                            <input type="text" formControlName="country" placeholder="United States">
+                        </label>
+
+                        <label class="form-field">
+                            <span>Region (if different)</span>
+                            <input type="text" formControlName="region" placeholder="Greater Accra">
+                        </label>
+
+                        <label class="form-field">
+                            <span>Event timezone <em>*</em></span>
+                            <input type="text" formControlName="timeZone" placeholder="America/New_York">
+                        </label>
+
+                        <label class="form-field form-field--wide">
+                            <span>Venue address <em>*</em></span>
+                            <input type="text" formControlName="venueAddress" placeholder="Street address, city and postal code">
                         </label>
                     </div>
                 </section>
@@ -515,54 +534,86 @@
                     </div>
 
                     <p class="section-description">
-                        Select each arrangement that the host ministry
-                        has already confirmed.
+                        Choose a clear answer for each item. “No” is a valid
+                        answer; use “Not determined” only when a decision is still pending.
                     </p>
 
-                    <div class="coverage-grid">
-                        <label class="coverage-card">
-                            <input type="checkbox" formControlName="travelCovered">
-
-                            <span class="checkbox-mark"></span>
-
-                            <span class="coverage-copy">
-                                <strong>Travel expenses covered</strong>
-
-                                <small>
-                                    Airfare, mileage or other primary travel
-                                    expenses will be provided.
-                                </small>
-                            </span>
+                    <div class="field-grid">
+                        <label class="form-field">
+                            <span>Will the host cover travel?</span>
+                            <select formControlName="travelCoverageStatus">
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                                <option value="not-determined">Not determined</option>
+                            </select>
                         </label>
 
-                        <label class="coverage-card">
-                            <input type="checkbox" formControlName="lodgingCovered">
-
-                            <span class="checkbox-mark"></span>
-
-                            <span class="coverage-copy">
-                                <strong>Lodging provided</strong>
-
-                                <small>
-                                    Hotel or approved ministry lodging will be
-                                    arranged.
-                                </small>
-                            </span>
+                        <label class="form-field">
+                            <span>Will the host provide lodging?</span>
+                            <select formControlName="lodgingCoverageStatus">
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                                <option value="not-determined">Not determined</option>
+                            </select>
                         </label>
 
-                        <label class="coverage-card">
-                            <input type="checkbox" formControlName="honorariumProvided">
+                        <label class="form-field">
+                            <span>Will an honorarium be provided?</span>
+                            <select formControlName="honorariumStatus">
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                                <option value="not-determined">Not determined</option>
+                            </select>
+                        </label>
 
-                            <span class="checkbox-mark"></span>
+                        <label class="form-field">
+                            <span>Who will book primary travel?</span>
+                            <select formControlName="travelBookedBy">
+                                <option value="host">Host ministry</option>
+                                <option value="ministry-team">Apostle Cynthia’s team</option>
+                                <option value="shared">Shared responsibility</option>
+                                <option value="not-determined">Not determined</option>
+                            </select>
+                        </label>
 
-                            <span class="coverage-copy">
-                                <strong>Honorarium confirmed</strong>
+                        <label class="form-field">
+                            <span>Honorarium amount</span>
+                            <input type="number" min="0" formControlName="honorariumAmount" placeholder="2500">
+                        </label>
 
-                                <small>
-                                    The ministry has prepared an honorarium
-                                    arrangement.
-                                </small>
-                            </span>
+                        <label class="form-field">
+                            <span>Currency</span>
+                            <input type="text" maxlength="3" formControlName="honorariumCurrency" placeholder="USD">
+                        </label>
+
+                        <label class="form-field">
+                            <span>Payment status</span>
+                            <select formControlName="paymentStatus">
+                                <option value="not-applicable">Not applicable</option>
+                                <option value="not-due">Not due</option>
+                                <option value="pending">Pending</option>
+                                <option value="paid">Paid</option>
+                            </select>
+                        </label>
+
+                        <label class="form-field">
+                            <span>Agreement status</span>
+                            <select formControlName="agreementStatus">
+                                <option value="not-started">Not started</option>
+                                <option value="drafted">Drafted</option>
+                                <option value="sent">Sent</option>
+                                <option value="signed">Signed</option>
+                            </select>
+                        </label>
+
+                        <label class="form-field">
+                            <span>Engagement status</span>
+                            <select formControlName="engagementStatus">
+                                <option value="proposed">Proposed</option>
+                                <option value="scheduled">Scheduled</option>
+                                <option value="rescheduled">Rescheduled</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
                         </label>
                     </div>
                 </section>
@@ -606,21 +657,21 @@
                             </span>
 
                             <span [class.complete]="
-                  controls.travelCovered.value
+                  controls.travelCoverageStatus.value !== 'not-determined'
                 ">
 
                                 Travel
                             </span>
 
                             <span [class.complete]="
-                  controls.lodgingCovered.value
+                  controls.lodgingCoverageStatus.value !== 'not-determined'
                 ">
 
                                 Lodging
                             </span>
 
                             <span [class.complete]="
-                  controls.honorariumProvided.value
+                  controls.honorariumStatus.value !== 'not-determined'
                 ">
 
                                 Honorarium

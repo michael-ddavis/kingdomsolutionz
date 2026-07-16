@@ -207,12 +207,13 @@ p {
 
 .contact-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 15px;
 }
 
 .contact-card {
-  padding: 24px;
+  padding: 0;
+  overflow: hidden;
 }
 
 .contact-card--wide {
@@ -221,9 +222,49 @@ p {
 
 .contact-card-heading {
   display: flex;
-  margin-bottom: 22px;
+  margin: 0;
+  padding: 18px 22px;
   align-items: center;
   gap: 13px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.contact-card-heading::-webkit-details-marker {
+  display: none;
+}
+
+.contact-card-heading::after {
+  margin-left: 4px;
+  color: var(--kos-text-muted);
+  content: '+';
+  font-size: var(--kos-text-lg);
+}
+
+.contact-card[open] .contact-card-heading {
+  border-bottom: 1px solid var(--kos-border);
+}
+
+.contact-card[open] .contact-card-heading::after {
+  content: '−';
+}
+
+.contact-card-heading small {
+  display: block;
+  margin-top: 4px;
+  color: var(--kos-text-muted);
+  font-size: var(--kos-text-xs);
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.contact-card-body {
+  padding: 22px;
+}
+
+.contact-card-body > .reuse-contact-button {
+  margin: 0 0 16px;
 }
 
 .source-badge {

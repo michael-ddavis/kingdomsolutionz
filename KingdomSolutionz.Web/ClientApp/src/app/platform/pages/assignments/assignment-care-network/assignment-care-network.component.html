@@ -23,6 +23,12 @@
         (click)="resetDemo()">
         Reset demo data
       </button>
+
+      <a
+        class="reset-button"
+        [routerLink]="['/respond/assignments', vm.assignment.id]">
+        Open QR response form
+      </a>
     </header>
 
     <section
@@ -252,6 +258,15 @@
             </dl>
           </div>
 
+          <div class="referral-actions" *ngIf="selectedResponse.status !== 'connected'">
+            <button type="button" class="secondary-button" (click)="markUnreachable(selectedResponse)">
+              Mark unreachable
+            </button>
+            <button type="button" class="secondary-button" (click)="withdrawConsent(selectedResponse)">
+              Withdraw consent
+            </button>
+          </div>
+
           <ng-container
             *ngIf="
               getReferralForResponse(
@@ -336,6 +351,14 @@
                     )
                   ">
                   Open church response
+                </button>
+
+                <button
+                  type="button"
+                  class="secondary-button"
+                  *ngIf="activeReferral.status === 'sent' || activeReferral.status === 'viewed'"
+                  (click)="expireReferral(activeReferral)">
+                  No response · reassign
                 </button>
 
                 <button

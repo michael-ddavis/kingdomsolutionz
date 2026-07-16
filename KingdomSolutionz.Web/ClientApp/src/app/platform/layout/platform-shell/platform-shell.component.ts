@@ -265,6 +265,13 @@ export class PlatformShellComponent
               'Approved engagements and preparation',
             route: '/app/assignments',
             icon: 'assignments'
+          },
+          {
+            label: 'Speaker Profile',
+            description:
+              'Approved bio, assets and preferences',
+            route: '/app/speaker-profile',
+            icon: 'requests'
           }
         ]
       }
@@ -303,6 +310,13 @@ export class PlatformShellComponent
               'Travel, preparation and follow-up',
             route: '/app/assignments',
             icon: 'assignments'
+          },
+          {
+            label: 'Speaker Profile',
+            description:
+              'Approved bio, assets and preferences',
+            route: '/app/speaker-profile',
+            icon: 'requests'
           }
         ]
       }

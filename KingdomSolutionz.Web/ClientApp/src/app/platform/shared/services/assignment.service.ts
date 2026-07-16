@@ -8,6 +8,7 @@ import {
   AssignmentActivityLog,
   AssignmentActivitySection,
   AssignmentActivityTone,
+  AssignmentCloseout,
   AssignmentContact,
   AssignmentContactDirectory,
   AssignmentDocument,
@@ -15,6 +16,7 @@ import {
   AssignmentDocumentLibrary,
   AssignmentFlight,
   AssignmentGroundTransportation,
+  AssignmentHostCoordinationInput,
   AssignmentHotel,
   AssignmentStage,
   AssignmentTask,
@@ -37,11 +39,31 @@ interface NewAssignmentActivity {
   providedIn: 'root'
 })
 export class AssignmentService {
+  private readonly storageKey =
+    'kingdomos-demo-assignments-v2';
+
   private readonly assignmentsSubject =
-    new BehaviorSubject<readonly Assignment[]>([]);
+    new BehaviorSubject<readonly Assignment[]>(
+      this.loadAssignments()
+    );
 
   readonly assignments$: Observable<readonly Assignment[]> =
     this.assignmentsSubject.asObservable();
+
+  constructor() {
+    this.assignmentsSubject.subscribe(
+      assignments => {
+        try {
+          window.localStorage.setItem(
+            this.storageKey,
+            JSON.stringify(assignments)
+          );
+        } catch {
+          // Demo state remains available in memory.
+        }
+      }
+    );
+  }
 
   getAssignment(
     assignmentId: number
@@ -53,6 +75,10 @@ export class AssignmentService {
         )
       )
     );
+  }
+
+  resetDemoAssignments(): void {
+    this.assignmentsSubject.next([]);
   }
 
   getAssignmentBySpeakingRequestId(
@@ -419,6 +445,246 @@ export class AssignmentService {
     this.assignmentsSubject.next(updatedAssignments);
   }
 
+  requestHostCoordination(
+    assignmentId: number,
+    actor = 'Michael Davis'
+  ): void {
+    const createdUtc = new Date().toISOString();
+
+    const updatedAssignments =
+      this.assignmentsSubject.value.map(assignment => {
+        if (
+          assignment.id !== assignmentId ||
+          assignment.hostCoordination.status !==
+            'not-requested'
+        ) {
+          return assignment;
+        }
+
+        return this.appendActivity(
+          {
+            ...assignment,
+            hostCoordination: {
+              ...assignment.hostCoordination,
+              status: 'requested',
+              requestedUtc: createdUtc
+            }
+          },
+          {
+            type: 'host-coordination-requested',
+            tone: 'neutral',
+            title: 'Host coordination requested',
+            description:
+              'A secure coordination link is ready for the host to provide lodging, transportation and event details.',
+            actor,
+            section: 'travel',
+            createdUtc
+          }
+        );
+      });
+
+    this.assignmentsSubject.next(updatedAssignments);
+  }
+
+  submitHostCoordination(
+    assignmentId: number,
+    input: AssignmentHostCoordinationInput,
+    actor = 'Host team'
+  ): void {
+    const createdUtc = new Date().toISOString();
+
+    const updatedAssignments =
+      this.assignmentsSubject.value.map(assignment => {
+        if (assignment.id !== assignmentId) {
+          return assignment;
+        }
+
+        const itinerary: AssignmentTravelItinerary = {
+          ...assignment.travelItinerary,
+          hotel: input.hotel,
+          groundTransportation:
+            input.groundTransportation,
+          readinessPercentage: 0,
+          lastUpdatedUtc: createdUtc
+        };
+
+        const updatedItinerary = {
+          ...itinerary,
+          readinessPercentage:
+            this.calculateTravelReadiness(itinerary)
+        };
+
+        const withHostResponse: Assignment = {
+          ...assignment,
+          travelItinerary: updatedItinerary,
+          contactDirectory: {
+            ...assignment.contactDirectory,
+            travelContact:
+              this.mergeHostLocalContact(
+                assignment.contactDirectory.travelContact,
+                input.travelContact,
+                assignment.organizationName
+              ),
+            mediaContact:
+              this.mergeHostLocalContact(
+                assignment.contactDirectory.mediaContact,
+                input.mediaContact,
+                assignment.organizationName
+              ),
+            emergencyContact:
+              this.mergeHostLocalContact(
+                assignment.contactDirectory.emergencyContact,
+                input.emergencyContact,
+                assignment.organizationName
+              ),
+            readinessPercentage: 0,
+            lastUpdatedUtc: createdUtc
+          },
+          hostCoordination: {
+            ...assignment.hostCoordination,
+            status: 'submitted',
+            submittedUtc: createdUtc,
+            reviewedUtc: null,
+            eventSchedule:
+              input.eventSchedule.trim(),
+            prayerFocus:
+              input.prayerFocus.trim(),
+            promotionalRequirements:
+              input.promotionalRequirements.trim(),
+            hostNotes:
+              input.hostNotes.trim()
+          }
+        };
+
+        withHostResponse.contactDirectory = {
+          ...withHostResponse.contactDirectory,
+          readinessPercentage:
+            this.calculateContactReadiness(
+              withHostResponse.contactDirectory
+            )
+        };
+
+        const recalculated =
+          this.recalculateAssignment(
+            this.syncContactChecklist(
+              this.syncTravelChecklist(
+                withHostResponse
+              )
+            )
+          );
+
+        return this.appendActivity(
+          recalculated,
+          {
+            type: 'host-coordination-submitted',
+            tone: 'attention',
+            title: 'Host details received',
+            description:
+              'The host submitted lodging, transportation and event coordination details for team review.',
+            actor,
+            section: 'travel',
+            createdUtc
+          }
+        );
+      });
+
+    this.assignmentsSubject.next(updatedAssignments);
+  }
+
+  reviewHostCoordination(
+    assignmentId: number,
+    actor = 'Michael Davis'
+  ): void {
+    const createdUtc = new Date().toISOString();
+
+    const updatedAssignments =
+      this.assignmentsSubject.value.map(assignment => {
+        if (
+          assignment.id !== assignmentId ||
+          assignment.hostCoordination.status !==
+            'submitted'
+        ) {
+          return assignment;
+        }
+
+        return this.appendActivity(
+          {
+            ...assignment,
+            hostCoordination: {
+              ...assignment.hostCoordination,
+              status: 'reviewed',
+              reviewedUtc: createdUtc
+            }
+          },
+          {
+            type: 'host-coordination-reviewed',
+            tone: 'success',
+            title: 'Host details reviewed',
+            description:
+              'The assignment coordinator reviewed the host-provided logistics.',
+            actor,
+            section: 'travel',
+            createdUtc
+          }
+        );
+      });
+
+    this.assignmentsSubject.next(updatedAssignments);
+  }
+
+  updateCloseout(
+    assignmentId: number,
+    closeout: AssignmentCloseout,
+    closeAssignment = false,
+    actor = 'Michael Davis'
+  ): void {
+    const createdUtc = new Date().toISOString();
+
+    const updatedAssignments =
+      this.assignmentsSubject.value.map(assignment => {
+        if (assignment.id !== assignmentId) {
+          return assignment;
+        }
+
+        const updated: Assignment = {
+          ...assignment,
+          status: closeAssignment
+            ? 'completed'
+            : assignment.status,
+          closeout: {
+            ...closeout,
+            status: closeAssignment
+              ? 'closed'
+              : 'in-progress',
+            archivedUtc: closeAssignment
+              ? createdUtc
+              : closeout.archivedUtc,
+            lastUpdatedUtc: createdUtc
+          }
+        };
+
+        return this.appendActivity(updated, {
+          type: closeAssignment
+            ? 'assignment-closed'
+            : 'note-added',
+          tone: closeAssignment
+            ? 'success'
+            : 'neutral',
+          title: closeAssignment
+            ? 'Assignment closed and archived'
+            : 'Closeout updated',
+          description: closeAssignment
+            ? 'Event outcomes, financial follow-up, host feedback and thank-you communication were recorded.'
+            : 'Post-event results were saved for continued closeout work.',
+          actor,
+          section: 'follow-up',
+          createdUtc
+        });
+      });
+
+    this.assignmentsSubject.next(updatedAssignments);
+  }
+
   updateContactDirectory(
     assignmentId: number,
     directory: AssignmentContactDirectory,
@@ -648,7 +914,8 @@ export class AssignmentService {
         | 'referral-viewed'
         | 'referral-accepted'
         | 'referral-declined'
-        | 'person-connected';
+        | 'person-connected'
+        | 'note-added';
       tone: AssignmentActivityTone;
       title: string;
       description: string;
@@ -738,6 +1005,10 @@ export class AssignmentService {
       eventType: request.eventType,
       city: request.city,
       state: request.state,
+      country: request.country,
+      region: request.region,
+      timeZone: request.timeZone,
+      venueAddress: request.venueAddress,
       venueName: request.venueName,
       startDate,
       endDate,
@@ -752,6 +1023,24 @@ export class AssignmentService {
           request.lodgingCovered,
         honorariumProvided:
           request.honorariumProvided,
+        travelCoverageStatus:
+          request.travelCoverageStatus,
+        lodgingCoverageStatus:
+          request.lodgingCoverageStatus,
+        honorariumStatus:
+          request.honorariumStatus,
+        travelBookedBy:
+          request.travelBookedBy,
+        honorariumAmount:
+          request.honorariumAmount,
+        honorariumCurrency:
+          request.honorariumCurrency,
+        paymentStatus:
+          request.paymentStatus,
+        agreementStatus:
+          request.agreementStatus,
+        engagementStatus:
+          request.engagementStatus,
         submittedUtc:
           request.submittedUtc
       },
@@ -767,12 +1056,34 @@ export class AssignmentService {
         ),
       travelItinerary:
         this.createEmptyTravelItinerary(),
+      hostCoordination: {
+        status: 'not-requested',
+        requestedUtc: null,
+        submittedUtc: null,
+        reviewedUtc: null,
+        eventSchedule: '',
+        prayerFocus: '',
+        promotionalRequirements: '',
+        hostNotes: ''
+      },
       documentLibrary:
         this.createEmptyDocumentLibrary(),
       activityLog:
         this.createInitialActivityLog(
           createdUtc
         ),
+      closeout: {
+        status: 'not-started',
+        actualAttendance: 0,
+        ministryOutcomes: '',
+        testimonies: '',
+        outstandingExpenses: '',
+        honorariumReconciled: false,
+        hostFeedback: '',
+        thankYouSent: false,
+        archivedUtc: null,
+        lastUpdatedUtc: null
+      },
       status: 'active',
       readinessPercentage: 0,
       createdUtc,
@@ -1192,6 +1503,22 @@ export class AssignmentService {
     };
   }
 
+  private loadAssignments(): readonly Assignment[] {
+    try {
+      const stored = window.localStorage.getItem(
+        this.storageKey
+      );
+
+      if (stored) {
+        return JSON.parse(stored) as Assignment[];
+      }
+    } catch {
+      // Fall through to a clean invitation-first demo.
+    }
+
+    return [];
+  }
+
   private calculateTravelReadiness(
     itinerary: AssignmentTravelItinerary
   ): number {
@@ -1493,6 +1820,33 @@ export class AssignmentService {
       email: '',
       preferredContactMethod: '',
       notes: ''
+    };
+  }
+
+  private mergeHostLocalContact(
+    existing: AssignmentContact,
+    input: {
+      name: string;
+      role: string;
+      phone: string;
+      email: string;
+    },
+    organization: string
+  ): AssignmentContact {
+    return {
+      ...existing,
+      source: 'assignment',
+      name: input.name.trim(),
+      role: input.role.trim(),
+      organization,
+      phone: input.phone.trim(),
+      email: input.email.trim().toLowerCase(),
+      preferredContactMethod:
+        input.email.trim()
+          ? 'email'
+          : input.phone.trim()
+            ? 'phone'
+            : ''
     };
   }
 

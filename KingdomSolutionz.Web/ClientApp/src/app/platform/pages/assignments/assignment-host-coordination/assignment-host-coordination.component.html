@@ -1,0 +1,106 @@
+<main class="host-shell" *ngIf="assignment$ | async as assignment; else unavailable">
+  <header class="host-header">
+    <div class="brand-mark">CT</div>
+    <div>
+      <p>Apostle Cynthia Ministries</p>
+      <span>Host coordination portal</span>
+    </div>
+  </header>
+
+  <section class="success-card" *ngIf="submitted; else coordinationForm">
+    <span>✓</span>
+    <p class="eyebrow">Details received</p>
+    <h1>Thank you, {{ assignment.contactDirectory.hostCoordinator.name }}.</h1>
+    <p>Your information has populated the ministry assignment and is ready for the coordinator’s review.</p>
+    <dl>
+      <div><dt>Assignment</dt><dd>{{ assignment.eventName }}</dd></div>
+      <div><dt>Reference</dt><dd>ASN-{{ assignment.id }}</dd></div>
+      <div><dt>Status</dt><dd>Submitted for review</dd></div>
+    </dl>
+  </section>
+
+  <ng-template #coordinationForm>
+    <section class="intro-card">
+      <p class="eyebrow">Secure host coordination</p>
+      <h1>Complete the final details for {{ assignment.eventName }}</h1>
+      <p>{{ assignment.organizationName }} · {{ assignment.startDate | date:'MMMM d' }}–{{ assignment.endDate | date:'MMMM d, y' }}</p>
+      <div class="known-details">
+        <span>Primary contact <strong>{{ assignment.contactDirectory.hostCoordinator.name }}</strong></span>
+        <span>Location <strong>{{ assignment.city }}, {{ assignment.country }}</strong></span>
+        <span>Reference <strong>ASN-{{ assignment.id }}</strong></span>
+      </div>
+    </section>
+
+    <section class="speaker-packet" style="display:grid;grid-template-columns:100px 1fr;gap:18px;margin-bottom:16px;padding:18px;border:1px solid #d8cfbf;border-radius:18px;align-items:center;background:#fffdfa" *ngIf="speakerProfile$ | async as profile">
+      <img style="width:100px;height:120px;border-radius:12px;object-fit:cover" [src]="profile.approvedPhotoUrl" alt="Approved portrait of Apostle Cynthia Thompson">
+      <div>
+        <p class="eyebrow">Reusable speaker packet</p>
+        <h2>{{ profile.name }}</h2>
+        <p>{{ profile.shortBio }}</p>
+        <small>{{ profile.standardDocuments.join(' · ') }}</small>
+      </div>
+    </section>
+
+    <form [formGroup]="form" (ngSubmit)="submit(assignment)">
+      <details class="form-section" open formGroupName="hotel">
+        <summary><span>01</span><div><small>Travel and lodging</small><h2>Hotel accommodations</h2></div></summary>
+        <div class="field-grid">
+          <label><span>Hotel name *</span><input formControlName="hotelName" placeholder="Hyatt Regency Atlanta"></label>
+          <label><span>Confirmation number</span><input formControlName="confirmationNumber"></label>
+          <label class="wide"><span>Address</span><input formControlName="address"></label>
+          <label><span>City</span><input formControlName="city"></label>
+          <label><span>State / region</span><input formControlName="state"></label>
+          <label><span>Postal code</span><input formControlName="postalCode"></label>
+          <label><span>Hotel phone</span><input type="tel" formControlName="phone"></label>
+          <label><span>Check-in date</span><input type="date" formControlName="checkInDate"></label>
+          <label><span>Check-in time</span><input type="time" formControlName="checkInTime"></label>
+          <label><span>Check-out date</span><input type="date" formControlName="checkOutDate"></label>
+          <label><span>Check-out time</span><input type="time" formControlName="checkOutTime"></label>
+          <label class="wide"><span>Lodging notes</span><textarea rows="3" formControlName="notes"></textarea></label>
+        </div>
+      </details>
+
+      <details class="form-section" formGroupName="groundTransportation">
+        <summary><span>02</span><div><small>Ground transportation</small><h2>Airport pickup and local travel</h2></div></summary>
+        <div class="field-grid">
+          <label><span>Arrival contact</span><input formControlName="arrivalPickupContact"></label>
+          <label><span>Arrival phone</span><input type="tel" formControlName="arrivalPickupPhone"></label>
+          <label class="wide"><span>Arrival instructions</span><textarea rows="3" formControlName="arrivalPickupInstructions"></textarea></label>
+          <label><span>Departure contact</span><input formControlName="departurePickupContact"></label>
+          <label><span>Departure phone</span><input type="tel" formControlName="departurePickupPhone"></label>
+          <label class="wide"><span>Departure instructions</span><textarea rows="3" formControlName="departurePickupInstructions"></textarea></label>
+          <label class="wide"><span>Local transportation plan</span><textarea rows="3" formControlName="localTransportationDetails"></textarea></label>
+        </div>
+      </details>
+
+      <details class="form-section">
+        <summary><span>03</span><div><small>Local contacts</small><h2>Who will the ministry team work with?</h2></div></summary>
+        <div class="contact-groups">
+          <fieldset formGroupName="travelContact"><legend>Travel contact</legend><input formControlName="name" placeholder="Name"><input formControlName="role" placeholder="Role"><input type="tel" formControlName="phone" placeholder="International phone"><input type="email" formControlName="email" placeholder="Email"></fieldset>
+          <fieldset formGroupName="mediaContact"><legend>Media contact</legend><input formControlName="name" placeholder="Name"><input formControlName="role" placeholder="Role"><input type="tel" formControlName="phone" placeholder="International phone"><input type="email" formControlName="email" placeholder="Email"></fieldset>
+          <fieldset formGroupName="emergencyContact"><legend>Emergency contact</legend><input formControlName="name" placeholder="Name"><input formControlName="role" placeholder="Role"><input type="tel" formControlName="phone" placeholder="International phone"><input type="email" formControlName="email" placeholder="Email"></fieldset>
+        </div>
+      </details>
+
+      <details class="form-section" open>
+        <summary><span>04</span><div><small>Event preparation</small><h2>Schedule, promotion and prayer</h2></div></summary>
+        <div class="field-grid">
+          <label class="wide"><span>Event schedule *</span><textarea rows="5" formControlName="eventSchedule" placeholder="Include arrival, soundcheck, sessions and departure timing."></textarea></label>
+          <label class="wide"><span>Promotional requirements</span><textarea rows="3" formControlName="promotionalRequirements"></textarea></label>
+          <label class="wide"><span>Prayer focus</span><textarea rows="3" formControlName="prayerFocus"></textarea></label>
+          <label class="wide"><span>Additional host notes</span><textarea rows="3" formControlName="hostNotes"></textarea></label>
+        </div>
+      </details>
+
+      <section class="upload-section">
+        <div><p class="eyebrow">Documents</p><h2>Upload schedules or confirmations</h2><p>PDF, image or office files; up to five for this demo.</p></div>
+        <label class="upload-button">Choose files<input type="file" multiple (change)="onFilesSelected($event)"></label>
+        <ul *ngIf="selectedFiles.length"><li *ngFor="let file of selectedFiles">{{ file.name }}</li></ul>
+      </section>
+
+      <footer><p>Submitting updates the assignment automatically. The coordinator will review the details before they are final.</p><button type="submit">Submit host details →</button></footer>
+    </form>
+  </ng-template>
+</main>
+
+<ng-template #unavailable><main class="host-shell"><section class="success-card"><h1>Coordination link unavailable</h1><p>Ask the ministry team for a current assignment link.</p></section></main></ng-template>

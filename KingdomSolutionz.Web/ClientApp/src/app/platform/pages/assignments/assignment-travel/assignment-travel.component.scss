@@ -194,6 +194,68 @@ p {
   gap: 10px;
 }
 
+.host-coordination {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  padding: 20px;
+  border: 1px solid rgb(53 91 159 / 24%);
+  border-radius: var(--kos-radius-lg);
+  align-items: center;
+  gap: 15px;
+  background: var(--kos-blue-100);
+}
+
+.host-coordination-mark {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--kos-radius-md);
+  place-items: center;
+  color: var(--kos-text-on-dark);
+  font-weight: 850;
+  background: var(--kos-shell-gradient);
+}
+
+.host-coordination h3 {
+  margin: 4px 0;
+  color: var(--kos-text);
+}
+
+.host-coordination p:last-child {
+  margin: 0;
+  color: var(--kos-text-secondary);
+  font-size: var(--kos-text-sm);
+}
+
+.host-coordination-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.host-coordination-actions a,
+.host-coordination-actions button {
+  display: inline-flex;
+  min-height: var(--kos-control-height);
+  padding: 0 14px;
+  border: 1px solid var(--kos-obsidian-800);
+  border-radius: var(--kos-radius-sm);
+  align-items: center;
+  color: var(--kos-text-on-dark);
+  font: inherit;
+  font-size: var(--kos-text-xs);
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  background: var(--kos-shell-gradient);
+}
+
+.host-coordination-actions .review-button {
+  border-color: var(--kos-blue-600);
+  color: var(--kos-blue-600);
+  background: var(--kos-surface-elevated);
+}
+
 .readiness-item {
   display: flex;
   min-height: 70px;
@@ -253,9 +315,30 @@ p {
 
 .section-heading {
   display: flex;
-  margin-bottom: 24px;
+  margin: 0;
   align-items: center;
   gap: 13px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.section-heading::-webkit-details-marker {
+  display: none;
+}
+
+.section-heading::after {
+  margin-left: auto;
+  color: var(--kos-text-muted);
+  content: '+';
+  font-size: var(--kos-text-lg);
+}
+
+.travel-section[open] .section-heading {
+  margin-bottom: 24px;
+}
+
+.travel-section[open] .section-heading::after {
+  content: '−';
 }
 
 .section-number {
@@ -459,6 +542,15 @@ textarea::placeholder {
   .travel-readiness {
     width: 100%;
     min-width: 0;
+  }
+
+  .host-coordination {
+    grid-template-columns: auto 1fr;
+  }
+
+  .host-coordination-actions {
+    grid-column: 1 / -1;
+    flex-wrap: wrap;
   }
 
   .field-grid,

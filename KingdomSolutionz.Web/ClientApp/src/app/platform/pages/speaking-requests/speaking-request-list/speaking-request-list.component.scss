@@ -67,6 +67,23 @@ h1 {
   box-shadow: 0 10px 24px rgb(17 26 41 / 14%);
 }
 
+.heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.heading-actions button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.primary-action--secondary {
+  color: var(--kos-blue-600);
+  background: var(--kos-surface-elevated);
+  box-shadow: none;
+}
+
 .primary-action span {
   color: var(--kos-champagne-300);
   font-size: 1.125rem;

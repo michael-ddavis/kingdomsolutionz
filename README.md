@@ -44,9 +44,13 @@ dotnet run --project KingdomSolutionz.Web/KingdomSolutionz.Web.csproj
 - `/` — public KingdomSolutionz website
 - `/start-project` — public project-intake form
 - `/invite/apostle-cynthia` — public speaking-request demonstration
+- `/invite/apostle-cynthia/requests/:id/update` — host correction and resubmission link
+- `/coordinate/assignments/:id` — host logistics, contacts, schedule, prayer, promotion, and file intake
+- `/respond/assignments/:id` — public/QR ministry-response intake
 - `/app/login` — KingdomOS demonstration entry
 - `/app` — KingdomOS workspace prototype
 - `/app/assignments/2001/care-network` — event responses, local care partners, and accountable referral demonstration
+- `/app/speaker-profile` — reusable biography, assets, preferences, documents, and team contacts
 
 ## KingdomOS design foundation
 
@@ -68,11 +72,10 @@ Approved speaking requests are the source record for assignment creation. Event 
 KingdomOS is currently a product demonstration, not a production tenant application:
 
 - the KingdomOS login does not authenticate a user;
-- assignments, speaking requests, workspaces, travel details, and activity are stored in browser memory;
-- care-network referral state is stored in browser local storage so the send, acceptance, and connection sequence survives a demo refresh;
-- referral email delivery is simulated; a production provider and signed, expiring partner links are still required;
+- speaking-request, assignment, and care-network state is stored in browser local storage so host links and the full demo sequence survive a refresh;
+- invitation notifications and referral email delivery are simulated; a production provider and signed, expiring links are still required;
 - document uploads use temporary browser object URLs;
-- refreshing the page resets most demonstration data outside the care-network flow;
+- the Speaking Requests page includes a Reset ACT demo action that restores the single pending invitation;
 - administrative lead endpoints must be protected before production use.
 
 Authentication, authorization, durable APIs, database migrations, and document storage are required before onboarding real KingdomOS users.
