@@ -21,7 +21,7 @@
             vm.assignment.id
           )
         ">
-        Return to ACT assignment
+        Return to CTG assignment
       </button>
     </header>
 
@@ -35,8 +35,7 @@
           <p>KingdomOS Care Network</p>
           <h1>{{ vm.context.partner.name }}</h1>
           <span>
-            Secure care referral from Apostle Cynthia Ministries
-          </span>
+            Secure care referral from Cynthia Thompson Global Ministries          </span>
         </div>
 
         <small
@@ -57,7 +56,7 @@
         <span aria-hidden="true">◎</span>
 
         <p>
-          This person gave permission for ACT to share the
+          This person gave permission for CTG to share the
           contact information below for local ministry follow-up.
           Please accept only if your team can take responsibility
           for the next step.
@@ -115,7 +114,7 @@
         </article>
 
         <article class="coordinator-note">
-          <small>ACT coordinator note</small>
+          <small>CTG coordinator note</small>
           <p>{{ vm.context.referral.personalMessage }}</p>
         </article>
       </section>
@@ -137,7 +136,7 @@
             <h2>Confirm your church's next step</h2>
 
             <span>
-              ACT will remain responsible until your team
+              CTG will remain responsible until your team
               accepts this handoff.
             </span>
           </header>
@@ -202,7 +201,7 @@
                 responseForm.controls
                   .declineReason.invalid
               ">
-              Give ACT enough context to choose another partner.
+              Give CTG enough context to choose another partner.
             </small>
           </label>
 
@@ -262,7 +261,7 @@
                 <strong>{{ vm.context.referral.assignedOwner }}</strong>
                 now owns
                 {{ vm.context.referral.nextStep }}.
-                ACT can see the acceptance without receiving
+                CTG can see the acceptance without receiving
                 private pastoral notes.
               </span>
             </ng-container>
@@ -271,7 +270,7 @@
               *ngIf="
                 vm.context.referral.status === 'declined'
               ">
-              The response has returned to ACT so another
+              The response has returned to CTG so another
               local care partner can be selected.
             </span>
           </div>
@@ -283,7 +282,7 @@
                 vm.assignment.id
               )
             ">
-            View ACT status
+            View CTG status
           </button>
         </section>
       </ng-template>

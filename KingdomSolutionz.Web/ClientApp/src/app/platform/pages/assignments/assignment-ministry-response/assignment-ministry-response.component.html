@@ -1,5 +1,5 @@
 <main class="response-shell" *ngIf="assignment$ | async as assignment; else unavailable">
-  <header><div class="brand-mark">CT</div><div><strong>Apostle Cynthia Ministries</strong><span>Event response</span></div></header>
+  <header><div class="brand-mark">CT</div><div><strong>Cynthia Thompson Global Ministries</strong><span>Event response</span></div></header>
 
   <section class="success" *ngIf="submitted; else responseForm">
     <span>✓</span><p class="eyebrow">Response received</p><h1>Thank you for trusting us.</h1>
@@ -21,7 +21,7 @@
         <label><span>Type of support *</span><select formControlName="responseType"><option>Discipleship</option><option>Prayer follow-up</option><option>Church connection</option><option>Pastoral care</option></select></label>
         <label class="wide"><span>Tell us what you are requesting *</span><textarea rows="5" formControlName="requestedSupport"></textarea></label>
       </div>
-      <label class="consent"><input type="checkbox" formControlName="consentToShare"><span><strong>I give permission for ACT to share my contact details and request with a selected local church or care partner.</strong><small>I may withdraw this permission at any time by contacting the ministry team.</small></span></label>
+      <label class="consent"><input type="checkbox" formControlName="consentToShare"><span><strong>I give permission for CTG to share my contact details and request with a selected local church or care partner.</strong><small>I may withdraw this permission at any time by contacting the ministry team.</small></span></label>
       <footer><p>Private details stay in the care workflow and are not included in public event reporting.</p><button type="submit">Send my response →</button></footer>
     </form>
   </ng-template>

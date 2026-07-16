@@ -283,7 +283,7 @@ export class PlatformDashboardComponent {
 
       workspaceOverviews: [
         {
-          name: 'Apostle Cynthia Ministries',
+          name: 'Cynthia Thompson Global Ministries',
           description:
             'Speaking, travel, events and ministry responses.',
           primaryMetric:
@@ -354,7 +354,7 @@ export class PlatformDashboardComponent {
     return {
       workspace,
       eyebrow: 'Itinerant Ministry',
-      title: 'Apostle Cynthia Ministries',
+      title: 'Cynthia Thompson Global Ministries',
       description:
         'Speaking engagements, travel preparation and ministry responses.',
 
@@ -517,7 +517,7 @@ export class PlatformDashboardComponent {
             ? `${request.organizationName} still needs to provide additional host information.`
             : `${request.organizationName} submitted a speaking invitation for review.`,
 
-        workspace: 'ACT Ministries',
+        workspace: 'CTG Ministries',
 
         due: this.getSubmissionLabel(
           request.submittedUtc

@@ -55,7 +55,7 @@ export class AssignmentCareNetworkComponent {
   selectedPartnerId = 302;
 
   personalMessage =
-    'Jasmine asked to join a local foundations group and gave permission for ACT to share her contact details. Please confirm whether your team can receive this referral.';
+    'Jasmine asked to join a local foundations group and gave permission for CTG to share her contact details. Please confirm whether your team can receive this referral.';
 
   emailPreviewVisible = false;
   sendError = '';
@@ -125,7 +125,7 @@ export class AssignmentCareNetworkComponent {
     }
 
     this.personalMessage =
-      `${response.personName} requested ${response.responseType.toLowerCase()} support and gave permission for ACT to share contact details. Please confirm whether your team can receive this referral.`;
+      `${response.personName} requested ${response.responseType.toLowerCase()} support and gave permission for CTG to share contact details. Please confirm whether your team can receive this referral.`;
   }
 
   selectPartner(

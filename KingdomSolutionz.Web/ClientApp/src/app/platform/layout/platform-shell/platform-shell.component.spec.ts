@@ -27,8 +27,8 @@ describe('PlatformShellComponent', () => {
 
   const workspace: Workspace = {
     id: 'apostle-cynthia',
-    name: 'Apostle Cynthia Ministries',
-    shortName: 'ACT Ministries',
+    name: 'Cynthia Thompson Global Ministries',
+    shortName: 'CTG Ministries',
     kind: 'itinerant-ministry',
     description: 'Test workspace'
   };
