@@ -163,6 +163,19 @@
             </a>
           </div>
         </details>
+
+        <div class="record-mobile-options">
+          <a
+            *ngFor="let tab of recordTabs"
+            [routerLink]="tab.route"
+            routerLinkActive="assignment-tab--active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            ariaCurrentWhenActive="page"
+            class="assignment-tab">
+
+            <strong>{{ tab.label }}</strong>
+          </a>
+        </div>
       </section>
     </nav>
 

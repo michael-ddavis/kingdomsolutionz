@@ -19,6 +19,7 @@ import {
   CareReferral,
   CareReferralStatus,
   MinistryResponse,
+  MinistryResponseConsentSource,
   MinistryResponseStatus
 } from '../../../shared/models/care-referral.model';
 
@@ -34,6 +35,10 @@ interface CareNetworkViewModel {
   assignment: Assignment;
   network: CareNetworkState;
 }
+
+type ConsentAction =
+  | 'verify'
+  | 'withdraw';
 
 @Component({
   standalone: false,
@@ -59,6 +64,15 @@ export class AssignmentCareNetworkComponent {
 
   emailPreviewVisible = false;
   sendError = '';
+
+  pendingConsentAction:
+    { responseId: number; action: ConsentAction } | null = null;
+
+  consentVerificationSource:
+    Extract<
+      MinistryResponseConsentSource,
+      'verbal-confirmation' | 'written-confirmation'
+    > = 'verbal-confirmation';
 
   readonly viewModel$:
     Observable<CareNetworkViewModel | undefined> =
@@ -109,6 +123,7 @@ export class AssignmentCareNetworkComponent {
   ): void {
     this.selectedResponseId = response.id;
     this.sendError = '';
+    this.pendingConsentAction = null;
 
     const matchingPartner =
       network.partners.find(partner =>
@@ -125,7 +140,9 @@ export class AssignmentCareNetworkComponent {
     }
 
     this.personalMessage =
-      `${response.personName} requested ${response.responseType.toLowerCase()} support and gave permission for ACT to share contact details. Please confirm whether your team can receive this referral.`;
+      response.consentToShare
+        ? `${response.personName} requested ${response.responseType.toLowerCase()} support and gave permission for ACT to share contact details. Please confirm whether your team can receive this referral.`
+        : `${response.personName} requested ${response.responseType.toLowerCase()} support. Consent has not yet been verified, so this referral must not be sent.`;
   }
 
   selectPartner(
@@ -214,12 +231,83 @@ export class AssignmentCareNetworkComponent {
     );
   }
 
-  withdrawConsent(
+  requestConsentAction(
+    response: MinistryResponse,
+    action: ConsentAction
+  ): void {
+    this.pendingConsentAction = {
+      responseId: response.id,
+      action
+    };
+  }
+
+  cancelConsentAction(): void {
+    this.pendingConsentAction = null;
+  }
+
+  updateConsentSource(event: Event): void {
+    this.consentVerificationSource =
+      (event.target as HTMLSelectElement).value as
+        typeof this.consentVerificationSource;
+  }
+
+  confirmConsentAction(
     response: MinistryResponse
   ): void {
-    this.careReferralService.withdrawConsent(
-      response.id
+    const pending = this.pendingConsentAction;
+
+    if (!pending || pending.responseId !== response.id) {
+      return;
+    }
+
+    if (pending.action === 'verify') {
+      this.careReferralService.verifyConsent(
+        response.id,
+        this.consentVerificationSource
+      );
+
+      this.personalMessage =
+        `${response.personName} requested ${response.responseType.toLowerCase()} support and directly confirmed permission for ACT to share contact details. Please confirm whether your team can receive this referral.`;
+    } else {
+      this.careReferralService.withdrawConsent(
+        response.id
+      );
+    }
+
+    this.pendingConsentAction = null;
+    this.sendError = '';
+  }
+
+  isConsentActionPending(
+    response: MinistryResponse,
+    action?: ConsentAction
+  ): boolean {
+    return Boolean(
+      this.pendingConsentAction?.responseId === response.id &&
+      (
+        !action ||
+        this.pendingConsentAction.action === action
+      )
     );
+  }
+
+  getConsentSourceLabel(
+    source: MinistryResponseConsentSource
+  ): string {
+    switch (source) {
+      case 'qr-form':
+        return 'QR response form';
+
+      case 'verbal-confirmation':
+        return 'Direct verbal confirmation';
+
+      case 'written-confirmation':
+        return 'Written confirmation';
+
+      case 'not-recorded':
+      default:
+        return 'Not recorded';
+    }
   }
 
   resetDemo(): void {
@@ -228,6 +316,7 @@ export class AssignmentCareNetworkComponent {
     this.selectedPartnerId = 302;
     this.emailPreviewVisible = false;
     this.sendError = '';
+    this.pendingConsentAction = null;
   }
 
   getSelectedResponse(

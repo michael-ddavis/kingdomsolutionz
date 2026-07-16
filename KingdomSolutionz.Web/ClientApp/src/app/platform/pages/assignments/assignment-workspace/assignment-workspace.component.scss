@@ -333,6 +333,10 @@ h1 {
   min-width: 0;
 }
 
+.record-mobile-options {
+  display: none;
+}
+
 .record-menu summary {
   list-style: none;
 }
@@ -502,8 +506,63 @@ h1 {
     grid-template-columns: 1fr;
   }
 
+  .assignment-tabs {
+    position: sticky;
+    z-index: 20;
+    top: -1px;
+    padding: 6px;
+    border-radius: var(--kos-radius-md);
+    gap: 4px;
+    scrollbar-width: none;
+    box-shadow: 0 9px 24px rgb(17 26 41 / 10%);
+  }
+
+  .assignment-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .assignment-tab-group {
+    display: block;
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .assignment-tab-group-label {
+    display: none;
+  }
+
+  .assignment-tab-group-items,
+  .assignment-tab-group--preparation
+    .assignment-tab-group-items,
+  .record-mobile-options {
+    display: flex;
+    gap: 4px;
+  }
+
   .assignment-tab {
-    flex-basis: 174px;
+    min-height: 44px;
+    padding: 0 13px;
+    flex: 0 0 auto;
+    justify-content: center;
+    scroll-snap-align: center;
+  }
+
+  .assignment-tab strong {
+    font-size: var(--kos-text-sm);
+  }
+
+  .assignment-tab small {
+    display: none;
+  }
+
+  .assignment-tab--active::after {
+    right: 10px;
+    left: 10px;
+    height: 2px;
+  }
+
+  .assignment-tab-group--record .record-menu {
+    display: none;
   }
 
 }
