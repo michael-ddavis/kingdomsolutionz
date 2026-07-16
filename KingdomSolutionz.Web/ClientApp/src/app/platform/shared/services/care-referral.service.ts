@@ -473,7 +473,7 @@ export class CareReferralService {
           tone: 'attention',
           title: 'Partner unable to accept referral',
           description:
-            `${context.partner.name} could not accept ${context.response.personName}'s referral. It has returned to the ACT follow-up queue.`,
+            `${context.partner.name} could not accept ${context.response.personName}'s referral. It has returned to the CTG follow-up queue.`,
           actor: context.partner.name,
           section: 'follow-up'
         }
@@ -654,7 +654,7 @@ export class CareReferralService {
           tone: 'success',
           title: 'Local connection confirmed',
           description:
-            `${context.response.personName} was connected with ${context.partner.name}. ACT's accountable handoff is complete.`,
+            `${context.response.personName} was connected with ${context.partner.name}. CTG's accountable handoff is complete.`,
           actor: 'Michael Davis',
           section: 'follow-up'
         }

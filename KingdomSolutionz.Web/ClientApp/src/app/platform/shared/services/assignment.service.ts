@@ -1125,7 +1125,7 @@ export class AssignmentService {
             title: 'Confirm assignment scope',
             description:
               'Confirm the ministry expectations, session responsibilities and event purpose.',
-            owner: 'Apostle Cynthia',
+            owner: 'Cynthia Thompson',
             dueDate: this.shiftDate(startDate, -58),
             status: 'complete'
           },
@@ -1134,7 +1134,7 @@ export class AssignmentService {
             title: 'Assign coordinator',
             description:
               'Name the person responsible for moving the assignment through preparation.',
-            owner: 'Apostle Cynthia',
+            owner: 'Cynthia Thompson',
             dueDate: this.shiftDate(startDate, -56),
             status: 'complete'
           }

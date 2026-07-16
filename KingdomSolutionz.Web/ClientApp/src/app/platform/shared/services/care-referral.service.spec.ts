@@ -40,7 +40,7 @@ describe('CareReferralService', () => {
     );
   });
 
-  it('records a sent referral and keeps ACT responsible', async () => {
+  it('records a sent referral and keeps CTG responsible', async () => {
     const referral = service.sendReferral(
       4101,
       302,
@@ -172,7 +172,7 @@ describe('CareReferralService', () => {
       .toBe('Jordan Ellis');
   });
 
-  it('returns a declined referral to the ACT queue', async () => {
+  it('returns a declined referral to the CTG queue', async () => {
     service.declineReferral(
       5001,
       'Outside our current capacity.'

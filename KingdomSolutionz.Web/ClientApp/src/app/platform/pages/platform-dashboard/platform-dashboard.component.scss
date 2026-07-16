@@ -163,7 +163,7 @@ h1 {
 }
 
 .section-heading h2,
-.journey-panel h2 {
+.assignment-flow-panel h2 {
   margin-bottom: 0;
   color: var(--kos-obsidian-900);
   font-size: var(--kos-text-xl);
@@ -424,7 +424,7 @@ h1 {
   font-size: var(--kos-text-xs);
 }
 
-.journey-panel {
+.assignment-flow-panel {
   display: grid;
   grid-template-columns:
     minmax(270px, 0.7fr)
@@ -445,15 +445,15 @@ h1 {
   box-shadow: var(--kos-shadow-md);
 }
 
-.journey-panel .section-eyebrow {
+.assignment-flow-panel .section-eyebrow {
   color: var(--kos-champagne-300);
 }
 
-.journey-panel h2 {
+.assignment-flow-panel h2 {
   color: var(--kos-text-on-dark);
 }
 
-.journey-description {
+.assignment-flow-description {
   max-width: 450px;
   margin: 11px 0 0;
   color: var(--kos-text-on-dark-muted);
@@ -461,7 +461,7 @@ h1 {
   line-height: 1.65;
 }
 
-.journey-steps {
+.assignment-flow-steps {
   display: grid;
   grid-template-columns:
     auto minmax(18px, 1fr)
@@ -472,7 +472,7 @@ h1 {
   align-items: center;
 }
 
-.journey-step {
+.assignment-flow-step {
   display: flex;
   min-width: 68px;
   align-items: center;
@@ -480,7 +480,7 @@ h1 {
   text-align: center;
 }
 
-.journey-step > span {
+.assignment-flow-step > span {
   display: grid;
   width: 34px;
   height: 34px;
@@ -494,37 +494,37 @@ h1 {
   background: rgb(255 255 255 / 6%);
 }
 
-.journey-step strong {
+.assignment-flow-step strong {
   color: var(--kos-text-on-dark);
   font-size: var(--kos-text-xs);
 }
 
-.journey-step small {
+.assignment-flow-step small {
   margin-top: 4px;
   color: var(--kos-text-on-dark-muted);
   font-size: var(--kos-text-xs);
 }
 
-.journey-step--complete > span {
+.assignment-flow-step--complete > span {
   border-color: var(--kos-green-600);
   color: #ffffff;
   background: var(--kos-green-600);
 }
 
-.journey-step--current > span {
+.assignment-flow-step--current > span {
   border-color: var(--kos-champagne-300);
   color: var(--kos-obsidian-950);
   background: var(--kos-champagne-metal);
   box-shadow: 0 0 0 5px rgb(197 161 90 / 14%);
 }
 
-.journey-line {
+.assignment-flow-line {
   height: 1px;
   margin: 0 6px 30px;
   background: rgb(255 255 255 / 18%);
 }
 
-.journey-line--complete {
+.assignment-flow-line--complete {
   background: var(--kos-green-600);
 }
 
@@ -551,7 +551,7 @@ h1 {
   }
 
   .dashboard-columns,
-  .journey-panel {
+  .assignment-flow-panel {
     grid-template-columns: 1fr;
   }
 }
@@ -580,12 +580,12 @@ h1 {
     justify-self: start;
   }
 
-  .journey-steps {
+  .assignment-flow-steps {
     grid-template-columns: 1fr;
     gap: 12px;
   }
 
-  .journey-line {
+  .assignment-flow-line {
     width: 1px;
     height: 18px;
     margin: 0 auto;

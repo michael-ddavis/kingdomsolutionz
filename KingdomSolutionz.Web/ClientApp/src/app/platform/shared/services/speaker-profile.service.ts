@@ -7,10 +7,10 @@ import { SpeakerProfile } from '../models/speaker-profile.model';
 export class SpeakerProfileService {
   private readonly profileSubject =
     new BehaviorSubject<SpeakerProfile>({
-      name: 'Apostle Cynthia Thompson',
+      name: 'Cynthia Thompson Global',
       ministryTitle: 'Apostolic Leader · Author · Global Speaker',
       shortBio:
-        'Apostle Cynthia Thompson equips leaders, strengthens churches and ministers with a prophetic and apostolic grace across nations.',
+        'Cynthia Thompson Global equips leaders, strengthens churches and ministers with a prophetic and apostolic grace across nations.',
       approvedPhotoUrl:
         'assets/images/apostle-cynthia/booking-portrait.avif',
       travelPreferences:

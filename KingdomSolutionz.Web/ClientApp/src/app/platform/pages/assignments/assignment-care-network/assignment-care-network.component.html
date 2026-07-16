@@ -59,7 +59,7 @@
             )
           }}
         </strong>
-        <small>Follow-up remains with ACT</small>
+        <small>Follow-up remains with CTG</small>
       </article>
 
       <article class="metric-card metric-card--success">
@@ -272,7 +272,7 @@
 
               <p *ngIf="isConsentActionPending(selectedResponse, 'verify')">
                 Only continue if {{ selectedResponse.personName }} directly gave
-                ACT permission to share their contact details and care request.
+                CTG permission to share their contact details and care request.
               </p>
 
               <p *ngIf="isConsentActionPending(selectedResponse, 'withdraw')">
@@ -424,7 +424,7 @@
                 <span
                   class="completed-message"
                   *ngIf="activeReferral.status === 'connected'">
-                  ✓ ACT follow-up complete
+                  ✓ CTG follow-up complete
                 </span>
               </div>
             </section>
@@ -560,7 +560,7 @@
             </header>
 
             <p>
-              ACT now owns the follow-up until the church
+              CTG now owns the follow-up until the church
               accepts. The recipient receives a secure response
               link rather than private ministry notes by email.
             </p>

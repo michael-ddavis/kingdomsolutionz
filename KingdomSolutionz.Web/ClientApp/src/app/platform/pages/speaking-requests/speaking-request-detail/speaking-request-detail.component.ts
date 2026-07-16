@@ -110,7 +110,7 @@ export class SpeakingRequestDetailComponent {
       return;
     }
 
-    const journey =
+    const assignment =
       this.assignmentService.createOrGetAssignment(
         {
           ...request,
@@ -120,7 +120,7 @@ export class SpeakingRequestDetailComponent {
 
     this.router.navigate([
       '/app/assignments',
-      journey.id
+      assignment.id
     ]);
   }
 
@@ -290,14 +290,14 @@ export class SpeakingRequestDetailComponent {
   openAssignment(
     request: SpeakingRequest
   ): void {
-    const journey =
+    const assignment =
       this.assignmentService.createOrGetAssignment(
         request
       );
 
     this.router.navigate([
       '/app/assignments',
-      journey.id
+      assignment.id
     ]);
   }
 

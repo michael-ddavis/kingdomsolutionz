@@ -92,7 +92,7 @@ interface DashboardViewModel {
   workspaceOverviews?: WorkspaceOverview[];
 }
 
-interface JourneyTaskContext {
+interface AssignmentTaskContext {
   assignment: Assignment;
   stage: AssignmentStage;
   task: AssignmentTask;
@@ -190,8 +190,8 @@ export class PlatformDashboardComponent {
     const orderedRequests =
       this.orderRequestsByNewest(speakingRequests);
 
-    const orderedJourneys =
-      this.orderJourneysByEventDate(assignments);
+    const orderedAssignments =
+      this.orderAssignmentsByEventDate(assignments);
 
     const awaitingReview =
       orderedRequests.filter(
@@ -205,14 +205,14 @@ export class PlatformDashboardComponent {
           request.status === 'information-needed'
       );
 
-    const activeJourneys =
-      orderedJourneys.filter(
+    const activeAssignments =
+      orderedAssignments.filter(
         assignment => assignment.status === 'active'
       );
 
     const assignmentAttentionCount =
-      this.getJourneyAttentionCount(
-        activeJourneys
+      this.getAssignmentAttentionCount(
+        activeAssignments
       );
 
     const requestPriorities =
@@ -221,8 +221,8 @@ export class PlatformDashboardComponent {
       );
 
     const assignmentPriorities =
-      this.buildJourneyPriorities(
-        activeJourneys
+      this.buildAssignmentPriorities(
+        activeAssignments
       );
 
     const priorities = [
@@ -238,7 +238,7 @@ export class PlatformDashboardComponent {
     return {
       workspace,
       eyebrow: 'All Ministries',
-      title: 'Good afternoon, Apostle Cynthia',
+      title: 'Good afternoon, Cynthia Thompson',
       description:
         'Here is what needs your attention across your connected ministries.',
 
@@ -250,7 +250,7 @@ export class PlatformDashboardComponent {
           tone: 'navy'
         },
         {
-          value: activeJourneys.length.toString(),
+          value: activeAssignments.length.toString(),
           label: 'Active engagements',
           detail: 'Speaking assignments underway',
           tone: 'violet'
@@ -278,20 +278,20 @@ export class PlatformDashboardComponent {
 
       activities: this.buildCombinedActivities(
         orderedRequests,
-        orderedJourneys
+        orderedAssignments
       ),
 
       workspaceOverviews: [
         {
-          name: 'Apostle Cynthia Ministries',
+          name: 'Cynthia Thompson Global',
           description:
             'Speaking, travel, events and ministry responses.',
           primaryMetric:
-            activeJourneys.length.toString(),
+            activeAssignments.length.toString(),
           primaryLabel: 'Active assignments',
           secondaryMetric:
             this.getAverageReadiness(
-              activeJourneys
+              activeAssignments
             ) + '%',
           secondaryLabel: 'Readiness',
           tone: 'violet'
@@ -308,8 +308,8 @@ export class PlatformDashboardComponent {
     const orderedRequests =
       this.orderRequestsByNewest(speakingRequests);
 
-    const orderedJourneys =
-      this.orderJourneysByEventDate(assignments);
+    const orderedAssignments =
+      this.orderAssignmentsByEventDate(assignments);
 
     const awaitingReview =
       orderedRequests.filter(
@@ -323,13 +323,13 @@ export class PlatformDashboardComponent {
           request.status === 'information-needed'
       );
 
-    const activeJourneys =
-      orderedJourneys.filter(
+    const activeAssignments =
+      orderedAssignments.filter(
         assignment => assignment.status === 'active'
       );
 
     const approachingEvents =
-      activeJourneys.filter(
+      activeAssignments.filter(
         assignment => {
           const daysUntilEvent =
             this.getDaysUntilEvent(assignment);
@@ -347,20 +347,20 @@ export class PlatformDashboardComponent {
       );
 
     const assignmentPriorities =
-      this.buildJourneyPriorities(
-        activeJourneys
+      this.buildAssignmentPriorities(
+        activeAssignments
       );
 
     return {
       workspace,
       eyebrow: 'Itinerant Ministry',
-      title: 'Apostle Cynthia Ministries',
+      title: 'Cynthia Thompson Global',
       description:
         'Speaking engagements, travel preparation and ministry responses.',
 
       metrics: [
         {
-          value: activeJourneys.length.toString(),
+          value: activeAssignments.length.toString(),
           label: 'Active assignments',
           detail: 'Approved engagements underway',
           tone: 'navy'
@@ -368,7 +368,7 @@ export class PlatformDashboardComponent {
         {
           value:
             this.getAverageReadiness(
-              activeJourneys
+              activeAssignments
             ) + '%',
           label: 'Average readiness',
           detail: 'Across active engagements',
@@ -399,7 +399,7 @@ export class PlatformDashboardComponent {
       activities:
         this.buildApostleCynthiaActivities(
           orderedRequests,
-          orderedJourneys
+          orderedAssignments
         )
     };
   }
@@ -517,7 +517,7 @@ export class PlatformDashboardComponent {
             ? `${request.organizationName} still needs to provide additional host information.`
             : `${request.organizationName} submitted a speaking invitation for review.`,
 
-        workspace: 'ACT Ministries',
+        workspace: 'CTG',
 
         due: this.getSubmissionLabel(
           request.submittedUtc
@@ -536,7 +536,7 @@ export class PlatformDashboardComponent {
       }));
   }
 
-  private buildJourneyPriorities(
+  private buildAssignmentPriorities(
     assignments: readonly Assignment[]
   ): DashboardPriority[] {
     const priorities: DashboardPriority[] = [];
@@ -578,7 +578,7 @@ export class PlatformDashboardComponent {
         title: nextTask.task.title,
         description:
           `${assignment.eventName} · ${nextTask.stage.name}`,
-        workspace: 'Speaker Journeys',
+        workspace: 'Assignments',
         due:
           this.getTaskDueLabel(
             nextTask.task.dueDate
@@ -586,7 +586,7 @@ export class PlatformDashboardComponent {
         status:
           daysUntilDue < 0
             ? 'Overdue'
-            : 'Journey task',
+            : 'Assignment task',
         tone:
           daysUntilDue <= 7
             ? 'amber'
@@ -613,7 +613,7 @@ export class PlatformDashboardComponent {
 
   private getBlockedTask(
     assignment: Assignment
-  ): JourneyTaskContext | undefined {
+  ): AssignmentTaskContext | undefined {
     for (const stage of assignment.stages) {
       const task = stage.tasks.find(
         item => item.status === 'blocked'
@@ -633,8 +633,8 @@ export class PlatformDashboardComponent {
 
   private getNextIncompleteTask(
     assignment: Assignment
-  ): JourneyTaskContext | undefined {
-    const contexts: JourneyTaskContext[] = [];
+  ): AssignmentTaskContext | undefined {
+    const contexts: AssignmentTaskContext[] = [];
 
     for (const stage of assignment.stages) {
       for (const task of stage.tasks) {
@@ -659,7 +659,7 @@ export class PlatformDashboardComponent {
     )[0];
   }
 
-  private getJourneyAttentionCount(
+  private getAssignmentAttentionCount(
     assignments: readonly Assignment[]
   ): number {
     return assignments.filter(
@@ -718,7 +718,7 @@ export class PlatformDashboardComponent {
       );
 
     const assignmentActivity =
-      this.buildLatestJourneyActivity(
+      this.buildLatestAssignmentActivity(
         assignments
       );
 
@@ -745,7 +745,7 @@ export class PlatformDashboardComponent {
       );
 
     const assignmentActivity =
-      this.buildLatestJourneyActivity(
+      this.buildLatestAssignmentActivity(
         assignments
       );
 
@@ -785,10 +785,10 @@ export class PlatformDashboardComponent {
     };
   }
 
-  private buildLatestJourneyActivity(
+  private buildLatestAssignmentActivity(
     assignments: readonly Assignment[]
   ): DashboardActivity | null {
-    const latestJourney =
+    const latestAssignment =
       [...assignments].sort(
         (left, right) =>
           new Date(
@@ -799,21 +799,21 @@ export class PlatformDashboardComponent {
           ).getTime()
       )[0];
 
-    if (!latestJourney) {
+    if (!latestAssignment) {
       return null;
     }
 
     return {
       title: 'Speaker assignment created',
       description:
-        `${latestJourney.eventName} is now in ministry preparation.`,
+        `${latestAssignment.eventName} is now in ministry preparation.`,
       time:
         this.getSubmissionLabel(
-          latestJourney.createdUtc
+          latestAssignment.createdUtc
         ),
       initials:
         this.getOrganizationInitials(
-          latestJourney.organizationName
+          latestAssignment.organizationName
         )
     };
   }
@@ -832,7 +832,7 @@ export class PlatformDashboardComponent {
     );
   }
 
-  private orderJourneysByEventDate(
+  private orderAssignmentsByEventDate(
     assignments: readonly Assignment[]
   ): Assignment[] {
     return [...assignments].sort(

@@ -266,7 +266,7 @@ export class SpeakingRequestService {
           message:
             message.trim() ||
             'The invitation was approved and moved into assignment preparation.',
-          actor: 'Apostle Cynthia Ministries',
+          actor: 'Cynthia Thompson Global',
           createdUtc
         };
 
@@ -277,7 +277,7 @@ export class SpeakingRequestService {
           message:
             message.trim() ||
             'The ministry team is unable to accept this invitation.',
-          actor: 'Apostle Cynthia Ministries',
+          actor: 'Cynthia Thompson Global',
           createdUtc
         };
 

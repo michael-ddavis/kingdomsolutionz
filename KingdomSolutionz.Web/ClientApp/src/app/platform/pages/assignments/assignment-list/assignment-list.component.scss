@@ -2,8 +2,15 @@
   display: block;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 .assignments-page {
   display: grid;
+  min-width: 0;
   width: min(100%, var(--kos-content-max));
   margin: 0 auto;
   gap: 24px;
@@ -14,6 +21,18 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 26px;
+}
+
+.page-heading > div,
+.assignment-toolbar,
+.assignment-list,
+.assignment-card,
+.assignment-card-body,
+.assignment-card-footer,
+.assignment-main,
+.summary-card,
+.summary-card > div:last-child {
+  min-width: 0;
 }
 
 .eyebrow {
@@ -140,6 +159,7 @@ h1 {
   color: var(--kos-text-secondary);
   font-size: var(--kos-text-sm);
   font-weight: 750;
+  overflow-wrap: anywhere;
 }
 
 .summary-card small {
@@ -670,9 +690,12 @@ h1 {
   }
 
   .filter-group {
+    width: 100%;
     align-self: flex-start;
     max-width: 100%;
     overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
   }
 
   .assignment-card-heading {
@@ -716,6 +739,47 @@ h1 {
     border: 1px solid var(--kos-border);
     border-radius: var(--kos-radius-sm);
     place-items: center;
+  }
+}
+
+@media (max-width: 445px) {
+  .assignments-page {
+    width: 100%;
+    overflow-x: clip;
+  }
+
+  .page-heading {
+    padding: 16px;
+  }
+
+  .primary-action {
+    max-width: 100%;
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .summary-grid {
+    gap: 8px;
+  }
+
+  .summary-card {
+    min-height: 90px;
+    padding: 12px;
+  }
+
+  .filter-group {
+    align-self: stretch;
+  }
+
+  .filter-group button {
+    flex: 0 0 auto;
+  }
+
+  .assignment-card-heading,
+  .assignment-card-body,
+  .assignment-card-footer {
+    padding-right: 15px;
+    padding-left: 15px;
   }
 }
 
