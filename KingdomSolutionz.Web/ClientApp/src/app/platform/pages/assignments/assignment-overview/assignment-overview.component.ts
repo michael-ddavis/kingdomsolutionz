@@ -47,6 +47,14 @@ export class AssignmentOverviewComponent {
     );
   }
 
+  formatToken(value: string): string {
+    return value
+      .replace(/-/g, ' ')
+      .replace(/\b\w/g, character =>
+        character.toUpperCase()
+      );
+  }
+
   getTotalTaskCount(
     assignment: Assignment
   ): number {

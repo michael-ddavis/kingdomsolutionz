@@ -23,21 +23,30 @@
       </article>
     </section>
 
-    <section class="invitation-source-panel">
-      <header><div><p class="source-eyebrow">Carried forward from invitation</p><h2>Approved terms and ministry request</h2></div><a [routerLink]="['/app/speaking-requests', assignment.speakingRequestId]">View source <span>→</span></a></header>
+    <details class="invitation-source-panel">
+      <summary>
+        <span class="source-mark" aria-hidden="true">↳</span>
+        <span class="source-summary-copy">
+          <span class="source-eyebrow">Invitation source</span>
+          <strong>Approved terms retained · ACT-{{ assignment.speakingRequestId }}</strong>
+        </span>
+        <span class="source-summary-note">Review carried-forward details</span>
+        <span class="source-chevron" aria-hidden="true">⌄</span>
+      </summary>
       <div class="source-content">
         <article class="ministry-request-card"><small>Requested ministry</small><p>{{ assignment.invitation.ministryRequest }}</p></article>
         <dl class="source-facts">
           <div><dt>Attendance</dt><dd>{{ assignment.invitation.expectedAttendance | number }}</dd></div>
-          <div><dt>Travel / booking</dt><dd>{{ assignment.invitation.travelCoverageStatus }} · {{ assignment.invitation.travelBookedBy }}</dd></div>
-          <div><dt>Lodging</dt><dd>{{ assignment.invitation.lodgingCoverageStatus }}</dd></div>
-          <div><dt>Honorarium</dt><dd>{{ assignment.invitation.honorariumStatus }}<ng-container *ngIf="assignment.invitation.honorariumAmount"> · {{ assignment.invitation.honorariumAmount | number }} {{ assignment.invitation.honorariumCurrency }}</ng-container></dd></div>
-          <div><dt>Agreement</dt><dd>{{ assignment.invitation.agreementStatus }}</dd></div>
-          <div><dt>Payment</dt><dd>{{ assignment.invitation.paymentStatus }}</dd></div>
-          <div><dt>Engagement</dt><dd>{{ assignment.invitation.engagementStatus }}</dd></div>
+          <div><dt>Travel / booking</dt><dd>{{ formatToken(assignment.invitation.travelCoverageStatus) }} · {{ formatToken(assignment.invitation.travelBookedBy) }}</dd></div>
+          <div><dt>Lodging</dt><dd>{{ formatToken(assignment.invitation.lodgingCoverageStatus) }}</dd></div>
+          <div><dt>Honorarium</dt><dd>{{ formatToken(assignment.invitation.honorariumStatus) }}<ng-container *ngIf="assignment.invitation.honorariumAmount"> · {{ assignment.invitation.honorariumAmount | number }} {{ assignment.invitation.honorariumCurrency }}</ng-container></dd></div>
+          <div><dt>Agreement</dt><dd>{{ formatToken(assignment.invitation.agreementStatus) }}</dd></div>
+          <div><dt>Payment</dt><dd>{{ formatToken(assignment.invitation.paymentStatus) }}</dd></div>
+          <div><dt>Engagement</dt><dd>{{ formatToken(assignment.invitation.engagementStatus) }}</dd></div>
         </dl>
+        <a class="source-link" [routerLink]="['/app/speaking-requests', assignment.speakingRequestId]">View source invitation <span>→</span></a>
       </div>
-    </section>
+    </details>
 
     <section class="overview-layout">
       <article class="readiness-panel">

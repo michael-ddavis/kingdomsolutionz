@@ -166,6 +166,34 @@ describe('AssignmentService invitation prefill', () => {
 
     service.requestHostCoordination(assignment.id);
     service.submitHostCoordination(assignment.id, {
+      outboundFlight: {
+        type: 'outbound',
+        airline: 'Delta',
+        flightNumber: 'DL 241',
+        confirmationNumber: 'ABC123',
+        departureAirport: 'RIC',
+        arrivalAirport: 'ATL',
+        departureDate: '2026-08-27',
+        departureTime: '10:00',
+        arrivalDate: '2026-08-27',
+        arrivalTime: '11:45',
+        seat: '2A',
+        notes: ''
+      },
+      returnFlight: {
+        type: 'return',
+        airline: 'Delta',
+        flightNumber: 'DL 310',
+        confirmationNumber: 'ABC123',
+        departureAirport: 'ATL',
+        arrivalAirport: 'RIC',
+        departureDate: '2026-08-31',
+        departureTime: '14:00',
+        arrivalDate: '2026-08-31',
+        arrivalTime: '15:35',
+        seat: '2A',
+        notes: ''
+      },
       hotel: {
         hotelName: 'Hyatt Regency',
         confirmationNumber: 'HTL123',
@@ -207,6 +235,8 @@ describe('AssignmentService invitation prefill', () => {
       .pipe(take(1))
       .subscribe(updated => {
         expect(updated?.hostCoordination.status).toBe('submitted');
+        expect(updated?.travelItinerary.outboundFlight.flightNumber).toBe('DL 241');
+        expect(updated?.travelItinerary.returnFlight.flightNumber).toBe('DL 310');
         expect(updated?.travelItinerary.hotel.hotelName).toBe('Hyatt Regency');
         expect(updated?.contactDirectory.travelContact.name).toBe('Jordan Ellis');
       });

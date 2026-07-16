@@ -44,6 +44,9 @@ export class AssignmentDetailComponent {
   expandedCommentTaskId:
     number | null = null;
 
+  readonly stageExpansionOverrides:
+    Record<string, boolean> = {};
+
   readonly commentDrafts:
     Record<number, string> = {};
 
@@ -107,6 +110,23 @@ export class AssignmentDetailComponent {
       stageId,
       task
     );
+  }
+
+  isStageExpanded(
+    stage: AssignmentStage
+  ): boolean {
+    return this.stageExpansionOverrides[stage.id] ??
+      (
+        stage.status === 'current' ||
+        stage.status === 'blocked'
+      );
+  }
+
+  toggleStageExpansion(
+    stage: AssignmentStage
+  ): void {
+    this.stageExpansionOverrides[stage.id] =
+      !this.isStageExpanded(stage);
   }
 
   toggleComments(

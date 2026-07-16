@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, filter, take } from 'rxjs';
 
 import {
   Assignment,
+  AssignmentFlight,
   AssignmentHostCoordinationInput
 } from '../../../shared/models/assignment.model';
 import { AssignmentService } from '../../../shared/services/assignment.service';
@@ -32,8 +33,10 @@ export class AssignmentHostCoordinationComponent implements OnInit {
   selectedFiles: File[] = [];
 
   readonly form = this.formBuilder.nonNullable.group({
+    outboundFlight: this.createFlightForm(),
+    returnFlight: this.createFlightForm(),
     hotel: this.formBuilder.nonNullable.group({
-      hotelName: ['', Validators.required],
+      hotelName: '',
       confirmationNumber: '',
       address: '',
       city: '',
@@ -58,7 +61,7 @@ export class AssignmentHostCoordinationComponent implements OnInit {
     travelContact: this.createContactForm(),
     mediaContact: this.createContactForm(),
     emergencyContact: this.createContactForm(),
-    eventSchedule: ['', Validators.required],
+    eventSchedule: '',
     promotionalRequirements: '',
     prayerFocus: '',
     hostNotes: ''
@@ -81,6 +84,8 @@ export class AssignmentHostCoordinationComponent implements OnInit {
         const directory = assignment.contactDirectory;
 
         this.form.patchValue({
+          outboundFlight: assignment.travelItinerary.outboundFlight,
+          returnFlight: assignment.travelItinerary.returnFlight,
           hotel: assignment.travelItinerary.hotel,
           groundTransportation:
             assignment.travelItinerary.groundTransportation,
@@ -110,6 +115,14 @@ export class AssignmentHostCoordinationComponent implements OnInit {
     const value = this.form.getRawValue();
     const input: AssignmentHostCoordinationInput = {
       ...value,
+      outboundFlight: this.normalizeFlight(
+        'outbound',
+        value.outboundFlight
+      ),
+      returnFlight: this.normalizeFlight(
+        'return',
+        value.returnFlight
+      ),
       hotel: {
         ...value.hotel,
         hotelName: value.hotel.hotelName.trim(),
@@ -155,5 +168,44 @@ export class AssignmentHostCoordinationComponent implements OnInit {
       phone: '',
       email: ''
     });
+  }
+
+  private createFlightForm() {
+    return this.formBuilder.nonNullable.group({
+      airline: '',
+      flightNumber: '',
+      confirmationNumber: '',
+      departureAirport: '',
+      arrivalAirport: '',
+      departureDate: '',
+      departureTime: '',
+      arrivalDate: '',
+      arrivalTime: '',
+      seat: '',
+      notes: ''
+    });
+  }
+
+  private normalizeFlight(
+    type: AssignmentFlight['type'],
+    value: Omit<AssignmentFlight, 'type'>
+  ): AssignmentFlight {
+    return {
+      type,
+      airline: value.airline.trim(),
+      flightNumber: value.flightNumber.trim().toUpperCase(),
+      confirmationNumber:
+        value.confirmationNumber.trim().toUpperCase(),
+      departureAirport:
+        value.departureAirport.trim().toUpperCase(),
+      arrivalAirport:
+        value.arrivalAirport.trim().toUpperCase(),
+      departureDate: value.departureDate,
+      departureTime: value.departureTime,
+      arrivalDate: value.arrivalDate,
+      arrivalTime: value.arrivalTime,
+      seat: value.seat.trim().toUpperCase(),
+      notes: value.notes.trim()
+    };
   }
 }

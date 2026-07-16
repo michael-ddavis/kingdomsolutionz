@@ -122,11 +122,15 @@ p {
 .stage-heading {
   display: flex;
   padding: 20px 22px;
-  border-bottom: 1px solid var(--kos-border);
+  border-bottom: 1px solid transparent;
   align-items: flex-start;
   justify-content: space-between;
   gap: 20px;
   background: var(--kos-surface-soft);
+}
+
+.stage-heading--expanded {
+  border-bottom-color: var(--kos-border);
 }
 
 .stage-heading-copy {
@@ -232,6 +236,34 @@ p {
   font-weight: 750;
 }
 
+.stage-collapse-button {
+  display: grid;
+  width: var(--kos-control-height);
+  height: var(--kos-control-height);
+  padding: 0;
+  border: 1px solid var(--kos-border);
+  border-radius: var(--kos-radius-sm);
+  color: var(--kos-text-secondary);
+  font: inherit;
+  cursor: pointer;
+  place-items: center;
+  background: var(--kos-surface-elevated);
+}
+
+.stage-collapse-button span {
+  transition: transform 220ms var(--kos-ease-standard);
+}
+
+.stage-collapse-button[aria-expanded='true'] span {
+  transform: rotate(180deg);
+}
+
+.stage-collapse-button:hover {
+  border-color: var(--kos-blue-600);
+  color: var(--kos-blue-600);
+  background: var(--kos-blue-100);
+}
+
 .stage-link {
   display: inline-flex;
   min-height: var(--kos-control-height);
@@ -247,6 +279,25 @@ p {
 .stage-link:hover {
   color: var(--kos-obsidian-900);
   text-decoration: underline;
+}
+
+.stage-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 240ms var(--kos-ease-standard),
+    opacity 180ms var(--kos-ease-standard);
+}
+
+.stage-content--open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.stage-content-inner {
+  min-height: 0;
+  overflow: hidden;
 }
 
 .task-list {
@@ -289,7 +340,7 @@ p {
 }
 
 .task-toggle:hover {
-  background: var(--kos-champagne-100);
+  background: var(--kos-blue-100);
 }
 
 .task-toggle:focus-visible {
@@ -373,9 +424,9 @@ p {
 
 .comment-toggle:hover,
 .comment-toggle--active {
-  border-color: var(--kos-champagne-500);
-  color: var(--kos-champagne-700);
-  background: var(--kos-champagne-100);
+  border-color: var(--kos-blue-600);
+  color: var(--kos-blue-600);
+  background: var(--kos-blue-100);
 }
 
 .comment-panel {
@@ -383,12 +434,14 @@ p {
   padding: 17px;
   border: 1px solid var(--kos-border);
   border-radius: var(--kos-radius-md);
-  background:
-    linear-gradient(
-      145deg,
-      var(--kos-surface-soft),
-      var(--kos-champagne-100)
-    );
+  background: var(--kos-surface-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage-content,
+  .stage-collapse-button span {
+    transition: none;
+  }
 }
 
 .comment-thread {

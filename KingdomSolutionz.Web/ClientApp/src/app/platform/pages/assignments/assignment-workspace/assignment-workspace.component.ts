@@ -114,24 +114,22 @@ export class AssignmentWorkspaceComponent {
               'Responses, referrals and handoffs'
           }
         ]
+      }
+    ];
+
+  readonly recordTabs:
+    AssignmentWorkspaceTab[] = [
+      {
+        label: 'Closeout',
+        route: 'closeout',
+        description:
+          'Outcomes, reconciliation and archive'
       },
       {
-        id: 'record',
-        label: 'Record',
-        tabs: [
-          {
-            label: 'Closeout',
-            route: 'closeout',
-            description:
-              'Outcomes, reconciliation and archive'
-          },
-          {
-            label: 'Ministry Log',
-            route: 'activity',
-            description:
-              'Updates, decisions and activity'
-          }
-        ]
+        label: 'Ministry Log',
+        route: 'activity',
+        description:
+          'Updates, decisions and activity'
       }
     ];
 
