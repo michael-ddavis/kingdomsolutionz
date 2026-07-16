@@ -642,6 +642,82 @@ export class AssignmentService {
     this.assignmentsSubject.next(updatedAssignments);
   }
 
+  addCareReferralActivity(
+    assignmentId: number,
+    activity: {
+      type:
+        | 'referral-sent'
+        | 'referral-viewed'
+        | 'referral-accepted'
+        | 'referral-declined'
+        | 'person-connected';
+      tone: AssignmentActivityTone;
+      title: string;
+      description: string;
+      actor: string;
+      section:
+        | 'responses'
+        | 'follow-up';
+    }
+  ): void {
+    const updatedAssignments: Assignment[] =
+      this.assignmentsSubject.value.map(assignment => {
+        if (assignment.id !== assignmentId) {
+          return assignment;
+        }
+
+        return this.appendActivity(
+          assignment,
+          activity
+        );
+      });
+
+    this.assignmentsSubject.next(updatedAssignments);
+  }
+
+  resetCareReferralActivity(
+    assignmentId: number
+  ): void {
+    const referralActivityTypes:
+      AssignmentActivityItem['type'][] = [
+        'referral-sent',
+        'referral-viewed',
+        'referral-accepted',
+        'referral-declined',
+        'person-connected'
+      ];
+
+    const updatedAssignments: Assignment[] =
+      this.assignmentsSubject.value.map(assignment => {
+        if (assignment.id !== assignmentId) {
+          return assignment;
+        }
+
+        const items =
+          assignment.activityLog.items.filter(
+            item =>
+              !referralActivityTypes.includes(
+                item.type
+              )
+          );
+
+        return {
+          ...assignment,
+          activityLog: {
+            items,
+            lastUpdatedUtc:
+              items.length === 0
+                ? null
+                : items[
+                  items.length - 1
+                ].createdUtc
+          }
+        };
+      });
+
+    this.assignmentsSubject.next(updatedAssignments);
+  }
+
   private buildAssignment(
     request: SpeakingRequest,
     assignmentId: number

@@ -1,0 +1,302 @@
+<ng-container
+  *ngIf="
+    viewModel$ | async as vm;
+    else referralNotFound
+  ">
+
+  <section class="partner-response-page">
+    <header class="preview-banner">
+      <div>
+        <span>Partner portal preview</span>
+        <strong>
+          This is the secure response experience received
+          by {{ vm.context.partner.name }}.
+        </strong>
+      </div>
+
+      <button
+        type="button"
+        (click)="
+          returnToAssignment(
+            vm.assignment.id
+          )
+        ">
+        Return to ACT assignment
+      </button>
+    </header>
+
+    <main class="response-card">
+      <header class="church-heading">
+        <div class="church-mark" aria-hidden="true">
+          {{ vm.context.partner.name.charAt(0) }}
+        </div>
+
+        <div>
+          <p>KingdomOS Care Network</p>
+          <h1>{{ vm.context.partner.name }}</h1>
+          <span>
+            Secure care referral from Apostle Cynthia Ministries
+          </span>
+        </div>
+
+        <small
+          [ngClass]="[
+            'status-badge',
+            'status-badge--' +
+              vm.context.referral.status
+          ]">
+          {{
+            getStatusLabel(
+              vm.context.referral.status
+            )
+          }}
+        </small>
+      </header>
+
+      <section class="trust-notice">
+        <span aria-hidden="true">◎</span>
+
+        <p>
+          This person gave permission for ACT to share the
+          contact information below for local ministry follow-up.
+          Please accept only if your team can take responsibility
+          for the next step.
+        </p>
+      </section>
+
+      <section class="referral-summary">
+        <div class="person-summary">
+          <span class="person-avatar" aria-hidden="true">
+            {{ vm.context.response.personName.charAt(0) }}
+          </span>
+
+          <div>
+            <small>Person requesting connection</small>
+            <h2>{{ vm.context.response.personName }}</h2>
+            <p>
+              {{ vm.context.response.city }},
+              {{ vm.context.response.state }}
+              {{ vm.context.response.postalCode }}
+            </p>
+          </div>
+        </div>
+
+        <dl>
+          <div>
+            <dt>Requested support</dt>
+            <dd>{{ vm.context.response.responseType }}</dd>
+          </div>
+
+          <div>
+            <dt>Event</dt>
+            <dd>{{ vm.assignment.eventName }}</dd>
+          </div>
+
+          <div>
+            <dt>Event location</dt>
+            <dd>
+              {{ vm.assignment.city }},
+              {{ vm.assignment.state }}
+            </dd>
+          </div>
+
+          <div>
+            <dt>Requested response time</dt>
+            <dd>
+              Within
+              {{ vm.context.partner.responseSlaHours }} hours
+            </dd>
+          </div>
+        </dl>
+
+        <article class="support-request">
+          <small>What the person requested</small>
+          <p>{{ vm.context.response.requestedSupport }}</p>
+        </article>
+
+        <article class="coordinator-note">
+          <small>ACT coordinator note</small>
+          <p>{{ vm.context.referral.personalMessage }}</p>
+        </article>
+      </section>
+
+      <ng-container
+        *ngIf="
+          vm.context.referral.status === 'sent' ||
+          vm.context.referral.status === 'viewed';
+        else responseRecorded
+      ">
+
+        <form
+          class="response-form"
+          [formGroup]="responseForm"
+          (ngSubmit)="acceptReferral()">
+
+          <header>
+            <p>Accept responsibility</p>
+            <h2>Confirm your church's next step</h2>
+
+            <span>
+              ACT will remain responsible until your team
+              accepts this handoff.
+            </span>
+          </header>
+
+          <div class="field-grid">
+            <label>
+              <span>Assigned church owner</span>
+
+              <input
+                type="text"
+                maxlength="120"
+                formControlName="assignedOwner" />
+
+              <small
+                *ngIf="
+                  responseForm.controls
+                    .assignedOwner.touched &&
+                  responseForm.controls
+                    .assignedOwner.invalid
+                ">
+                Name the person responsible for follow-up.
+              </small>
+            </label>
+
+            <label>
+              <span>Planned next step</span>
+
+              <input
+                type="text"
+                maxlength="180"
+                formControlName="nextStep" />
+
+              <small
+                *ngIf="
+                  responseForm.controls
+                    .nextStep.touched &&
+                  responseForm.controls
+                    .nextStep.invalid
+                ">
+                Record what your team will do next.
+              </small>
+            </label>
+          </div>
+
+          <label
+            class="decline-field"
+            *ngIf="declineMode">
+
+            <span>Why is your church unable to accept?</span>
+
+            <textarea
+              rows="3"
+              maxlength="240"
+              formControlName="declineReason"
+              placeholder="Capacity, location, ministry fit or another reason">
+            </textarea>
+
+            <small
+              *ngIf="
+                responseForm.controls
+                  .declineReason.touched &&
+                responseForm.controls
+                  .declineReason.invalid
+              ">
+              Give ACT enough context to choose another partner.
+            </small>
+          </label>
+
+          <footer>
+            <button
+              type="button"
+              class="decline-button"
+              (click)="declineReferral()">
+              {{
+                declineMode
+                  ? 'Confirm unable to accept'
+                  : 'Unable to accept'
+              }}
+            </button>
+
+            <button
+              type="submit"
+              class="accept-button">
+              Accept care responsibility
+            </button>
+          </footer>
+        </form>
+      </ng-container>
+
+      <ng-template #responseRecorded>
+        <section
+          [ngClass]="[
+            'response-recorded',
+            'response-recorded--' +
+              vm.context.referral.status
+          ]">
+
+          <span class="recorded-icon" aria-hidden="true">
+            {{
+              vm.context.referral.status === 'declined'
+                ? '×'
+                : '✓'
+            }}
+          </span>
+
+          <div>
+            <p>Response recorded</p>
+            <h2>
+              {{
+                getStatusLabel(
+                  vm.context.referral.status
+                )
+              }}
+            </h2>
+
+            <ng-container
+              *ngIf="
+                vm.context.referral.status !== 'declined'
+              ">
+
+              <span>
+                <strong>{{ vm.context.referral.assignedOwner }}</strong>
+                now owns
+                {{ vm.context.referral.nextStep }}.
+                ACT can see the acceptance without receiving
+                private pastoral notes.
+              </span>
+            </ng-container>
+
+            <span
+              *ngIf="
+                vm.context.referral.status === 'declined'
+              ">
+              The response has returned to ACT so another
+              local care partner can be selected.
+            </span>
+          </div>
+
+          <button
+            type="button"
+            (click)="
+              returnToAssignment(
+                vm.assignment.id
+              )
+            ">
+            View ACT status
+          </button>
+        </section>
+      </ng-template>
+    </main>
+  </section>
+</ng-container>
+
+<ng-template #referralNotFound>
+  <section class="not-found">
+    <h1>Referral unavailable</h1>
+    <p>
+      This secure care referral could not be found or is no
+      longer available.
+    </p>
+  </section>
+</ng-template>

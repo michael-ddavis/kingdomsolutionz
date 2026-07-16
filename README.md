@@ -46,6 +46,7 @@ dotnet run --project KingdomSolutionz.Web/KingdomSolutionz.Web.csproj
 - `/invite/apostle-cynthia` — public speaking-request demonstration
 - `/app/login` — KingdomOS demonstration entry
 - `/app` — KingdomOS workspace prototype
+- `/app/assignments/2001/care-network` — event responses, local care partners, and accountable referral demonstration
 
 ## KingdomOS design foundation
 
@@ -66,8 +67,10 @@ KingdomOS is currently a product demonstration, not a production tenant applicat
 
 - the KingdomOS login does not authenticate a user;
 - assignments, speaking requests, workspaces, travel details, and activity are stored in browser memory;
+- care-network referral state is stored in browser local storage so the send, acceptance, and connection sequence survives a demo refresh;
+- referral email delivery is simulated; a production provider and signed, expiring partner links are still required;
 - document uploads use temporary browser object URLs;
-- refreshing the page resets demonstration data;
+- refreshing the page resets most demonstration data outside the care-network flow;
 - administrative lead endpoints must be protected before production use.
 
 Authentication, authorization, durable APIs, database migrations, and document storage are required before onboarding real KingdomOS users.

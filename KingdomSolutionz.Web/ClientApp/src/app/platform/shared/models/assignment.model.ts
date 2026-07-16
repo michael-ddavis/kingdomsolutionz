@@ -202,6 +202,11 @@ export type AssignmentActivityType =
   | 'document-removed'
   | 'task-updated'
   | 'comment-added'
+  | 'referral-sent'
+  | 'referral-viewed'
+  | 'referral-accepted'
+  | 'referral-declined'
+  | 'person-connected'
   | 'note-added';
 
 export type AssignmentActivityTone =

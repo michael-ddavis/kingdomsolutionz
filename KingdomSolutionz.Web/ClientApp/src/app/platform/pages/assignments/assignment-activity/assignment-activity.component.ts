@@ -174,6 +174,21 @@ export class AssignmentActivityComponent
       case 'comment-added':
         return '◌';
 
+      case 'referral-sent':
+        return '→';
+
+      case 'referral-viewed':
+        return '◉';
+
+      case 'referral-accepted':
+        return '✓';
+
+      case 'referral-declined':
+        return '×';
+
+      case 'person-connected':
+        return '◆';
+
       case 'note-added':
       default:
         return '•';

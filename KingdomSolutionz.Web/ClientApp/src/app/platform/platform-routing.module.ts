@@ -14,6 +14,9 @@ import {
   AssignmentContactsComponent
 } from './pages/assignments/assignment-contacts/assignment-contacts.component';
 import {
+  AssignmentCareNetworkComponent
+} from './pages/assignments/assignment-care-network/assignment-care-network.component';
+import {
   AssignmentDetailComponent
 } from './pages/assignments/assignment-detail/assignment-detail.component';
 import {
@@ -38,6 +41,9 @@ import {
   PlatformLoginComponent
 } from './pages/platform-login/platform-login.component';
 import {
+  PartnerReferralResponseComponent
+} from './pages/referrals/partner-referral-response/partner-referral-response.component';
+import {
   SpeakingRequestDetailComponent
 } from './pages/speaking-requests/speaking-request-detail/speaking-request-detail.component';
 import {
@@ -48,6 +54,10 @@ const routes: Routes = [
   {
     path: 'login',
     component: PlatformLoginComponent
+  },
+  {
+    path: 'referrals/:id/respond',
+    component: PartnerReferralResponseComponent
   },
   {
     path: '',
@@ -93,6 +103,10 @@ const routes: Routes = [
           {
             path: 'documents',
             component: AssignmentDocumentsComponent
+          },
+          {
+            path: 'care-network',
+            component: AssignmentCareNetworkComponent
           },
           {
             path: 'activity',

@@ -82,6 +82,12 @@ export class AssignmentWorkspaceComponent {
           'Files, schedules and resources'
       },
       {
+        label: 'Care Network',
+        route: 'care-network',
+        description:
+          'Responses, referrals and handoffs'
+      },
+      {
         label: 'Ministry Log',
         route: 'activity',
         description:

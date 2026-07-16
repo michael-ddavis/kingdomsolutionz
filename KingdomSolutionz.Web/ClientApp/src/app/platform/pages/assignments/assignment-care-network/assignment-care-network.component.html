@@ -1,0 +1,508 @@
+<ng-container
+  *ngIf="
+    viewModel$ | async as vm;
+    else assignmentNotFound
+  ">
+
+  <section class="care-network-page">
+    <header class="page-heading">
+      <div>
+        <p class="eyebrow">Accountable follow-up</p>
+        <h2>Local care network</h2>
+
+        <p>
+          Prepare trusted churches near the event, send
+          consented referrals and keep responsibility visible
+          until a local connection is confirmed.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="reset-button"
+        (click)="resetDemo()">
+        Reset demo data
+      </button>
+    </header>
+
+    <section
+      class="accountability-strip"
+      aria-label="Referral accountability stages">
+
+      <div class="accountability-step accountability-step--complete">
+        <span>1</span>
+        <div>
+          <strong>Response</strong>
+          <small>Consent captured</small>
+        </div>
+      </div>
+
+      <i aria-hidden="true"></i>
+
+      <div class="accountability-step accountability-step--current">
+        <span>2</span>
+        <div>
+          <strong>Referral</strong>
+          <small>Email and secure response</small>
+        </div>
+      </div>
+
+      <i aria-hidden="true"></i>
+
+      <div class="accountability-step">
+        <span>3</span>
+        <div>
+          <strong>Acceptance</strong>
+          <small>Church owns next step</small>
+        </div>
+      </div>
+
+      <i aria-hidden="true"></i>
+
+      <div class="accountability-step">
+        <span>4</span>
+        <div>
+          <strong>Connection</strong>
+          <small>Handoff completed</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="metric-grid">
+      <article class="metric-card">
+        <span>Local partners</span>
+        <strong>{{ vm.network.partners.length }}</strong>
+        <small>Prepared for this event</small>
+      </article>
+
+      <article class="metric-card">
+        <span>Ready to refer</span>
+        <strong>
+          {{ countReadyResponses(vm.network) }}
+        </strong>
+        <small>Consent verified</small>
+      </article>
+
+      <article class="metric-card">
+        <span>Awaiting church</span>
+        <strong>
+          {{
+            countByReferralStatus(
+              vm.network,
+              ['sent', 'viewed']
+            )
+          }}
+        </strong>
+        <small>Follow-up remains with ACT</small>
+      </article>
+
+      <article class="metric-card metric-card--success">
+        <span>Accepted or connected</span>
+        <strong>
+          {{
+            countByReferralStatus(
+              vm.network,
+              ['accepted', 'connected']
+            )
+          }}
+        </strong>
+        <small>Responsibility confirmed</small>
+      </article>
+    </section>
+
+    <section class="care-layout">
+      <section class="response-panel">
+        <header class="panel-heading">
+          <div>
+            <p class="eyebrow">Event responses</p>
+            <h3>Choose a person to follow up</h3>
+          </div>
+
+          <span>{{ vm.network.responses.length }}</span>
+        </header>
+
+        <div class="response-list">
+          <button
+            type="button"
+            *ngFor="let response of vm.network.responses"
+            [ngClass]="[
+              'response-card',
+              selectedResponseId === response.id
+                ? 'response-card--selected'
+                : ''
+            ]"
+            (click)="
+              selectResponse(
+                response,
+                vm.network
+              )
+            ">
+
+            <span class="response-avatar" aria-hidden="true">
+              {{ response.personName.charAt(0) }}
+            </span>
+
+            <span class="response-copy">
+              <span class="response-title-row">
+                <strong>{{ response.personName }}</strong>
+
+                <small
+                  [ngClass]="[
+                    'status-pill',
+                    'status-pill--' + response.status
+                  ]">
+                  {{
+                    getResponseStatusLabel(
+                      response.status
+                    )
+                  }}
+                </small>
+              </span>
+
+              <span>
+                {{ response.responseType }}
+                ·
+                {{ response.city }}, {{ response.state }}
+              </span>
+
+              <small class="consent-line">
+                {{
+                  response.consentToShare
+                    ? '✓ Permission to share recorded'
+                    : 'Consent must be confirmed'
+                }}
+              </small>
+
+              <ng-container
+                *ngIf="
+                  getReferralForResponse(
+                    response,
+                    vm.network
+                  ) as referral
+                ">
+
+                <small class="active-referral">
+                  {{
+                    getReferralStatusLabel(
+                      referral.status
+                    )
+                  }}
+                </small>
+              </ng-container>
+            </span>
+          </button>
+        </div>
+      </section>
+
+      <section class="referral-panel">
+        <ng-container
+          *ngIf="
+            getSelectedResponse(vm.network)
+              as selectedResponse;
+            else selectResponsePrompt
+          ">
+
+          <header class="panel-heading referral-heading">
+            <div>
+              <p class="eyebrow">Referral workspace</p>
+              <h3>{{ selectedResponse.personName }}</h3>
+            </div>
+
+            <span
+              [ngClass]="[
+                'consent-badge',
+                selectedResponse.consentToShare
+                  ? 'consent-badge--confirmed'
+                  : 'consent-badge--missing'
+              ]">
+              {{
+                selectedResponse.consentToShare
+                  ? 'Consent confirmed'
+                  : 'Consent required'
+              }}
+            </span>
+          </header>
+
+          <div class="response-detail">
+            <div>
+              <small>Requested support</small>
+              <strong>{{ selectedResponse.responseType }}</strong>
+              <p>{{ selectedResponse.requestedSupport }}</p>
+            </div>
+
+            <dl>
+              <div>
+                <dt>Location</dt>
+                <dd>
+                  {{ selectedResponse.city }},
+                  {{ selectedResponse.state }}
+                  {{ selectedResponse.postalCode }}
+                </dd>
+              </div>
+
+              <div>
+                <dt>Received</dt>
+                <dd>
+                  {{
+                    selectedResponse.receivedUtc
+                      | date:'MMM d, y, h:mm a'
+                  }}
+                </dd>
+              </div>
+            </dl>
+          </div>
+
+          <ng-container
+            *ngIf="
+              getReferralForResponse(
+                selectedResponse,
+                vm.network
+              ) as activeReferral;
+            else composeReferral
+          ">
+
+            <section
+              [ngClass]="[
+                'active-referral-card',
+                'active-referral-card--' +
+                  activeReferral.status
+              ]">
+
+              <div class="active-referral-heading">
+                <div>
+                  <small>Current handoff status</small>
+                  <strong>
+                    {{
+                      getReferralStatusLabel(
+                        activeReferral.status
+                      )
+                    }}
+                  </strong>
+                </div>
+
+                <span aria-hidden="true">→</span>
+              </div>
+
+              <ng-container
+                *ngIf="
+                  getReferralPartner(
+                    activeReferral,
+                    vm.network
+                  ) as referralPartner
+                ">
+
+                <p>
+                  <strong>{{ referralPartner.name }}</strong>
+                  <br />
+                  {{ referralPartner.contactName }}
+                  · {{ referralPartner.contactEmail }}
+                </p>
+              </ng-container>
+
+              <p class="timestamp" *ngIf="activeReferral.sentUtc">
+                Email recorded as sent
+                {{ activeReferral.sentUtc | date:'MMM d, h:mm a' }}
+              </p>
+
+              <div
+                class="accepted-detail"
+                *ngIf="
+                  activeReferral.status === 'accepted' ||
+                  activeReferral.status === 'connected'
+                ">
+
+                <span>
+                  <small>Assigned owner</small>
+                  <strong>{{ activeReferral.assignedOwner }}</strong>
+                </span>
+
+                <span>
+                  <small>Next step</small>
+                  <strong>{{ activeReferral.nextStep }}</strong>
+                </span>
+              </div>
+
+              <div class="referral-actions">
+                <button
+                  type="button"
+                  class="secondary-button"
+                  *ngIf="
+                    activeReferral.status === 'sent' ||
+                    activeReferral.status === 'viewed'
+                  "
+                  (click)="
+                    openPartnerResponse(
+                      activeReferral
+                    )
+                  ">
+                  Open church response
+                </button>
+
+                <button
+                  type="button"
+                  class="primary-button"
+                  *ngIf="activeReferral.status === 'accepted'"
+                  (click)="
+                    confirmConnected(
+                      activeReferral
+                    )
+                  ">
+                  Confirm person connected
+                </button>
+
+                <span
+                  class="completed-message"
+                  *ngIf="activeReferral.status === 'connected'">
+                  ✓ ACT follow-up complete
+                </span>
+              </div>
+            </section>
+          </ng-container>
+
+          <ng-template #composeReferral>
+            <section class="partner-section">
+              <div class="section-heading">
+                <div>
+                  <small>Recommended local partners</small>
+                  <strong>Select a receiving church</strong>
+                </div>
+
+                <span>Location and capacity matched</span>
+              </div>
+
+              <div class="partner-grid">
+                <button
+                  type="button"
+                  *ngFor="let partner of vm.network.partners"
+                  [ngClass]="[
+                    'partner-card',
+                    selectedPartnerId === partner.id
+                      ? 'partner-card--selected'
+                      : ''
+                  ]"
+                  (click)="selectPartner(partner)">
+
+                  <span class="partner-card-heading">
+                    <strong>{{ partner.name }}</strong>
+
+                    <small
+                      [class.availability--limited]="
+                        partner.availability === 'limited'
+                      ">
+                      {{ partner.availability }}
+                    </small>
+                  </span>
+
+                  <span>
+                    {{ partner.city }}, {{ partner.state }}
+                    · {{ partner.distanceMiles }} mi
+                  </span>
+
+                  <small>
+                    {{ partner.ministries.join(' · ') }}
+                  </small>
+
+                  <span class="partner-response-time">
+                    Response requested within
+                    {{ partner.responseSlaHours }} hours
+                  </span>
+                </button>
+              </div>
+            </section>
+
+            <ng-container
+              *ngIf="
+                getSelectedPartner(vm.network)
+                  as selectedPartner
+              ">
+
+              <section class="email-composer">
+                <div class="section-heading">
+                  <div>
+                    <small>Referral email</small>
+                    <strong>
+                      To {{ selectedPartner.contactName }}
+                    </strong>
+                  </div>
+
+                  <span>
+                    {{ selectedPartner.contactEmail }}
+                  </span>
+                </div>
+
+                <label>
+                  <span>Personal message</span>
+
+                  <textarea
+                    rows="4"
+                    maxlength="500"
+                    [value]="personalMessage"
+                    (input)="updatePersonalMessage($event)">
+                  </textarea>
+                </label>
+
+                <div
+                  class="send-error"
+                  role="alert"
+                  *ngIf="sendError">
+                  {{ sendError }}
+                </div>
+
+                <div class="composer-footer">
+                  <small>
+                    Demo mode records the provider response;
+                    no external email is delivered.
+                  </small>
+
+                  <button
+                    type="button"
+                    class="primary-button"
+                    (click)="sendReferral(vm.network)">
+                    Send referral email
+                  </button>
+                </div>
+              </section>
+            </ng-container>
+          </ng-template>
+
+          <section
+            class="email-preview"
+            *ngIf="emailPreviewVisible">
+
+            <header>
+              <div>
+                <small>Email provider response</small>
+                <strong>Accepted for delivery</strong>
+              </div>
+
+              <span>✓ Sent</span>
+            </header>
+
+            <p>
+              ACT now owns the follow-up until the church
+              accepts. The recipient receives a secure response
+              link rather than private ministry notes by email.
+            </p>
+          </section>
+        </ng-container>
+
+        <ng-template #selectResponsePrompt>
+          <div class="empty-state">
+            <h3>Select an event response</h3>
+            <p>
+              Choose a person to review consent and find a
+              trusted local care partner.
+            </p>
+          </div>
+        </ng-template>
+      </section>
+    </section>
+  </section>
+</ng-container>
+
+<ng-template #assignmentNotFound>
+  <section class="not-found">
+    <h2>Assignment not found</h2>
+    <p>This care network is no longer available.</p>
+  </section>
+</ng-template>
