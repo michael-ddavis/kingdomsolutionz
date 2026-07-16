@@ -64,7 +64,8 @@
       <article
         *ngFor="
           let stage of
-            assignment.stages
+            assignment.stages;
+          trackBy: trackStageById
         "
         [ngClass]="[
           'stage-panel',
@@ -74,7 +75,7 @@
 
         <header
           class="stage-heading"
-          [class.stage-heading--expanded]="isStageExpanded(stage)">
+          [class.stage-heading--expanded]="isStageExpanded(stage, assignment.stages)">
           <div class="stage-heading-copy">
             <span
               [ngClass]="[
@@ -180,11 +181,11 @@
               type="button"
               class="stage-collapse-button"
               [attr.aria-label]="
-                (isStageExpanded(stage) ? 'Collapse ' : 'Expand ') +
+                (isStageExpanded(stage, assignment.stages) ? 'Collapse ' : 'Expand ') +
                 stage.name
               "
-              [attr.aria-expanded]="isStageExpanded(stage)"
-              (click)="toggleStageExpansion(stage)">
+              [attr.aria-expanded]="isStageExpanded(stage, assignment.stages)"
+              (click)="toggleStageExpansion(stage, assignment.stages)">
 
               <span aria-hidden="true"></span>
             </button>
@@ -193,12 +194,13 @@
 
         <div
           class="stage-content"
-          [class.stage-content--open]="isStageExpanded(stage)">
+          [class.stage-content--open]="isStageExpanded(stage, assignment.stages)">
           <div class="stage-content-inner">
             <div class="task-list">
           <article
             *ngFor="
-              let task of stage.tasks
+              let task of stage.tasks;
+              trackBy: trackTaskById
             "
             [ngClass]="[
               'task-row',

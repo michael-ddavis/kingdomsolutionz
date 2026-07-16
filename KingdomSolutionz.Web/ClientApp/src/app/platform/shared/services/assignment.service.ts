@@ -1382,20 +1382,39 @@ export class AssignmentService {
           ) * 100
         );
 
-    let currentStageAssigned = false;
-
-    const updatedStages: AssignmentStage[] =
-      assignment.stages.map(stage => {
-        const allComplete =
+    const stageProgress =
+      assignment.stages.map(stage => ({
+        allComplete:
           stage.tasks.length > 0 &&
           stage.tasks.every(
             task => task.status === 'complete'
-          );
+          ),
 
-        const hasBlockedTask =
+        hasBlockedTask:
           stage.tasks.some(
             task => task.status === 'blocked'
-          );
+          ),
+
+        hasStartedTask:
+          stage.tasks.some(
+            task => task.status !== 'not-started'
+          )
+      }));
+
+    const nextActionableStageIndex =
+      stageProgress.findIndex(
+        progress =>
+          !progress.allComplete &&
+          !progress.hasBlockedTask
+      );
+
+    const updatedStages: AssignmentStage[] =
+      assignment.stages.map((stage, index) => {
+        const {
+          allComplete,
+          hasBlockedTask,
+          hasStartedTask
+        } = stageProgress[index];
 
         if (allComplete) {
           return {
@@ -1405,17 +1424,16 @@ export class AssignmentService {
         }
 
         if (hasBlockedTask) {
-          currentStageAssigned = true;
-
           return {
             ...stage,
             status: 'blocked'
           };
         }
 
-        if (!currentStageAssigned) {
-          currentStageAssigned = true;
-
+        if (
+          hasStartedTask ||
+          index === nextActionableStageIndex
+        ) {
           return {
             ...stage,
             status: 'current'

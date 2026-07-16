@@ -105,6 +105,11 @@ export class AssignmentDetailComponent {
     stageId: string,
     task: AssignmentTask
   ): void {
+    // Keep the stage open while its status and counts refresh.
+    // This also prevents the document height from collapsing under
+    // the user's pointer when the last task is completed.
+    this.stageExpansionOverrides[stageId] = true;
+
     this.assignmentService.toggleTask(
       assignmentId,
       stageId,
@@ -112,21 +117,48 @@ export class AssignmentDetailComponent {
     );
   }
 
-  isStageExpanded(
+  trackStageById(
+    _index: number,
     stage: AssignmentStage
+  ): string {
+    return stage.id;
+  }
+
+  trackTaskById(
+    _index: number,
+    task: AssignmentTask
+  ): number {
+    return task.id;
+  }
+
+  isStageExpanded(
+    stage: AssignmentStage,
+    stages: readonly AssignmentStage[]
   ): boolean {
-    return this.stageExpansionOverrides[stage.id] ??
-      (
-        stage.status === 'current' ||
-        stage.status === 'blocked'
+    const expansionOverride =
+      this.stageExpansionOverrides[stage.id];
+
+    if (expansionOverride !== undefined) {
+      return expansionOverride;
+    }
+
+    const defaultExpandedStage =
+      stages.find(
+        candidate => candidate.status === 'current'
+      ) ??
+      stages.find(
+        candidate => candidate.status === 'blocked'
       );
+
+    return defaultExpandedStage?.id === stage.id;
   }
 
   toggleStageExpansion(
-    stage: AssignmentStage
+    stage: AssignmentStage,
+    stages: readonly AssignmentStage[]
   ): void {
     this.stageExpansionOverrides[stage.id] =
-      !this.isStageExpanded(stage);
+      !this.isStageExpanded(stage, stages);
   }
 
   toggleComments(
