@@ -111,21 +111,64 @@
       </div>
     </header>
 
+    <section
+      class="workspace-principles"
+      aria-label="How this assignment workspace works">
+
+      <article>
+        <span aria-hidden="true">↳</span>
+        <div>
+          <strong>Prefilled from invitation</strong>
+          <small>Known details follow the assignment automatically.</small>
+        </div>
+      </article>
+
+      <article>
+        <span aria-hidden="true">◎</span>
+        <div>
+          <strong>Owned by the team</strong>
+          <small>Each coordinator maintains only their section.</small>
+        </div>
+      </article>
+
+      <article>
+        <span aria-hidden="true">→</span>
+        <div>
+          <strong>Completed in stages</strong>
+          <small>Work becomes relevant as the event progresses.</small>
+        </div>
+      </article>
+    </section>
+
     <nav class="assignment-tabs" aria-label="Assignment sections">
 
-      <a *ngFor="let tab of tabs" [routerLink]="tab.route" routerLinkActive="assignment-tab--active"
-        [routerLinkActiveOptions]="{
-      exact: true
-    }" ariaCurrentWhenActive="page" class="assignment-tab">
+      <section
+        *ngFor="let group of tabGroups"
+        [ngClass]="[
+          'assignment-tab-group',
+          'assignment-tab-group--' + group.id
+        ]">
 
-        <strong>
-          {{ tab.label }}
-        </strong>
+        <span class="assignment-tab-group-label">
+          {{ group.label }}
+        </span>
 
-        <small>
-          {{ tab.description }}
-        </small>
-      </a>
+        <div class="assignment-tab-group-items">
+          <a
+            *ngFor="let tab of group.tabs"
+            [routerLink]="tab.route"
+            routerLinkActive="assignment-tab--active"
+            [routerLinkActiveOptions]="{
+              exact: true
+            }"
+            ariaCurrentWhenActive="page"
+            class="assignment-tab">
+
+            <strong>{{ tab.label }}</strong>
+            <small>{{ tab.description }}</small>
+          </a>
+        </div>
+      </section>
     </nav>
 
     <div class="assignment-content">

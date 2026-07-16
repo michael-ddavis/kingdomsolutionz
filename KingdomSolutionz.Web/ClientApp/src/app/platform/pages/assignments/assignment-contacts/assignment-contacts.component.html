@@ -70,6 +70,35 @@
       </div>
     </header>
 
+    <section
+      class="prefill-notice"
+      *ngIf="
+        assignment.contactDirectory
+          .hostCoordinator.source ===
+          'speaking-request'
+      ">
+
+      <span class="prefill-icon" aria-hidden="true">↳</span>
+
+      <div>
+        <strong>Primary host contact carried forward</strong>
+
+        <p>
+          Name, organization, phone and email came from the
+          approved invitation. Review or update them here;
+          do not enter them again.
+        </p>
+      </div>
+
+      <a
+        [routerLink]="[
+          '/app/speaking-requests',
+          assignment.speakingRequestId
+        ]">
+        View source invitation
+      </a>
+    </section>
+
     <section class="readiness-summary">
       <article
         class="readiness-item"
@@ -149,6 +178,19 @@
             <p>Host leadership</p>
             <h3>Host pastor</h3>
           </div>
+
+          <button
+            type="button"
+            class="reuse-contact-button"
+            [disabled]="!canReuseHostContact()"
+            (click)="
+              reuseHostContact(
+                'hostPastor',
+                'Host pastor'
+              )
+            ">
+            Use primary contact
+          </button>
         </header>
 
         <ng-container
@@ -173,6 +215,16 @@
             <p>Primary logistics</p>
             <h3>Host coordinator</h3>
           </div>
+
+          <span
+            class="source-badge"
+            *ngIf="
+              assignment.contactDirectory
+                .hostCoordinator.source ===
+                'speaking-request'
+            ">
+            Prefilled
+          </span>
         </header>
 
         <ng-container
@@ -197,6 +249,19 @@
             <p>Local transportation</p>
             <h3>Travel contact</h3>
           </div>
+
+          <button
+            type="button"
+            class="reuse-contact-button"
+            [disabled]="!canReuseHostContact()"
+            (click)="
+              reuseHostContact(
+                'travelContact',
+                'Travel contact'
+              )
+            ">
+            Use primary contact
+          </button>
         </header>
 
         <ng-container
@@ -226,6 +291,19 @@
             <p>Media and production</p>
             <h3>Media contact</h3>
           </div>
+
+          <button
+            type="button"
+            class="reuse-contact-button"
+            [disabled]="!canReuseHostContact()"
+            (click)="
+              reuseHostContact(
+                'mediaContact',
+                'Media contact'
+              )
+            ">
+            Use primary contact
+          </button>
         </header>
 
         <ng-container
@@ -250,6 +328,19 @@
             <p>Urgent support</p>
             <h3>Emergency contact</h3>
           </div>
+
+          <button
+            type="button"
+            class="reuse-contact-button"
+            [disabled]="!canReuseHostContact()"
+            (click)="
+              reuseHostContact(
+                'emergencyContact',
+                'Emergency contact'
+              )
+            ">
+            Use primary contact
+          </button>
         </header>
 
         <ng-container

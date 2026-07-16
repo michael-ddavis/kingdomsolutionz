@@ -25,7 +25,8 @@ import {
   AssignmentContact,
   AssignmentContactCategory,
   AssignmentContactDirectory,
-  AssignmentContactMethod
+  AssignmentContactMethod,
+  AssignmentDataSource
 } from '../../../shared/models/assignment.model';
 
 import {
@@ -59,6 +60,12 @@ type ContactFormGroup =
     notes: FormControl<string>;
   }>;
 
+type ReusableContactControl =
+  | 'hostPastor'
+  | 'travelContact'
+  | 'mediaContact'
+  | 'emergencyContact';
+
 @Component({
   standalone: false,
   selector: 'app-assignment-contacts',
@@ -83,6 +90,18 @@ export class AssignmentContactsComponent
       null;
 
   saved = false;
+
+  private readonly contactSources:
+    Record<
+      AssignmentContactCategory,
+      AssignmentDataSource
+    > = {
+      'host-pastor': 'assignment',
+      'host-coordinator': 'assignment',
+      travel: 'assignment',
+      media: 'assignment',
+      emergency: 'assignment'
+    };
 
   readonly assignment$:
     Observable<Assignment | undefined> =
@@ -134,6 +153,23 @@ export class AssignmentContactsComponent
       .subscribe(assignment => {
         const directory =
           assignment.contactDirectory;
+
+        this.contactSources[
+          'host-pastor'
+        ] = directory.hostPastor.source;
+
+        this.contactSources[
+          'host-coordinator'
+        ] = directory.hostCoordinator.source;
+
+        this.contactSources.travel =
+          directory.travelContact.source;
+
+        this.contactSources.media =
+          directory.mediaContact.source;
+
+        this.contactSources.emergency =
+          directory.emergencyContact.source;
 
         this.form.patchValue({
           hostPastor: {
@@ -293,31 +329,40 @@ export class AssignmentContactsComponent
         hostPastor:
           this.buildContact(
             'host-pastor',
-            value.hostPastor
+            value.hostPastor,
+            this.contactSources[
+              'host-pastor'
+            ]
           ),
 
         hostCoordinator:
           this.buildContact(
             'host-coordinator',
-            value.hostCoordinator
+            value.hostCoordinator,
+            this.contactSources[
+              'host-coordinator'
+            ]
           ),
 
         travelContact:
           this.buildContact(
             'travel',
-            value.travelContact
+            value.travelContact,
+            this.contactSources.travel
           ),
 
         mediaContact:
           this.buildContact(
             'media',
-            value.mediaContact
+            value.mediaContact,
+            this.contactSources.media
           ),
 
         emergencyContact:
           this.buildContact(
             'emergency',
-            value.emergencyContact
+            value.emergencyContact,
+            this.contactSources.emergency
           ),
 
         readinessPercentage: 0,
@@ -368,6 +413,57 @@ export class AssignmentContactsComponent
     ).length;
   }
 
+  canReuseHostContact(): boolean {
+    const hostContact =
+      this.form.controls
+        .hostCoordinator
+        .getRawValue();
+
+    return Boolean(
+      hostContact.name.trim() &&
+      (
+        hostContact.phone.trim() ||
+        hostContact.email.trim()
+      )
+    );
+  }
+
+  reuseHostContact(
+    target: ReusableContactControl,
+    defaultRole: string
+  ): void {
+    if (!this.canReuseHostContact()) {
+      return;
+    }
+
+    const source =
+      this.form.controls
+        .hostCoordinator
+        .getRawValue();
+
+    const targetControl =
+      this.form.controls[target];
+
+    const currentTarget =
+      targetControl.getRawValue();
+
+    targetControl.patchValue({
+      name: source.name,
+      role:
+        currentTarget.role ||
+        defaultRole,
+      organization:
+        source.organization,
+      phone: source.phone,
+      email: source.email,
+      preferredContactMethod:
+        source.preferredContactMethod,
+      notes:
+        currentTarget.notes ||
+        'Same person as the primary host contact.'
+    });
+  }
+
   private createContactForm():
     ContactFormGroup {
     return this.formBuilder
@@ -415,11 +511,13 @@ export class AssignmentContactsComponent
     category:
       AssignmentContactCategory,
 
-    contact:
-      ContactFormValue
+    contact: ContactFormValue,
+
+    source: AssignmentDataSource
   ): AssignmentContact {
     return {
       category,
+      source,
 
       name:
         contact.name.trim(),

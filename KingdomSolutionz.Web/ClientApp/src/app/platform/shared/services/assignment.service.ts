@@ -3,6 +3,9 @@ import { BehaviorSubject, Observable, map } from 'rxjs';
 
 import { SpeakingRequest } from '../models/speaking-request.model';
 import {
+  SEEDED_SPEAKING_REQUESTS
+} from '../demo-data/speaking-request.seed';
+import {
   Assignment,
   AssignmentActivityItem,
   AssignmentActivityLog,
@@ -720,7 +723,8 @@ export class AssignmentService {
 
   private buildAssignment(
     request: SpeakingRequest,
-    assignmentId: number
+    assignmentId: number,
+    createdUtc = new Date().toISOString()
   ): Assignment {
     const startDate = request.startDate;
     const endDate =
@@ -731,9 +735,7 @@ export class AssignmentService {
       endDate
     );
 
-    const createdUtc = new Date().toISOString();
-
-    return this.recalculateAssignment({
+    const assignment: Assignment = {
       id: assignmentId,
       speakingRequestId: request.id,
       eventName: request.eventName,
@@ -744,12 +746,30 @@ export class AssignmentService {
       venueName: request.venueName,
       startDate,
       endDate,
+      invitation: {
+        ministryRequest:
+          request.ministryRequest,
+        expectedAttendance:
+          request.expectedAttendance,
+        travelCovered:
+          request.travelCovered,
+        lodgingCovered:
+          request.lodgingCovered,
+        honorariumProvided:
+          request.honorariumProvided,
+        submittedUtc:
+          request.submittedUtc
+      },
       coordinator: {
         name: 'Michael Davis',
-        role: 'Assignment Coordinator'
+        role: 'Assignment Coordinator',
+        email:
+          'michael@kingdomsolutionz.com'
       },
       contactDirectory:
-        this.createEmptyContactDirectory(),
+        this.createContactDirectoryFromRequest(
+          request
+        ),
       travelItinerary:
         this.createEmptyTravelItinerary(),
       documentLibrary:
@@ -762,7 +782,13 @@ export class AssignmentService {
       readinessPercentage: 0,
       createdUtc,
       stages
-    });
+    };
+
+    return this.recalculateAssignment(
+      this.syncContactChecklist(
+        assignment
+      )
+    );
   }
 
   private buildAssignmentStages(
@@ -1464,6 +1490,7 @@ export class AssignmentService {
   ): AssignmentContact {
     return {
       category,
+      source: 'assignment',
       name: '',
       role: '',
       organization: '',
@@ -1471,6 +1498,43 @@ export class AssignmentService {
       email: '',
       preferredContactMethod: '',
       notes: ''
+    };
+  }
+
+  private createContactDirectoryFromRequest(
+    request: SpeakingRequest
+  ): AssignmentContactDirectory {
+    const directory =
+      this.createEmptyContactDirectory();
+
+    const hostCoordinator:
+      AssignmentContact = {
+      category: 'host-coordinator',
+      source: 'speaking-request',
+      name: request.contactName,
+      role: 'Primary host contact',
+      organization:
+        request.organizationName,
+      phone: request.contactPhone,
+      email: request.contactEmail,
+      preferredContactMethod:
+        request.contactEmail
+          ? 'email'
+          : request.contactPhone
+            ? 'phone'
+            : '',
+      notes:
+        'Carried forward from the approved speaking request.'
+    };
+
+    return {
+      ...directory,
+      hostCoordinator,
+      readinessPercentage:
+        this.calculateContactReadiness({
+          ...directory,
+          hostCoordinator
+        })
     };
   }
 
@@ -1726,7 +1790,7 @@ export class AssignmentService {
           tone: 'success',
           title: 'Assignment created',
           description:
-            'The ministry assignment was created from an approved host invitation.',
+            'The ministry assignment was created from an approved host invitation. Known event details and the primary host contact were carried forward automatically.',
           actor: 'KingdomOS',
           createdUtc,
           section: 'overview'
@@ -1845,52 +1909,22 @@ export class AssignmentService {
 
   private createSeededAssignment():
     Assignment {
-    const startDate = '2026-08-28';
-    const endDate = '2026-08-30';
-    const createdUtc =
-      '2026-07-14T14:00:00.000Z';
+    const request =
+      SEEDED_SPEAKING_REQUESTS.find(
+        item => item.id === 1003
+      );
 
-    const stages = this.buildAssignmentStages(
-      startDate,
-      endDate
+    if (!request) {
+      throw new Error(
+        'The seeded speaking request for assignment 2001 was not found.'
+      );
+    }
+
+    return this.buildAssignment(
+      request,
+      2001,
+      '2026-07-14T14:00:00.000Z'
     );
-
-    return this.recalculateAssignment({
-      id: 2001,
-      speakingRequestId: 1003,
-      eventName:
-        'Kingdom Leadership Intensive',
-      organizationName:
-        'New Covenant Global Church',
-      eventType:
-        'Leadership Intensive',
-      city: 'Atlanta',
-      state: 'GA',
-      venueName:
-        'New Covenant Global Church',
-      startDate,
-      endDate,
-      coordinator: {
-        name: 'Michael Davis',
-        role: 'Assignment Coordinator',
-        email:
-          'michael@kingdomsolutionz.com'
-      },
-      contactDirectory:
-        this.createEmptyContactDirectory(),
-      travelItinerary:
-        this.createEmptyTravelItinerary(),
-      documentLibrary:
-        this.createEmptyDocumentLibrary(),
-      activityLog:
-        this.createInitialActivityLog(
-          createdUtc
-        ),
-      status: 'active',
-      readinessPercentage: 0,
-      createdUtc,
-      stages
-    });
   }
 
   private getNextAssignmentId():

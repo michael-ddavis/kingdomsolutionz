@@ -26,6 +26,16 @@ interface AssignmentWorkspaceTab {
   description: string;
 }
 
+interface AssignmentWorkspaceTabGroup {
+  id:
+    | 'assignment'
+    | 'preparation'
+    | 'ministry'
+    | 'record';
+  label: string;
+  tabs: AssignmentWorkspaceTab[];
+}
+
 @Component({
   standalone: false,
   selector: 'app-assignment-workspace',
@@ -49,49 +59,73 @@ export class AssignmentWorkspaceComponent {
       )
     );
 
-  readonly tabs:
-    AssignmentWorkspaceTab[] = [
+  readonly tabGroups:
+    AssignmentWorkspaceTabGroup[] = [
       {
-        label: 'Overview',
-        route: 'overview',
-        description:
-          'Executive assignment summary'
+        id: 'assignment',
+        label: 'Assignment',
+        tabs: [
+          {
+            label: 'Overview',
+            route: 'overview',
+            description:
+              'Executive assignment summary'
+          }
+        ]
       },
       {
-        label: 'Checklist',
-        route: 'checklist',
-        description:
-          'Preparation responsibilities'
+        id: 'preparation',
+        label: 'Preparation',
+        tabs: [
+          {
+            label: 'Checklist',
+            route: 'checklist',
+            description:
+              'Preparation responsibilities'
+          },
+          {
+            label: 'Travel',
+            route: 'travel',
+            description:
+              'Flights, lodging and transportation'
+          },
+          {
+            label: 'Contacts',
+            route: 'contacts',
+            description:
+              'Host and assignment contacts'
+          },
+          {
+            label: 'Documents',
+            route: 'documents',
+            description:
+              'Files, schedules and resources'
+          }
+        ]
       },
       {
-        label: 'Travel',
-        route: 'travel',
-        description:
-          'Flights, lodging and transportation'
+        id: 'ministry',
+        label: 'Ministry',
+        tabs: [
+          {
+            label: 'Care Network',
+            route: 'care-network',
+            description:
+              'Responses, referrals and handoffs'
+          }
+        ]
       },
       {
-        label: 'Contacts',
-        route: 'contacts',
-        description:
-          'Host and assignment contacts'
-      },
-      {
-        label: 'Documents',
-        route: 'documents',
-        description:
-          'Files, schedules and resources'
-      },
-      {
-        label: 'Care Network',
-        route: 'care-network',
-        description:
-          'Responses, referrals and handoffs'
-      },
-      {
-        label: 'Ministry Log',
-        route: 'activity',
-        description:
-          'Updates, decisions and activity'
+        id: 'record',
+        label: 'Record',
+        tabs: [
+          {
+            label: 'Ministry Log',
+            route: 'activity',
+            description:
+              'Updates, decisions and activity'
+          }
+        ]
       }
     ];
 

@@ -71,6 +71,66 @@
       </div>
     </header>
 
+    <section class="coverage-notice">
+      <div>
+        <span aria-hidden="true">↳</span>
+
+        <div>
+          <strong>Coverage terms carried forward</strong>
+          <small>
+            These answers came from the approved invitation;
+            record only the final reservations below.
+          </small>
+        </div>
+      </div>
+
+      <div class="coverage-statuses">
+        <span
+          [class.coverage-status--pending]="
+            !assignment.invitation.travelCovered
+          ">
+          Travel
+          <strong>
+            {{
+              assignment.invitation.travelCovered
+                ? 'Confirmed'
+                : 'Needs agreement'
+            }}
+          </strong>
+        </span>
+
+        <span
+          [class.coverage-status--pending]="
+            !assignment.invitation.lodgingCovered
+          ">
+          Lodging
+          <strong>
+            {{
+              assignment.invitation.lodgingCovered
+                ? 'Confirmed'
+                : 'Needs agreement'
+            }}
+          </strong>
+        </span>
+
+        <span
+          [class.coverage-status--pending]="
+            !assignment.invitation
+              .honorariumProvided
+          ">
+          Honorarium
+          <strong>
+            {{
+              assignment.invitation
+                .honorariumProvided
+                ? 'Confirmed'
+                : 'Needs agreement'
+            }}
+          </strong>
+        </span>
+      </div>
+    </section>
+
     <section class="readiness-summary">
       <article
         [class.readiness-item--complete]="
@@ -562,6 +622,12 @@
           <p>Local transportation</p>
           <h3>Pickup and transportation</h3>
         </div>
+
+        <span
+          *ngIf="transportContactPrefilled"
+          class="prefill-badge">
+          Contact reused from Contacts
+        </span>
       </header>
 
       <div class="transportation-grid">

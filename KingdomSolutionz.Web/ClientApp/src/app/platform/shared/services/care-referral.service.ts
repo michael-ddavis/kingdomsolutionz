@@ -116,6 +116,10 @@ export class CareReferralService {
       return;
     }
 
+    const hostContact =
+      assignment.contactDirectory
+        .hostCoordinator;
+
     const hostPartner: CarePartner = {
       id: this.getNextPartnerId(state),
       assignmentId: assignment.id,
@@ -123,9 +127,13 @@ export class CareReferralService {
       city: assignment.city,
       state: assignment.state,
       distanceMiles: 0,
-      contactName: 'Host follow-up coordinator',
-      contactRole: 'Care coordinator',
-      contactEmail: '',
+      contactName:
+        hostContact.name ||
+        'Host follow-up coordinator',
+      contactRole:
+        hostContact.role ||
+        'Care coordinator',
+      contactEmail: hostContact.email,
       relationship: 'host-church',
       serviceArea:
         `${assignment.city} and surrounding communities`,

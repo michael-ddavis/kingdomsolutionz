@@ -48,6 +48,21 @@ export interface AssignmentCoordinator {
   phone?: string;
 }
 
+export type AssignmentDataSource =
+  | 'speaking-request'
+  | 'assignment';
+
+export interface AssignmentInvitationSnapshot {
+  ministryRequest: string;
+  expectedAttendance: number;
+
+  travelCovered: boolean;
+  lodgingCovered: boolean;
+  honorariumProvided: boolean;
+
+  submittedUtc: string;
+}
+
 export interface AssignmentFlight {
   type: 'outbound' | 'return';
 
@@ -170,6 +185,8 @@ export type AssignmentContactMethod =
 export interface AssignmentContact {
   category: AssignmentContactCategory;
 
+  source: AssignmentDataSource;
+
   name: string;
   role: string;
   organization: string;
@@ -258,6 +275,9 @@ export interface Assignment {
 
   startDate: string;
   endDate: string;
+
+  invitation:
+    AssignmentInvitationSnapshot;
 
   coordinator: AssignmentCoordinator;
 

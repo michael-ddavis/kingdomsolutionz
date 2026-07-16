@@ -187,6 +187,86 @@
             </article>
         </section>
 
+        <section class="invitation-source-panel">
+            <header>
+                <div>
+                    <p class="source-eyebrow">
+                        Carried forward from invitation
+                    </p>
+
+                    <h2>Known once, available everywhere</h2>
+
+                    <p>
+                        These approved request details are read from
+                        the original invitation. The assignment team
+                        reviews them here instead of entering them again.
+                    </p>
+                </div>
+
+                <a [routerLink]="[
+                    '/app/speaking-requests',
+                    assignment.speakingRequestId
+                  ]">
+                    View source
+                    <span aria-hidden="true">→</span>
+                </a>
+            </header>
+
+            <div class="source-content">
+                <article class="ministry-request-card">
+                    <small>Requested ministry</small>
+                    <p>{{ assignment.invitation.ministryRequest }}</p>
+                </article>
+
+                <dl class="source-facts">
+                    <div>
+                        <dt>Expected attendance</dt>
+                        <dd>
+                            {{
+                              assignment.invitation
+                                .expectedAttendance
+                              | number
+                            }}
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>Travel</dt>
+                        <dd>
+                            {{
+                              assignment.invitation.travelCovered
+                                ? 'Host confirmed'
+                                : 'Needs agreement'
+                            }}
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>Lodging</dt>
+                        <dd>
+                            {{
+                              assignment.invitation.lodgingCovered
+                                ? 'Host confirmed'
+                                : 'Needs agreement'
+                            }}
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>Honorarium</dt>
+                        <dd>
+                            {{
+                              assignment.invitation
+                                .honorariumProvided
+                                ? 'Host confirmed'
+                                : 'Needs agreement'
+                            }}
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+        </section>
+
         <section class="overview-layout">
             <article class="readiness-panel">
                 <header class="panel-heading">

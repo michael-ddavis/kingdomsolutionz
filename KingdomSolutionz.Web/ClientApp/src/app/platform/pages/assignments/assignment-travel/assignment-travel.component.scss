@@ -8,6 +8,7 @@
 }
 
 .travel-heading,
+.coverage-notice,
 .travel-section,
 .save-panel,
 .readiness-item {
@@ -20,6 +21,82 @@
       var(--kos-surface-soft)
     );
   box-shadow: var(--kos-shadow-sm);
+}
+
+.coverage-notice {
+  display: flex;
+  padding: 14px 17px;
+  border-color: rgb(53 91 159 / 22%);
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  background: var(--kos-blue-100);
+}
+
+.coverage-notice > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.coverage-notice > div:first-child > span {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border-radius: var(--kos-radius-sm);
+  color: var(--kos-blue-600);
+  font-weight: 800;
+  place-items: center;
+  background: rgb(255 255 255 / 68%);
+}
+
+.coverage-notice strong,
+.coverage-notice small {
+  display: block;
+}
+
+.coverage-notice > div:first-child strong {
+  color: var(--kos-text);
+  font-size: var(--kos-text-sm);
+}
+
+.coverage-notice small {
+  margin-top: 3px;
+  color: var(--kos-text-secondary);
+  font-size: var(--kos-text-xs);
+}
+
+.coverage-statuses {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.coverage-statuses > span {
+  padding: 7px 9px;
+  border: 1px solid rgb(52 121 94 / 22%);
+  border-radius: var(--kos-radius-sm);
+  color: var(--kos-text-muted);
+  font-size: var(--kos-text-xs);
+  background: rgb(255 255 255 / 68%);
+}
+
+.coverage-statuses > span strong {
+  margin-top: 2px;
+  color: var(--kos-green-600);
+  font-size: var(--kos-text-xs);
+}
+
+.coverage-statuses
+  .coverage-status--pending {
+  border-color: rgb(168 81 76 / 22%);
+}
+
+.coverage-statuses
+  .coverage-status--pending strong {
+  color: var(--kos-red-600);
 }
 
 .travel-heading {
@@ -203,6 +280,17 @@ p {
   letter-spacing: -0.02em;
 }
 
+.prefill-badge {
+  margin-left: auto;
+  padding: 6px 9px;
+  border: 1px solid rgb(53 91 159 / 22%);
+  border-radius: 999px;
+  color: var(--kos-blue-600);
+  font-size: var(--kos-text-xs);
+  font-weight: 750;
+  background: var(--kos-blue-100);
+}
+
 .field-grid,
 .transportation-grid {
   display: grid;
@@ -358,9 +446,14 @@ textarea::placeholder {
 
 @media (max-width: 720px) {
   .travel-heading,
+  .coverage-notice,
   .save-panel {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .coverage-statuses {
+    justify-content: flex-start;
   }
 
   .travel-readiness {
@@ -371,6 +464,15 @@ textarea::placeholder {
   .field-grid,
   .transportation-grid {
     grid-template-columns: 1fr;
+  }
+
+  .section-heading {
+    flex-wrap: wrap;
+  }
+
+  .prefill-badge {
+    width: 100%;
+    margin-left: 55px;
   }
 
   .field--wide {

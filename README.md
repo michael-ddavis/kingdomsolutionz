@@ -61,6 +61,8 @@ New platform UI should use these shared values before introducing component-spec
 
 The authenticated KingdomOS interface uses the **Quiet Authority** direction: obsidian navigation and primary actions, warm ivory work surfaces, restrained champagne accents, and functional status colors reserved for operational meaning. The public KingdomSolutionz site and invitation intake remain visually independent.
 
+Approved speaking requests are the source record for assignment creation. Event details, dates, venue, requested ministry, attendance, coverage commitments, and the primary host contact carry into the assignment automatically. Assignment sections collect only information that was not already supplied, while preserving a link to the original invitation.
+
 ## Prototype limitations
 
 KingdomOS is currently a product demonstration, not a production tenant application:

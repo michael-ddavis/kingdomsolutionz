@@ -51,6 +51,8 @@ export class AssignmentTravelComponent
 
   saved = false;
 
+  transportContactPrefilled = false;
+
   readonly assignment$:
     Observable<Assignment | undefined> =
       this.assignmentService.getAssignment(
@@ -147,6 +149,55 @@ export class AssignmentTravelComponent
         const itinerary =
           assignment.travelItinerary;
 
+        const transportation =
+          itinerary.groundTransportation;
+
+        const travelContact =
+          assignment.contactDirectory
+            .travelContact;
+
+        const groundTransportation = {
+          ...transportation,
+
+          arrivalPickupContact:
+            transportation
+              .arrivalPickupContact ||
+            travelContact.name,
+
+          arrivalPickupPhone:
+            transportation
+              .arrivalPickupPhone ||
+            travelContact.phone,
+
+          departurePickupContact:
+            transportation
+              .departurePickupContact ||
+            travelContact.name,
+
+          departurePickupPhone:
+            transportation
+              .departurePickupPhone ||
+            travelContact.phone
+        };
+
+        this.transportContactPrefilled =
+          groundTransportation
+            .arrivalPickupContact !==
+            transportation
+              .arrivalPickupContact ||
+          groundTransportation
+            .arrivalPickupPhone !==
+            transportation
+              .arrivalPickupPhone ||
+          groundTransportation
+            .departurePickupContact !==
+            transportation
+              .departurePickupContact ||
+          groundTransportation
+            .departurePickupPhone !==
+            transportation
+              .departurePickupPhone;
+
         this.form.patchValue({
           outboundFlight:
             itinerary.outboundFlight,
@@ -158,7 +209,7 @@ export class AssignmentTravelComponent
             itinerary.hotel,
 
           groundTransportation:
-            itinerary.groundTransportation,
+            groundTransportation,
 
           generalNotes:
             itinerary.generalNotes
