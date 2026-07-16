@@ -501,6 +501,8 @@ export class AssignmentService {
 
         const itinerary: AssignmentTravelItinerary = {
           ...assignment.travelItinerary,
+          outboundFlight: input.outboundFlight,
+          returnFlight: input.returnFlight,
           hotel: input.hotel,
           groundTransportation:
             input.groundTransportation,

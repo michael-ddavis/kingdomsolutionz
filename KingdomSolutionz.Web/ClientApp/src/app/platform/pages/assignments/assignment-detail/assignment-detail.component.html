@@ -72,7 +72,9 @@
             stage.status
         ]">
 
-        <header class="stage-heading">
+        <header
+          class="stage-heading"
+          [class.stage-heading--expanded]="isStageExpanded(stage)">
           <div class="stage-heading-copy">
             <span
               [ngClass]="[
@@ -173,10 +175,27 @@
               /
               {{ stage.tasks.length }}
             </span>
+
+            <button
+              type="button"
+              class="stage-collapse-button"
+              [attr.aria-label]="
+                (isStageExpanded(stage) ? 'Collapse ' : 'Expand ') +
+                stage.name
+              "
+              [attr.aria-expanded]="isStageExpanded(stage)"
+              (click)="toggleStageExpansion(stage)">
+
+              <span aria-hidden="true">⌄</span>
+            </button>
           </div>
         </header>
 
-        <div class="task-list">
+        <div
+          class="stage-content"
+          [class.stage-content--open]="isStageExpanded(stage)">
+          <div class="stage-content-inner">
+            <div class="task-list">
           <article
             *ngFor="
               let task of stage.tasks
@@ -404,6 +423,8 @@
               </div>
             </section>
           </article>
+            </div>
+          </div>
         </div>
       </article>
     </div>

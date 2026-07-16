@@ -172,6 +172,8 @@ export interface AssignmentHostCoordination {
 }
 
 export interface AssignmentHostCoordinationInput {
+  outboundFlight: AssignmentFlight;
+  returnFlight: AssignmentFlight;
   hotel: AssignmentHotel;
   groundTransportation:
     AssignmentGroundTransportation;

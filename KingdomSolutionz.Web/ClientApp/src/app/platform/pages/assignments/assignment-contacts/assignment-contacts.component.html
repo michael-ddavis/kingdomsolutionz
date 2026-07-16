@@ -109,8 +109,8 @@
           <span class="contact-number">01</span>
 
           <div>
-            <p>Primary logistics</p>
-            <h3>Host coordinator</h3>
+            <p>Invitation contact</p>
+            <h3>Primary host contact</h3>
             <small>
               {{ form.controls.hostCoordinator.controls.name.value }}
             </small>
@@ -121,7 +121,7 @@
 
         <div class="contact-card-body">
           <ng-container
-            *ngTemplateOutlet="contactFields; context: { rolePlaceholder: 'Executive Assistant' }">
+            *ngTemplateOutlet="contactFields; context: { group: form.controls.hostCoordinator, rolePlaceholder: 'Executive Assistant' }">
           </ng-container>
         </div>
       </details>
@@ -143,7 +143,7 @@
         <div class="contact-card-body">
           <button type="button" class="reuse-contact-button" [disabled]="!canReuseHostContact()"
             (click)="reuseHostContact('hostPastor', 'Host pastor')">Use primary contact</button>
-          <ng-container *ngTemplateOutlet="contactFields; context: { rolePlaceholder: 'Senior Pastor' }"></ng-container>
+          <ng-container *ngTemplateOutlet="contactFields; context: { group: form.controls.hostPastor, rolePlaceholder: 'Senior Pastor' }"></ng-container>
         </div>
       </details>
 
@@ -164,7 +164,7 @@
         <div class="contact-card-body">
           <button type="button" class="reuse-contact-button" [disabled]="!canReuseHostContact()"
             (click)="reuseHostContact('travelContact', 'Travel contact')">Use primary contact</button>
-          <ng-container *ngTemplateOutlet="contactFields; context: { rolePlaceholder: 'Transportation Coordinator' }"></ng-container>
+          <ng-container *ngTemplateOutlet="contactFields; context: { group: form.controls.travelContact, rolePlaceholder: 'Transportation Coordinator' }"></ng-container>
           <p class="contact-help">Keep pickup times and instructions in Travel.</p>
         </div>
       </details>
@@ -186,7 +186,7 @@
         <div class="contact-card-body">
           <button type="button" class="reuse-contact-button" [disabled]="!canReuseHostContact()"
             (click)="reuseHostContact('mediaContact', 'Media contact')">Use primary contact</button>
-          <ng-container *ngTemplateOutlet="contactFields; context: { rolePlaceholder: 'Media Director' }"></ng-container>
+          <ng-container *ngTemplateOutlet="contactFields; context: { group: form.controls.mediaContact, rolePlaceholder: 'Media Director' }"></ng-container>
         </div>
       </details>
 
@@ -207,7 +207,7 @@
         <div class="contact-card-body">
           <button type="button" class="reuse-contact-button" [disabled]="!canReuseHostContact()"
             (click)="reuseHostContact('emergencyContact', 'Emergency contact')">Use primary contact</button>
-          <ng-container *ngTemplateOutlet="contactFields; context: { rolePlaceholder: 'Emergency Contact' }"></ng-container>
+          <ng-container *ngTemplateOutlet="contactFields; context: { group: form.controls.emergencyContact, rolePlaceholder: 'Emergency Contact' }"></ng-container>
         </div>
       </details>
     </section>
@@ -244,9 +244,10 @@
 
 <ng-template
   #contactFields
+  let-group="group"
   let-rolePlaceholder="rolePlaceholder">
 
-  <div class="field-grid">
+  <div class="field-grid" [formGroup]="group">
     <label class="field">
       <span>Name</span>
 

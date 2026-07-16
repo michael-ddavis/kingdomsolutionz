@@ -17,62 +17,22 @@
         </p>
       </div>
 
-      <button
-        type="button"
-        class="reset-button"
-        (click)="resetDemo()">
-        Reset demo data
-      </button>
+      <div class="page-actions">
+        <button
+          type="button"
+          class="reset-button"
+          (click)="resetDemo()">
+          Reset demo data
+        </button>
 
-      <a
-        class="reset-button"
-        [routerLink]="['/respond/assignments', vm.assignment.id]">
-        Open QR response form
-      </a>
+        <a
+          class="qr-button"
+          [routerLink]="['/respond/assignments', vm.assignment.id]">
+          Open QR response form
+          <span aria-hidden="true">↗</span>
+        </a>
+      </div>
     </header>
-
-    <section
-      class="accountability-strip"
-      aria-label="Referral accountability stages">
-
-      <div class="accountability-step accountability-step--complete">
-        <span>1</span>
-        <div>
-          <strong>Response</strong>
-          <small>Consent captured</small>
-        </div>
-      </div>
-
-      <i aria-hidden="true"></i>
-
-      <div class="accountability-step accountability-step--current">
-        <span>2</span>
-        <div>
-          <strong>Referral</strong>
-          <small>Email and secure response</small>
-        </div>
-      </div>
-
-      <i aria-hidden="true"></i>
-
-      <div class="accountability-step">
-        <span>3</span>
-        <div>
-          <strong>Acceptance</strong>
-          <small>Church owns next step</small>
-        </div>
-      </div>
-
-      <i aria-hidden="true"></i>
-
-      <div class="accountability-step">
-        <span>4</span>
-        <div>
-          <strong>Connection</strong>
-          <small>Handoff completed</small>
-        </div>
-      </div>
-    </section>
 
     <section class="metric-grid">
       <article class="metric-card">

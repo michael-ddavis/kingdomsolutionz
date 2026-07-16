@@ -131,6 +131,39 @@
           </a>
         </div>
       </section>
+
+      <section class="assignment-tab-group assignment-tab-group--record">
+        <span class="assignment-tab-group-label">Record</span>
+
+        <details
+          #recordMenu
+          class="record-menu"
+          routerLinkActive="record-menu--active">
+
+          <summary class="assignment-tab record-trigger">
+            <span>
+              <strong>Record</strong>
+              <small>Closeout and ministry log</small>
+            </span>
+            <span class="record-chevron" aria-hidden="true">⌄</span>
+          </summary>
+
+          <div class="record-menu-popover">
+            <a
+              *ngFor="let tab of recordTabs"
+              [routerLink]="tab.route"
+              routerLinkActive="record-option--active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              ariaCurrentWhenActive="page"
+              class="record-option"
+              (click)="recordMenu.open = false">
+
+              <strong>{{ tab.label }}</strong>
+              <small>{{ tab.description }}</small>
+            </a>
+          </div>
+        </details>
+      </section>
     </nav>
 
     <div class="assignment-content">

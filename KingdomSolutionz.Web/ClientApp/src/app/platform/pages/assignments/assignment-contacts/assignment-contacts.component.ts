@@ -444,22 +444,14 @@ export class AssignmentContactsComponent
     const targetControl =
       this.form.controls[target];
 
-    const currentTarget =
-      targetControl.getRawValue();
-
     targetControl.patchValue({
       name: source.name,
-      role:
-        currentTarget.role ||
-        defaultRole,
-      organization:
-        source.organization,
+      role: source.role || defaultRole,
+      organization: source.organization,
       phone: source.phone,
       email: source.email,
-      preferredContactMethod:
-        source.preferredContactMethod,
-      notes:
-        currentTarget.notes ||
+      preferredContactMethod: source.preferredContactMethod,
+      notes: source.notes ||
         'Same person as the primary host contact.'
     });
   }

@@ -225,14 +225,13 @@ textarea:focus {
   display: grid;
   width: 40px;
   height: 40px;
-  border: 1px solid var(--kos-champagne-300);
+  border: 1px solid var(--kos-border);
   border-radius: var(--kos-radius-md);
-  color: var(--kos-obsidian-950);
+  color: var(--kos-blue-600);
   font-size: var(--kos-text-md);
   font-weight: 800;
   place-items: center;
-  background: var(--kos-champagne-metal);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 50%);
+  background: var(--kos-blue-100);
 }
 
 .activity-item--success .activity-symbol {
