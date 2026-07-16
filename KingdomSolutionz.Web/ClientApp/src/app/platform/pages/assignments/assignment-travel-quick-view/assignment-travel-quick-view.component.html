@@ -11,7 +11,16 @@
       </strong>
     </div>
 
-    <div class="travel-progress">
+    <div
+      class="travel-progress"
+      role="progressbar"
+      aria-label="Travel readiness"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      [attr.aria-valuenow]="
+        assignment.travelItinerary
+          .readinessPercentage
+      ">
       <span
         [style.width.%]="
           assignment.travelItinerary
@@ -254,7 +263,8 @@
 
   <a
     class="travel-open-link kos-clickable"
-    routerLink="travel">
+    routerLink="travel"
+    (click)="openFull.emit()">
 
     Open full Travel workspace
     <span aria-hidden="true">→</span>

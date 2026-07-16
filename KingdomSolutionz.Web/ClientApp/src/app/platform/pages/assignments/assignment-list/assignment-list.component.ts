@@ -19,6 +19,7 @@ type JourneyFilter =
   | 'cancelled';
 
 @Component({
+  standalone: false,
   selector: 'app-assignment-list',
   templateUrl:
     './assignment-list.component.html',

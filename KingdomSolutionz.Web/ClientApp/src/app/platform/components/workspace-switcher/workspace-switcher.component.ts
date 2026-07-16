@@ -4,6 +4,7 @@ import { WorkspaceId } from '../../shared/models/workspace.model';
 import { WorkspaceService } from '../../shared/services/workspace.service';
 
 @Component({
+  standalone: false,
   selector: 'app-workspace-switcher',
   templateUrl: './workspace-switcher.component.html',
   styleUrls: ['./workspace-switcher.component.scss']

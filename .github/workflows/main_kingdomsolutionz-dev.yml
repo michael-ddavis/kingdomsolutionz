@@ -26,14 +26,11 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22.12.0'
           cache: 'npm'
           cache-dependency-path: KingdomSolutionz.Web/ClientApp/package-lock.json
 
-      - name: Build with dotnet
-        run: dotnet build KingdomSolutionz.Web/KingdomSolutionz.Web.csproj --configuration Release
-
-      - name: dotnet publish
+      - name: Build and publish
         run: dotnet publish KingdomSolutionz.Web/KingdomSolutionz.Web.csproj -c Release -o "${{env.DOTNET_ROOT}}/myapp"
 
       - name: Upload artifact for deployment job
@@ -54,7 +51,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: .net-app
-      
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -69,4 +66,4 @@ jobs:
           app-name: 'kingdomsolutionz-dev'
           slot-name: 'Production'
           package: .
-          
+

@@ -13,6 +13,7 @@ import {
 } from '../../../shared/services/assignment.service';
 
 @Component({
+  standalone: false,
   selector: 'app-assignment-overview',
   templateUrl:
     './assignment-overview.component.html',

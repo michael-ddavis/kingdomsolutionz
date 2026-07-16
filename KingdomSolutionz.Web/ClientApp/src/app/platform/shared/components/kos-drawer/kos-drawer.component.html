@@ -13,6 +13,7 @@
   </button>
 
   <section
+    #drawerPanel
     class="kos-drawer"
     [class.kos-drawer--sm]="width === 'sm'"
     [class.kos-drawer--md]="width === 'md'"
@@ -20,6 +21,7 @@
     [attr.inert]="open ? null : ''"
     role="dialog"
     aria-modal="true"
+    tabindex="-1"
     [attr.aria-labelledby]="titleId">
 
     <header class="kos-drawer-heading">

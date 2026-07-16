@@ -29,6 +29,7 @@ type StatusTone =
   | 'gray';
 
 @Component({
+  standalone: false,
   selector: 'app-speaking-request-detail',
   templateUrl: './speaking-request-detail.component.html',
   styleUrls: ['./speaking-request-detail.component.scss']

@@ -227,7 +227,15 @@
                         </div>
 
                         <div class="readiness-progress">
-                            <div class="progress-bar">
+                            <div
+                                class="progress-bar"
+                                role="progressbar"
+                                [attr.aria-label]="stage.name + ' readiness'"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                                [attr.aria-valuenow]="
+                                    getStageReadiness(stage)
+                                ">
                                 <span [style.width.%]="
                     getStageReadiness(stage)
                   ">

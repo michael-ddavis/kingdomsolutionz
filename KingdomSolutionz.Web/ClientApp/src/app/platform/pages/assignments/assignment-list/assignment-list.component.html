@@ -381,7 +381,15 @@
               </strong>
             </div>
 
-            <div class="progress-bar">
+            <div
+              class="progress-bar"
+              role="progressbar"
+              aria-label="Assignment readiness"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              [attr.aria-valuenow]="
+                assignment.readinessPercentage
+              ">
               <span
                 [style.width.%]="
                   assignment.readinessPercentage

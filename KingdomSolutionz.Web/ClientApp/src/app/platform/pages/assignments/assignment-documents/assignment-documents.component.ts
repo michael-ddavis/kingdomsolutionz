@@ -34,6 +34,7 @@ interface RequiredDocumentType {
 }
 
 @Component({
+  standalone: false,
   selector: 'app-assignment-documents',
   templateUrl:
     './assignment-documents.component.html',

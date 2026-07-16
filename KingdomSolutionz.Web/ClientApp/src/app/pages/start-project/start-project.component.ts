@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LeadService } from 'src/app/services/lead.service';
 
@@ -22,6 +23,11 @@ interface PackageRecommendation {
 }
 
 @Component({
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule
+  ],
   selector: 'app-start-project',
   templateUrl: './start-project.component.html',
   styleUrls: ['./start-project.component.scss']

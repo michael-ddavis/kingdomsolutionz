@@ -93,7 +93,15 @@
             </strong>
           </div>
 
-          <div class="heading-progress">
+          <div
+            class="heading-progress"
+            role="progressbar"
+            aria-label="Overall assignment readiness"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            [attr.aria-valuenow]="
+              assignment.readinessPercentage
+            ">
             <span [style.width.%]="
                 assignment.readinessPercentage
               ">
@@ -126,7 +134,9 @@
     <app-kos-drawer [open]="travelQuickViewOpen" eyebrow="Assignment travel" title="Travel quick view" width="md"
       (closed)="closeTravelQuickView()">
 
-      <app-assignment-travel-quick-view [assignment]="assignment">
+      <app-assignment-travel-quick-view
+        [assignment]="assignment"
+        (openFull)="closeTravelQuickView()">
       </app-assignment-travel-quick-view>
     </app-kos-drawer>
   </section>

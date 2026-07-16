@@ -7,7 +7,9 @@ import {
 } from '@angular/router';
 
 import {
-  Observable
+  Observable,
+  map,
+  switchMap
 } from 'rxjs';
 
 import {
@@ -25,6 +27,7 @@ interface AssignmentWorkspaceTab {
 }
 
 @Component({
+  standalone: false,
   selector: 'app-assignment-workspace',
   templateUrl:
     './assignment-workspace.component.html',
@@ -33,15 +36,17 @@ interface AssignmentWorkspaceTab {
   ]
 })
 export class AssignmentWorkspaceComponent {
-  private readonly assignmentId =
-    Number(
-      this.route.snapshot.paramMap.get('id')
-    );
-
   readonly assignment$:
     Observable<Assignment | undefined> =
-    this.assignmentService.getAssignment(
-      this.assignmentId
+    this.route.paramMap.pipe(
+      map(params =>
+        Number(params.get('id'))
+      ),
+      switchMap(assignmentId =>
+        this.assignmentService.getAssignment(
+          assignmentId
+        )
+      )
     );
 
   readonly tabs:

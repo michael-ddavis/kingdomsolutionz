@@ -3,116 +3,21 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { PublicLayoutComponent } from './layouts/public-layout/public-layout.component';
 
-import { HomeComponent } from './pages/home/home.component';
-import { ServicesComponent } from './pages/services/services.component';
-import { PricingComponent } from './pages/pricing/pricing.component';
-import { PortfolioComponent } from './pages/portfolio/portfolio.component';
-import { StartProjectComponent } from './pages/start-project/start-project.component';
-import { AboutComponent } from './pages/about/about.component';
-import { ContactComponent } from './pages/contact/contact.component';
-
-import { PlatformShellComponent } from './platform/layout/platform-shell/platform-shell.component';
-import { PlatformLoginComponent } from './platform/pages/platform-login/platform-login.component';
-import { PlatformDashboardComponent } from './platform/pages/platform-dashboard/platform-dashboard.component';
-import {
-  SpeakingRequestListComponent
-} from './platform/pages/speaking-requests/speaking-request-list/speaking-request-list.component';
-
-import {
-  SpeakingRequestDetailComponent
-} from './platform/pages/speaking-requests/speaking-request-detail/speaking-request-detail.component';
-
-import {
-  SpeakingRequestFormComponent
-} from './platform/pages/speaking-requests/speaking-request-form/speaking-request-form.component';
-import {
-  AssignmentDetailComponent
-} from './platform/pages/assignments/assignment-detail/assignment-detail.component';
-import {
-  AssignmentListComponent
-} from './platform/pages/assignments/assignment-list/assignment-list.component';
-import {
-  AssignmentWorkspaceComponent
-} from './platform/pages/assignments/assignment-workspace/assignment-workspace.component';
-
-import {
-  AssignmentOverviewComponent
-} from './platform/pages/assignments/assignment-overview/assignment-overview.component';
-import { AssignmentTravelComponent } from './platform/pages/assignments/assignment-travel/assignment-travel.component';
-import { AssignmentContactsComponent } from './platform/pages/assignments/assignment-contacts/assignment-contacts.component';
-import { AssignmentDocumentsComponent } from './platform/pages/assignments/assignment-documents/assignment-documents.component';
-import { AssignmentActivityComponent } from './platform/pages/assignments/assignment-activity/assignment-activity.component';
-
 const routes: Routes = [
   {
-    path: 'app/login',
-    component: PlatformLoginComponent
-  },
-  {
     path: 'app',
-    component: PlatformShellComponent,
-    children: [
-      {
-        path: 'dashboard',
-        component: PlatformDashboardComponent
-      },
-      {
-        path: 'speaking-requests',
-        component: SpeakingRequestListComponent
-      },
-      {
-        path: 'speaking-requests/:id',
-        component: SpeakingRequestDetailComponent
-      },
-      {
-        path: 'assignments/:id',
-        component: AssignmentWorkspaceComponent,
-        children: [
-          {
-            path: '',
-            pathMatch: 'full',
-            redirectTo: 'overview'
-          },
-          {
-            path: 'overview',
-            component: AssignmentOverviewComponent
-          },
-          {
-            path: 'checklist',
-            component: AssignmentDetailComponent
-          },
-          {
-            path: 'travel',
-            component: AssignmentTravelComponent
-          },
-          {
-            path: 'contacts',
-            component: AssignmentContactsComponent
-          },
-          {
-            path: 'documents',
-            component: AssignmentDocumentsComponent
-          },
-          {
-            path: 'activity',
-            component: AssignmentActivityComponent
-          }
-        ]
-      },
-      {
-        path: 'assignments',
-        component: AssignmentListComponent
-      },
-      {
-        path: '',
-        pathMatch: 'full',
-        redirectTo: 'dashboard'
-      },
-    ]
+    loadChildren: () =>
+      import('./platform/platform.module')
+        .then(module => module.PlatformModule)
   },
   {
     path: 'invite/apostle-cynthia',
-    component: SpeakingRequestFormComponent
+    loadComponent: () =>
+      import(
+        './platform/pages/speaking-requests/speaking-request-form/speaking-request-form.component'
+      ).then(module =>
+        module.SpeakingRequestFormComponent
+      )
   },
   {
     path: '',
@@ -120,31 +25,48 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        component: HomeComponent
+        loadComponent: () =>
+          import('./pages/home/home.component')
+            .then(module => module.HomeComponent)
       },
       {
         path: 'services',
-        component: ServicesComponent
+        loadComponent: () =>
+          import('./pages/services/services.component')
+            .then(module => module.ServicesComponent)
       },
       {
         path: 'pricing',
-        component: PricingComponent
+        loadComponent: () =>
+          import('./pages/pricing/pricing.component')
+            .then(module => module.PricingComponent)
       },
       {
         path: 'portfolio',
-        component: PortfolioComponent
+        loadComponent: () =>
+          import('./pages/portfolio/portfolio.component')
+            .then(module => module.PortfolioComponent)
       },
       {
         path: 'start-project',
-        component: StartProjectComponent
+        loadComponent: () =>
+          import(
+            './pages/start-project/start-project.component'
+          ).then(module =>
+            module.StartProjectComponent
+          )
       },
       {
         path: 'about',
-        component: AboutComponent
+        loadComponent: () =>
+          import('./pages/about/about.component')
+            .then(module => module.AboutComponent)
       },
       {
         path: 'contact',
-        component: ContactComponent
+        loadComponent: () =>
+          import('./pages/contact/contact.component')
+            .then(module => module.ContactComponent)
       }
     ]
   },

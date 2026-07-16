@@ -17,7 +17,7 @@ export interface CreateLeadRequest {
 }
 
 export interface CreateLeadResponse {
-  leadId: string;
+  leadId: number;
   message: string;
   recommendedPackage: string;
   receivedAtUtc: string;

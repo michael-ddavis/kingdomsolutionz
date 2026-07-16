@@ -31,7 +31,16 @@
           </strong>
         </div>
 
-        <div class="readiness-bar">
+        <div
+          class="readiness-bar"
+          role="progressbar"
+          aria-label="Document readiness"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuenow]="
+            assignment.documentLibrary
+              .readinessPercentage
+          ">
           <span
             [style.width.%]="
               assignment.documentLibrary

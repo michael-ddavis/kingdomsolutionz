@@ -1,40 +1,85 @@
 :root {
-  // KingdomOS brand
-  --kos-navy-950: #0d1830;
-  --kos-navy-900: #101d35;
-  --kos-navy-800: #182a4a;
-  --kos-blue-600: #345ec6;
-  --kos-blue-100: #e9eefc;
-  --kos-violet-600: #7656b5;
-  --kos-violet-100: #f1ecfa;
-  --kos-gold-500: #e7bd54;
-  --kos-gold-100: #fff6dc;
+  // KingdomOS "Quiet Authority" brand
+  --kos-obsidian-1000: #070b12;
+  --kos-obsidian-950: #0b111d;
+  --kos-obsidian-900: #111a29;
+  --kos-obsidian-850: #172235;
+  --kos-obsidian-800: #1d2a40;
+  --kos-navy-950: var(--kos-obsidian-950);
+  --kos-navy-900: var(--kos-obsidian-900);
+  --kos-navy-800: var(--kos-obsidian-800);
+
+  --kos-champagne-700: #765820;
+  --kos-champagne-600: #9a7532;
+  --kos-champagne-500: #c5a15a;
+  --kos-champagne-300: #ddc98f;
+  --kos-champagne-200: #eadcad;
+  --kos-champagne-100: #f7f0df;
+  --kos-gold-500: var(--kos-champagne-500);
+  --kos-gold-100: var(--kos-champagne-100);
+
+  --kos-champagne-metal:
+    linear-gradient(
+      120deg,
+      #76551f 0%,
+      #b98d3f 24%,
+      #ead58e 48%,
+      #c39a4d 70%,
+      #806027 100%
+    );
+  --kos-shell-gradient:
+    linear-gradient(
+      155deg,
+      #080d16 0%,
+      #101a2a 52%,
+      #192941 100%
+    );
+  --kos-luxury-rule:
+    linear-gradient(
+      90deg,
+      transparent,
+      #9a7532 18%,
+      #ead58e 50%,
+      #9a7532 82%,
+      transparent
+    );
+
+  // Functional accents
+  --kos-blue-600: #355b9f;
+  --kos-blue-100: #eaf0f8;
+  --kos-violet-600: #685478;
+  --kos-violet-100: #f0ebf3;
   --kos-green-600: #34795e;
   --kos-green-100: #e8f3ed;
   --kos-red-600: #a8514c;
   --kos-red-100: #f8eae9;
 
   // Surfaces
-  --kos-page: #f5f4f0;
-  --kos-surface: #ffffff;
-  --kos-surface-soft: #f8f9fb;
-  --kos-surface-muted: #f1f3f6;
+  --kos-page: #f2efe8;
+  --kos-surface: #fffdf9;
+  --kos-surface-elevated: #ffffff;
+  --kos-surface-soft: #f8f4ec;
+  --kos-surface-muted: #eee9df;
+  --kos-surface-dark: var(--kos-obsidian-900);
 
   // Text
-  --kos-text: #202c42;
-  --kos-text-secondary: #657084;
-  --kos-text-muted: #7c8696;
-  --kos-text-faint: #9299a5;
+  --kos-text: #1c2635;
+  --kos-text-secondary: #4e5968;
+  --kos-text-muted: #68717e;
+  --kos-text-faint: #68717e;
+  --kos-text-on-dark: #f8f5ee;
+  --kos-text-on-dark-muted: #b9c2cf;
 
   // Borders
-  --kos-border: #dde1e7;
-  --kos-border-strong: #ccd2dc;
+  --kos-border: #ded8cc;
+  --kos-border-strong: #cbc1b0;
+  --kos-border-dark: rgb(255 255 255 / 13%);
 
   // Typography
-  --kos-text-xs: 0.625rem;   // 10px
-  --kos-text-sm: 0.6875rem;  // 11px
-  --kos-text-md: 0.75rem;    // 12px
-  --kos-text-base: 0.8125rem;// 13px
+  --kos-text-xs: 0.75rem;    // 12px
+  --kos-text-sm: 0.8125rem;  // 13px
+  --kos-text-md: 0.875rem;   // 14px
+  --kos-text-base: 0.875rem; // 14px
   --kos-text-lg: 1rem;       // 16px
   --kos-text-xl: 1.25rem;    // 20px
   --kos-text-2xl: 1.625rem;  // 26px
@@ -54,10 +99,23 @@
   --kos-radius-lg: 13px;
   --kos-radius-xl: 16px;
 
+  // Controls and focus
+  --kos-control-height: 44px;
+  --kos-focus-color: #765820;
+  --kos-focus-ring: 0 0 0 3px rgb(197 161 90 / 30%);
+
   // Shadows
-  --kos-shadow-sm: 0 2px 7px rgb(16 29 53 / 4%);
-  --kos-shadow-md: 0 10px 28px rgb(16 29 53 / 10%);
-  --kos-shadow-drawer: -18px 0 48px rgb(6 14 29 / 18%);
+  --kos-shadow-xs: 0 1px 2px rgb(17 26 41 / 5%);
+  --kos-shadow-sm:
+    0 2px 8px rgb(17 26 41 / 5%),
+    0 1px 2px rgb(118 88 32 / 4%);
+  --kos-shadow-md:
+    0 16px 36px rgb(17 26 41 / 10%),
+    0 2px 5px rgb(118 88 32 / 5%);
+  --kos-shadow-luxury:
+    0 18px 44px rgb(17 26 41 / 11%),
+    0 1px 0 rgb(255 255 255 / 80%) inset;
+  --kos-shadow-drawer: -22px 0 56px rgb(7 11 18 / 24%);
 
   // Motion
   --kos-motion-fast: 120ms;

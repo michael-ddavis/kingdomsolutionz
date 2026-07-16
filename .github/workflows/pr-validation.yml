@@ -1,0 +1,61 @@
+name: Pull request validation
+
+on:
+  pull_request:
+    branches:
+      - main
+      - feature/kingdomos-foundation
+  workflow_dispatch:
+
+concurrency:
+  group: pr-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+          cache: npm
+          cache-dependency-path: KingdomSolutionz.Web/ClientApp/package-lock.json
+
+      - name: Install web dependencies
+        working-directory: KingdomSolutionz.Web/ClientApp
+        run: npm ci
+
+      - name: Audit production dependencies
+        working-directory: KingdomSolutionz.Web/ClientApp
+        run: npm run audit:production
+
+      - name: Build Angular application
+        working-directory: KingdomSolutionz.Web/ClientApp
+        run: npm run build:production
+
+      - name: Run Angular tests
+        working-directory: KingdomSolutionz.Web/ClientApp
+        run: npm run test:ci
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+
+      - name: Restore .NET dependencies
+        run: dotnet restore KingdomSolutionz.Web/KingdomSolutionz.Web.csproj
+
+      - name: Build .NET application
+        run: >-
+          dotnet build
+          KingdomSolutionz.Web/KingdomSolutionz.Web.csproj
+          --configuration Debug
+          --no-restore

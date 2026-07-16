@@ -99,6 +99,7 @@ interface JourneyTaskContext {
 }
 
 @Component({
+  standalone: false,
   selector: 'app-platform-dashboard',
   templateUrl: './platform-dashboard.component.html',
   styleUrls: ['./platform-dashboard.component.scss']

@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
   FormBuilder,
+  ReactiveFormsModule,
   Validators
 } from '@angular/forms';
 
@@ -15,6 +17,11 @@ import {
 } from '../../../shared/services/speaking-request.service';
 
 @Component({
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule
+  ],
   selector: 'app-speaking-request-form',
   templateUrl: './speaking-request-form.component.html',
   styleUrls: ['./speaking-request-form.component.scss']

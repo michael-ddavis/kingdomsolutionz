@@ -33,6 +33,7 @@ type FlightFormValue =
   Omit<AssignmentFlight, 'type'>;
 
 @Component({
+  standalone: false,
   selector: 'app-assignment-travel',
   templateUrl:
     './assignment-travel.component.html',

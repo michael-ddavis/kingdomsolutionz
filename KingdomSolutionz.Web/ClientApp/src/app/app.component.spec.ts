@@ -14,16 +14,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'ClientApp'`, () => {
+  it(`should have the KingdomSolutionz title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('ClientApp');
+    expect(app.title).toEqual('KingdomSolutionz');
   });
 
-  it('should render title', () => {
+  it('should provide the application router outlet', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('ClientApp app is running!');
+    expect(compiled.querySelector('router-outlet')).not.toBeNull();
   });
 });

@@ -18,6 +18,7 @@ type StatusTone =
   | 'gray';
 
 @Component({
+  standalone: false,
   selector: 'app-speaking-request-list',
   templateUrl: './speaking-request-list.component.html',
   styleUrls: ['./speaking-request-list.component.scss']

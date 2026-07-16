@@ -144,7 +144,15 @@
                         </span>
                     </span>
 
-                    <span class="readiness-bar">
+                    <span
+                      class="readiness-bar"
+                      role="progressbar"
+                      aria-label="Host readiness"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                      [attr.aria-valuenow]="
+                        request.readinessPercentage
+                      ">
                         <span [ngClass]="[
                 'readiness-progress',
                 'readiness-progress--' +

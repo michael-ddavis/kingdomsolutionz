@@ -1,6 +1,8 @@
 import {
   Component,
-  Input
+  EventEmitter,
+  Input,
+  Output
 } from '@angular/core';
 
 import {
@@ -9,6 +11,7 @@ import {
 } from '../../../shared/models/assignment.model';
 
 @Component({
+  standalone: false,
   selector:
     'app-assignment-travel-quick-view',
 
@@ -21,6 +24,9 @@ import {
 })
 export class AssignmentTravelQuickViewComponent {
   @Input() assignment!: Assignment;
+
+  @Output() openFull =
+    new EventEmitter<void>();
 
   getFlightRoute(
     flight: AssignmentFlight

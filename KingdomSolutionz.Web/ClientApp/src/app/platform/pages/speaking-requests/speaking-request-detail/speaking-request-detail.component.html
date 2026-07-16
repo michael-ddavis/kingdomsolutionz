@@ -119,7 +119,15 @@
           key items complete
         </span>
 
-        <div class="summary-progress">
+        <div
+          class="summary-progress"
+          role="progressbar"
+          aria-label="Host readiness"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuenow]="
+            request.readinessPercentage
+          ">
           <span [style.width.%]="
               request.readinessPercentage
             ">

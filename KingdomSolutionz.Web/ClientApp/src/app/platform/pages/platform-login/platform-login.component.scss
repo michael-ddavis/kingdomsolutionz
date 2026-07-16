@@ -7,56 +7,100 @@
   min-height: 100vh;
   padding: 24px;
   place-items: center;
-  background: #f6f5f1;
+  background:
+    radial-gradient(
+      circle at 16% 10%,
+      rgb(197 161 90 / 18%),
+      transparent 28rem
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 3px,
+      rgb(255 255 255 / 1.2%) 3px 4px
+    ),
+    var(--kos-shell-gradient);
 }
 
 .login-card {
-  width: min(100%, 440px);
-  padding: 40px;
-  border: 1px solid #e3e5e9;
-  border-radius: 16px;
-  background: #ffffff;
-  box-shadow: 0 18px 50px rgb(16 29 53 / 8%);
+  position: relative;
+  width: min(100%, 460px);
+  padding: 42px;
+  overflow: hidden;
+  border: 1px solid var(--kos-champagne-300);
+  border-radius: var(--kos-radius-xl);
+  background:
+    linear-gradient(
+      145deg,
+      var(--kos-surface-elevated),
+      var(--kos-surface-soft)
+    );
+  box-shadow: 0 28px 70px rgb(0 0 0 / 28%);
+}
+
+.login-card::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  content: '';
+  background: var(--kos-luxury-rule);
 }
 
 .eyebrow {
   margin: 0 0 8px;
-  color: #345ec6;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  color: var(--kos-champagne-700);
+  font-size: var(--kos-text-xs);
+  font-weight: 800;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
 }
 
 h1 {
   margin: 0 0 10px;
-  color: #101d35;
-  font-size: 36px;
+  color: var(--kos-obsidian-900);
+  font-size: 2.25rem;
   letter-spacing: -0.04em;
 }
 
 p {
   margin-bottom: 28px;
-  color: #657083;
+  color: var(--kos-text-muted);
+  line-height: 1.6;
 }
 
 .login-button,
 .return-link {
-  display: block;
+  display: flex;
+  min-height: var(--kos-control-height);
+  align-items: center;
+  justify-content: center;
   text-align: center;
   text-decoration: none;
 }
 
 .login-button {
-  padding: 12px 18px;
-  border-radius: 10px;
-  color: #ffffff;
-  font-weight: 700;
-  background: #101d35;
+  padding: 0 18px;
+  border: 1px solid var(--kos-obsidian-800);
+  border-radius: var(--kos-radius-md);
+  color: var(--kos-text-on-dark);
+  font-weight: 750;
+  background: var(--kos-shell-gradient);
+  box-shadow: 0 10px 24px rgb(17 26 41 / 16%);
+}
+
+.login-button:hover {
+  border-color: var(--kos-champagne-500);
+  background: var(--kos-obsidian-800);
 }
 
 .return-link {
-  margin-top: 18px;
-  color: #345ec6;
-  font-size: 14px;
+  margin-top: 12px;
+  color: var(--kos-champagne-700);
+  font-size: var(--kos-text-md);
+  font-weight: 700;
+}
+
+@media (max-width: 520px) {
+  .login-card {
+    padding: 34px 24px;
+  }
 }

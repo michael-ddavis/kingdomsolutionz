@@ -2,7 +2,27 @@
     sidebarOpen
   ">
 
-  <aside class="platform-sidebar" id="platform-sidebar">
+  <aside
+    #sidebar
+    class="platform-sidebar"
+    id="platform-sidebar"
+    aria-label="KingdomOS navigation"
+    [attr.role]="compactNavigation ? 'dialog' : null"
+    [attr.aria-modal]="
+      compactNavigation && sidebarOpen
+        ? true
+        : null
+    "
+    [attr.aria-hidden]="
+      compactNavigation && !sidebarOpen
+        ? true
+        : null
+    "
+    [attr.inert]="
+      compactNavigation && !sidebarOpen
+        ? ''
+        : null
+    ">
     <div class="sidebar-brand">
       <div class="brand-mark">
         K
@@ -15,10 +35,6 @@
     </div>
 
     <section class="workspace-section">
-      <p class="sidebar-section-label">
-        Ministry workspace
-      </p>
-
       <app-workspace-switcher>
       </app-workspace-switcher>
     </section>
@@ -69,13 +85,16 @@
                 <path d="M8.5 16h4"></path>
               </svg>
 
-              <svg *ngSwitchCase="'journeys'" viewBox="0 0 24 24" aria-hidden="true">
+              <svg *ngSwitchCase="'assignments'" viewBox="0 0 24 24" aria-hidden="true">
 
-                <circle cx="5" cy="18" r="2"></circle>
-                <circle cx="19" cy="6" r="2"></circle>
+                <rect x="4" y="6" width="16" height="14" rx="2">
+                </rect>
 
-                <path d="M7 18h3.5a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h8">
+                <path d="M9 6V4.75A1.75 1.75 0 0 1 10.75 3h2.5A1.75 1.75 0 0 1 15 4.75V6">
                 </path>
+
+                <path d="M4 11.5h16"></path>
+                <path d="M10 11.5v1.75h4V11.5"></path>
               </svg>
 
             </span>
@@ -100,7 +119,10 @@
 
     <div class="sidebar-spacer"></div>
 
-    <button type="button" class="support-card">
+    <a
+      class="support-card"
+      routerLink="/contact"
+      (click)="closeSidebar()">
 
       <span class="support-icon">
         ?
@@ -108,13 +130,19 @@
 
       <span class="support-copy">
         <strong>Need help?</strong>
-        <small>KingdomSolutionz support</small>
+        <small>Contact KingdomSolutionz</small>
       </span>
-    </button>
+    </a>
   </aside>
 
-  <button type="button" class="sidebar-overlay" aria-label="Close navigation" (click)="closeSidebar()"
-    [attr.aria-expanded]="sidebarOpen" aria-controls="platform-sidebar">
+  <button
+    type="button"
+    class="sidebar-overlay"
+    tabindex="-1"
+    [disabled]="!sidebarOpen"
+    aria-label="Close navigation"
+    (click)="closeSidebar()"
+    aria-controls="platform-sidebar">
   </button>
 
   <div class="platform-main">
@@ -124,7 +152,18 @@
       ">
 
       <div class="header-left">
-        <button type="button" class="mobile-menu-button" aria-label="Open navigation" (click)="toggleSidebar()">
+        <button
+          #mobileMenuButton
+          type="button"
+          class="mobile-menu-button"
+          [attr.aria-label]="
+            sidebarOpen
+              ? 'Close navigation'
+              : 'Open navigation'
+          "
+          [attr.aria-expanded]="sidebarOpen"
+          aria-controls="platform-sidebar"
+          (click)="toggleSidebar()">
 
           <span></span>
           <span></span>
@@ -137,7 +176,10 @@
       </div>
 
       <div class="header-right">
-        <button type="button" class="notification-button" aria-label="Notifications">
+        <span
+          class="notification-status"
+          aria-label="Notifications are not enabled yet"
+          title="Notifications coming soon">
 
           <svg viewBox="0 0 24 24" aria-hidden="true">
 
@@ -148,8 +190,7 @@
             </path>
           </svg>
 
-          <span class="notification-dot"></span>
-        </button>
+        </span>
 
         <div class="user-avatar">
           CT

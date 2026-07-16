@@ -49,7 +49,8 @@ router-outlet + * {
   transform: translateY(0) scale(0.985);
 }
 
-body.kos-overlay-open {
+body.kos-overlay-open,
+body.kos-sidebar-open {
   overflow: hidden;
 }
 

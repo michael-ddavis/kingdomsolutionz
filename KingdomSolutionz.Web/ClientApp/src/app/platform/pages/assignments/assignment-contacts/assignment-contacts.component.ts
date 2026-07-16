@@ -60,6 +60,7 @@ type ContactFormGroup =
   }>;
 
 @Component({
+  standalone: false,
   selector: 'app-assignment-contacts',
 
   templateUrl:
