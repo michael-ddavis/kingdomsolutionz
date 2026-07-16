@@ -26,19 +26,16 @@ export class WorkspaceService {
       kind: 'itinerant-ministry',
       description:
         'Speaking engagements, travel, events, ministry responses and handoffs.'
-    },
-    {
-      id: 'jpp',
-      name: 'Jesus People Proclaim',
-      shortName: 'JPP',
-      kind: 'church',
-      description:
-        'People, small groups, curriculum, discipleship and pastoral care.'
     }
   ];
 
   private readonly selectedWorkspaceSubject =
-    new BehaviorSubject<Workspace>(this.workspaces[0]);
+    new BehaviorSubject<Workspace>(
+      this.workspaces.find(
+        workspace =>
+          workspace.id === 'apostle-cynthia'
+      ) ?? this.workspaces[0]
+    );
 
   readonly selectedWorkspace$ =
     this.selectedWorkspaceSubject.asObservable();

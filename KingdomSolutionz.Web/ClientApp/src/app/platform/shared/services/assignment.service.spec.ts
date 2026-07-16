@@ -8,6 +8,10 @@ import {
 } from '../models/speaking-request.model';
 
 import {
+  SEEDED_SPEAKING_REQUESTS
+} from '../demo-data/speaking-request.seed';
+
+import {
   AssignmentService
 } from './assignment.service';
 
@@ -18,22 +22,38 @@ describe('AssignmentService invitation prefill', () => {
     service = new AssignmentService();
   });
 
-  it('builds the seeded assignment from the shared request record', async () => {
-    const assignment = await firstValueFrom(
+  it('starts with no assignment before a request is approved', async () => {
+    const assignments = await firstValueFrom(
       service
-        .getAssignment(2001)
+        .assignments$
         .pipe(take(1))
     );
 
-    expect(assignment).toBeDefined();
-    expect(assignment?.eventName)
+    expect(assignments).toEqual([]);
+  });
+
+  it('creates the demo assignment from the pending request only after approval', () => {
+    const request =
+      SEEDED_SPEAKING_REQUESTS[0];
+
+    expect(request.status)
+      .toBe('awaiting-review');
+
+    const assignment =
+      service.createOrGetAssignment({
+        ...request,
+        status: 'approved'
+      });
+
+    expect(assignment.id).toBe(2001);
+    expect(assignment.eventName)
       .toBe('Kingdom Leadership Intensive');
     expect(
-      assignment?.invitation
+      assignment.invitation
         .expectedAttendance
     ).toBe(275);
     expect(
-      assignment?.invitation
+      assignment.invitation
         .ministryRequest
     ).toContain('Two leadership sessions');
   });

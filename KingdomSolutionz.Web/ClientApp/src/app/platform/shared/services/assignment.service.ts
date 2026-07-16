@@ -3,9 +3,6 @@ import { BehaviorSubject, Observable, map } from 'rxjs';
 
 import { SpeakingRequest } from '../models/speaking-request.model';
 import {
-  SEEDED_SPEAKING_REQUESTS
-} from '../demo-data/speaking-request.seed';
-import {
   Assignment,
   AssignmentActivityItem,
   AssignmentActivityLog,
@@ -41,9 +38,7 @@ interface NewAssignmentActivity {
 })
 export class AssignmentService {
   private readonly assignmentsSubject =
-    new BehaviorSubject<readonly Assignment[]>([
-      this.createSeededAssignment()
-    ]);
+    new BehaviorSubject<readonly Assignment[]>([]);
 
   readonly assignments$: Observable<readonly Assignment[]> =
     this.assignmentsSubject.asObservable();
@@ -88,7 +83,7 @@ export class AssignmentService {
 
     const assignment = this.buildAssignment(
       request,
-      this.getNextAssignmentId()
+      this.getNextAssignmentId(request)
     );
 
     this.assignmentsSubject.next([
@@ -1907,36 +1902,26 @@ export class AssignmentService {
     }
   }
 
-  private createSeededAssignment():
-    Assignment {
-    const request =
-      SEEDED_SPEAKING_REQUESTS.find(
-        item => item.id === 1003
-      );
-
-    if (!request) {
-      throw new Error(
-        'The seeded speaking request for assignment 2001 was not found.'
-      );
-    }
-
-    return this.buildAssignment(
-      request,
-      2001,
-      '2026-07-14T14:00:00.000Z'
-    );
-  }
-
-  private getNextAssignmentId():
+  private getNextAssignmentId(
+    request: SpeakingRequest
+  ):
     number {
     const currentIds =
       this.assignmentsSubject.value.map(
         assignment => assignment.id
       );
 
-    return currentIds.length === 0
-      ? 2001
-      : Math.max(...currentIds) + 1;
+    if (
+      request.id === 1003 &&
+      !currentIds.includes(2001)
+    ) {
+      return 2001;
+    }
+
+    return Math.max(
+      2001,
+      ...currentIds
+    ) + 1;
   }
 
   private getNextDocumentId():

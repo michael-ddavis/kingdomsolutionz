@@ -225,38 +225,15 @@ export class PlatformDashboardComponent {
         activeJourneys
       );
 
-    const jppPriorities: DashboardPriority[] = [
-      {
-        title: 'Contact Marcus Johnson',
-        description:
-          'Marcus missed two group meetings and has not completed Week 3.',
-        workspace: 'Jesus People Proclaim',
-        due: 'Due tomorrow',
-        status: 'Needs care',
-        tone: 'amber'
-      },
-      {
-        title: 'Accept two discipleship referrals',
-        description:
-          'Two conference responses are waiting for placement into a group.',
-        workspace: 'Jesus People Proclaim',
-        due: 'Waiting 1 day',
-        status: 'Awaiting handoff',
-        tone: 'blue'
-      }
-    ];
-
     const priorities = [
       ...requestPriorities.slice(0, 2),
-      ...assignmentPriorities.slice(0, 2),
-      ...jppPriorities
+      ...assignmentPriorities.slice(0, 3)
     ].slice(0, 5);
 
     const openPriorityCount =
       awaitingReview.length +
       informationNeeded.length +
-      assignmentAttentionCount +
-      jppPriorities.length;
+      assignmentAttentionCount;
 
     return {
       workspace,
@@ -288,9 +265,11 @@ export class PlatformDashboardComponent {
           tone: 'blue'
         },
         {
-          value: '3',
-          label: 'People may need care',
-          detail: 'Follow-up recommended',
+          value:
+            informationNeeded.length
+              .toString(),
+          label: 'Awaiting host details',
+          detail: 'Information requests open',
           tone: 'amber'
         }
       ],
@@ -316,16 +295,6 @@ export class PlatformDashboardComponent {
             ) + '%',
           secondaryLabel: 'Readiness',
           tone: 'violet'
-        },
-        {
-          name: 'Jesus People Proclaim',
-          description:
-            'Discipleship, groups, curriculum and care.',
-          primaryMetric: '3',
-          primaryLabel: 'Need care',
-          secondaryMetric: '4',
-          secondaryLabel: 'Lessons due',
-          tone: 'blue'
         }
       ]
     };
@@ -623,7 +592,7 @@ export class PlatformDashboardComponent {
             ? 'amber'
             : 'blue',
         route:
-          `/app/speaker-assignments/${assignment.id}`
+          `/app/assignments/${assignment.id}`
       });
     }
 
@@ -761,23 +730,6 @@ export class PlatformDashboardComponent {
       activities.push(assignmentActivity);
     }
 
-    activities.push(
-      {
-        title: 'Referral accepted',
-        description:
-          'Jasmine Lee was connected to JPP Online Discipleship.',
-        time: '18 minutes ago',
-        initials: 'JL'
-      },
-      {
-        title: 'Lesson completed',
-        description:
-          'David Carter completed Foundations of Faith — Week 2.',
-        time: '1 hour ago',
-        initials: 'DC'
-      }
-    );
-
     return activities.slice(0, 4);
   }
 
@@ -804,23 +756,6 @@ export class PlatformDashboardComponent {
     if (assignmentActivity) {
       activities.push(assignmentActivity);
     }
-
-    activities.push(
-      {
-        title: 'Host readiness updated',
-        description:
-          'New Covenant Church uploaded the event schedule.',
-        time: '32 minutes ago',
-        initials: 'NC'
-      },
-      {
-        title: 'Ministry response submitted',
-        description:
-          'A new discipleship request was received from Charlotte.',
-        time: 'Yesterday',
-        initials: 'CR'
-      }
-    );
 
     return activities.slice(0, 4);
   }
