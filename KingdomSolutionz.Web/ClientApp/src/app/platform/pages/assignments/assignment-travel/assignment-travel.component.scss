@@ -310,12 +310,15 @@ p {
 }
 
 .travel-section {
+  position: relative;
   padding: 24px;
 }
 
 .section-heading {
   display: flex;
+  width: 100%;
   margin: 0;
+  padding-right: 53px;
   align-items: center;
   gap: 13px;
   cursor: pointer;
@@ -327,10 +330,13 @@ p {
 }
 
 .section-heading::after {
+  position: absolute;
+  top: 24px;
+  right: 24px;
   display: grid;
   width: 40px;
   height: 40px;
-  margin-left: auto;
+  margin-left: 0;
   border: 1px solid var(--kos-border);
   border-radius: var(--kos-radius-sm);
   flex: 0 0 auto;

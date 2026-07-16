@@ -467,8 +467,12 @@ h1 {
     display: flex;
     overflow-x: auto;
     overscroll-behavior-inline: contain;
-    scrollbar-width: thin;
+    scrollbar-width: none;
     scroll-snap-type: inline proximity;
+  }
+
+  .assignment-tabs::-webkit-scrollbar {
+    display: none;
   }
 
   .assignment-tab-group {
@@ -481,8 +485,13 @@ h1 {
     display: flex;
   }
 
-  .record-menu {
-    width: 188px;
+  .assignment-tab-group--record .record-menu {
+    display: none;
+  }
+
+  .record-mobile-options {
+    display: flex;
+    gap: 4px;
   }
 
   .assignment-tab {
