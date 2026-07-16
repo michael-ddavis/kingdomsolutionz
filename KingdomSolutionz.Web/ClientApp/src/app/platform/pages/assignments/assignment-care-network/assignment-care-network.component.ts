@@ -141,7 +141,7 @@ export class AssignmentCareNetworkComponent {
 
     this.personalMessage =
       response.consentToShare
-        ? `${response.personName} requested ${response.responseType.toLowerCase()} support and gave permission for ACT to share contact details. Please confirm whether your team can receive this referral.`
+        ? `${response.personName} requested ${response.responseType.toLowerCase()} support and gave permission for CTG to share contact details. Please confirm whether your team can receive this referral.`
         : `${response.personName} requested ${response.responseType.toLowerCase()} support. Consent has not yet been verified, so this referral must not be sent.`;
   }
 
@@ -267,7 +267,7 @@ export class AssignmentCareNetworkComponent {
       );
 
       this.personalMessage =
-        `${response.personName} requested ${response.responseType.toLowerCase()} support and directly confirmed permission for ACT to share contact details. Please confirm whether your team can receive this referral.`;
+        `${response.personName} requested ${response.responseType.toLowerCase()} support and directly confirmed permission for CTG to share contact details. Please confirm whether your team can receive this referral.`;
     } else {
       this.careReferralService.withdrawConsent(
         response.id

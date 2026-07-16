@@ -12,7 +12,7 @@ import {
   AssignmentService
 } from '../../../shared/services/assignment.service';
 
-type JourneyFilter =
+type AssignmentFilter =
   | 'all'
   | 'active'
   | 'completed'
@@ -28,7 +28,7 @@ type JourneyFilter =
   ]
 })
 export class AssignmentListComponent {
-  selectedFilter: JourneyFilter = 'all';
+  selectedFilter: AssignmentFilter = 'all';
 
   readonly assignments$: Observable<
     readonly Assignment[]
@@ -49,7 +49,7 @@ export class AssignmentListComponent {
       AssignmentService
   ) { }
 
-  setFilter(filter: JourneyFilter): void {
+  setFilter(filter: AssignmentFilter): void {
     this.selectedFilter = filter;
   }
 
@@ -61,21 +61,21 @@ export class AssignmentListComponent {
     }
 
     return assignments.filter(
-      journey =>
-        journey.status === this.selectedFilter
+      assignment =>
+        assignment.status === this.selectedFilter
     );
   }
 
   countByStatus(
     assignments: readonly Assignment[],
-    status: JourneyFilter
+    status: AssignmentFilter
   ): number {
     if (status === 'all') {
       return assignments.length;
     }
 
     return assignments.filter(
-      journey => journey.status === status
+      assignment => assignment.status === status
     ).length;
   }
 
@@ -88,8 +88,8 @@ export class AssignmentListComponent {
 
     const totalReadiness =
       assignments.reduce(
-        (total, journey) =>
-          total + journey.readinessPercentage,
+        (total, assignment) =>
+          total + assignment.readinessPercentage,
         0
       );
 
@@ -101,12 +101,12 @@ export class AssignmentListComponent {
   getApproachingEventCount(
     assignments: readonly Assignment[]
   ): number {
-    return assignments.filter(journey => {
+    return assignments.filter(assignment => {
       const daysUntilEvent =
-        this.getDaysUntilEvent(journey);
+        this.getDaysUntilEvent(assignment);
 
       return (
-        journey.status === 'active' &&
+        assignment.status === 'active' &&
         daysUntilEvent >= 0 &&
         daysUntilEvent <= 30
       );
@@ -117,9 +117,9 @@ export class AssignmentListComponent {
     assignments: readonly Assignment[]
   ): number {
     return assignments.reduce(
-      (total, journey) =>
+      (total, assignment) =>
         total +
-        journey.stages.reduce(
+        assignment.stages.reduce(
           (stageTotal, stage) =>
             stageTotal +
             stage.tasks.filter(
@@ -132,27 +132,27 @@ export class AssignmentListComponent {
   }
 
   getCurrentStage(
-    journey: Assignment
+    assignment: Assignment
   ): AssignmentStage | undefined {
     return (
-      journey.stages.find(
+      assignment.stages.find(
         stage =>
           stage.status === 'blocked'
       ) ??
-      journey.stages.find(
+      assignment.stages.find(
         stage =>
           stage.status === 'current'
       ) ??
-      journey.stages[
-      journey.stages.length - 1
+      assignment.stages[
+      assignment.stages.length - 1
       ]
     );
   }
 
   getCompletedTaskCount(
-    journey: Assignment
+    assignment: Assignment
   ): number {
-    return journey.stages.reduce(
+    return assignment.stages.reduce(
       (total, stage) =>
         total +
         stage.tasks.filter(
@@ -163,9 +163,9 @@ export class AssignmentListComponent {
   }
 
   getTotalTaskCount(
-    journey: Assignment
+    assignment: Assignment
   ): number {
-    return journey.stages.reduce(
+    return assignment.stages.reduce(
       (total, stage) =>
         total + stage.tasks.length,
       0
@@ -173,9 +173,9 @@ export class AssignmentListComponent {
   }
 
   getBlockedTaskCount(
-    journey: Assignment
+    assignment: Assignment
   ): number {
-    return journey.stages.reduce(
+    return assignment.stages.reduce(
       (total, stage) =>
         total +
         stage.tasks.filter(
@@ -186,10 +186,10 @@ export class AssignmentListComponent {
   }
 
   getNextDueTask(
-    journey: Assignment
+    assignment: Assignment
   ): AssignmentTask | undefined {
     const incompleteTasks =
-      journey.stages
+      assignment.stages
         .flatMap(stage => stage.tasks)
         .filter(
           task => task.status !== 'complete'
@@ -204,14 +204,14 @@ export class AssignmentListComponent {
   }
 
   getDaysUntilEvent(
-    journey: Assignment
+    assignment: Assignment
   ): number {
     const today = new Date();
 
     today.setHours(0, 0, 0, 0);
 
     const eventDate = new Date(
-      `${journey.startDate}T12:00:00`
+      `${assignment.startDate}T12:00:00`
     );
 
     const difference =
@@ -223,16 +223,16 @@ export class AssignmentListComponent {
   }
 
   getEventTimingLabel(
-    journey: Assignment
+    assignment: Assignment
   ): string {
     const daysUntilEvent =
-      this.getDaysUntilEvent(journey);
+      this.getDaysUntilEvent(assignment);
 
-    if (journey.status === 'completed') {
+    if (assignment.status === 'completed') {
       return 'Engagement completed';
     }
 
-    if (journey.status === 'cancelled') {
+    if (assignment.status === 'cancelled') {
       return 'Engagement cancelled';
     }
 
@@ -253,8 +253,8 @@ export class AssignmentListComponent {
 
   trackByAssignmentId(
     index: number,
-    journey: Assignment
+    assignment: Assignment
   ): number {
-    return journey.id;
+    return assignment.id;
   }
 }

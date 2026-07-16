@@ -568,13 +568,13 @@ img {
   line-height: 1.05;
 }
 
-.journey-list {
+.assignment-flow-list {
   display: grid;
   gap: 10px;
   margin-top: 38px;
 }
 
-.journey-item {
+.assignment-flow-item {
   display: grid;
   grid-template-columns: auto 1fr auto;
   gap: 14px;
@@ -585,16 +585,16 @@ img {
   background: rgba(255, 255, 255, 0.035);
 }
 
-.journey-item.is-active {
+.assignment-flow-item.is-active {
   border-color: rgba(72, 119, 236, 0.5);
   background: rgba(47, 91, 211, 0.12);
 }
 
-.journey-item.is-complete {
+.assignment-flow-item.is-complete {
   border-color: rgba(50, 143, 102, 0.42);
 }
 
-.journey-number {
+.assignment-flow-number {
   width: 34px;
   height: 34px;
   display: grid;
@@ -606,33 +606,33 @@ img {
   font-weight: 800;
 }
 
-.journey-item div {
+.assignment-flow-item div {
   display: grid;
   gap: 3px;
 }
 
-.journey-item strong {
+.assignment-flow-item strong {
   font-size: 0.84rem;
 }
 
-.journey-item small {
+.assignment-flow-item small {
   color: var(--muted-dark);
   font-size: 0.72rem;
   line-height: 1.5;
 }
 
-.journey-state {
+.assignment-flow-state {
   color: #b8c5d6;
   font-size: 0.65rem;
   font-weight: 800;
   text-transform: uppercase;
 }
 
-.is-active .journey-state {
+.is-active .assignment-flow-state {
   color: #9fbbff;
 }
 
-.is-complete .journey-state {
+.is-complete .assignment-flow-state {
   color: #82c6a8;
 }
 
@@ -1918,11 +1918,11 @@ button:disabled {
     padding: 34px 18px 22px;
   }
 
-  .journey-item {
+  .assignment-flow-item {
     grid-template-columns: auto 1fr;
   }
 
-  .journey-state {
+  .assignment-flow-state {
     grid-column: 2;
   }
 
@@ -2102,6 +2102,23 @@ button:disabled {
   .form-actions .btn {
     width: 100%;
   }
+}
+
+/* Geometric disclosure icons stay optically centered at every size. */
+:is(
+  .workspace-caret,
+  .record-chevron,
+  .source-chevron,
+  .summary-chevron,
+  .stage-collapse-button > span
+)::before {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-right: 1.5px solid currentcolor;
+  border-bottom: 1.5px solid currentcolor;
+  content: '';
+  transform: translateY(-2px) rotate(45deg);
 }
 
 /* Shared disclosure motion keeps every expandable panel consistent. */

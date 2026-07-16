@@ -250,7 +250,7 @@ export class PlatformShellComponent
         ]
       },
       {
-        label: 'Cynthia Thompson Global Ministries',
+        label: 'Cynthia Thompson Global',
         items: [
           {
             label: 'Speaking Requests',

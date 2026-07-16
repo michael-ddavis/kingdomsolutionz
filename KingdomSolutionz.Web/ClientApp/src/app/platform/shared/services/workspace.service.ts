@@ -21,8 +21,8 @@ export class WorkspaceService {
     },
     {
       id: 'apostle-cynthia',
-      name: 'Cynthia Thompson Global Ministries',
-      shortName: 'CTG Ministries',
+      name: 'Cynthia Thompson Global',
+      shortName: 'CTG',
       kind: 'itinerant-ministry',
       description:
         'Speaking engagements, travel, events, ministry responses and handoffs.'
