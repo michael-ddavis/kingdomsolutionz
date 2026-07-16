@@ -2,28 +2,59 @@
   class="workspace-switcher"
   *ngIf="selectedWorkspace$ | async as selectedWorkspace">
 
-  <label for="workspace-select">
-    Ministry workspace
-  </label>
+  <span class="workspace-label">Ministry workspace</span>
 
-  <div class="workspace-select-wrapper">
-    <span class="workspace-mark">
-      {{ selectedWorkspace.shortName.charAt(0) }}
-    </span>
+  <div class="workspace-menu">
+    <button
+      id="workspace-menu-trigger"
+      type="button"
+      class="workspace-trigger"
+      [class.workspace-trigger--open]="menuOpen"
+      [attr.aria-expanded]="menuOpen"
+      aria-haspopup="listbox"
+      aria-controls="workspace-menu-options"
+      (click)="toggleMenu()">
 
-    <select
-      id="workspace-select"
-      [value]="selectedWorkspace.id"
-      (change)="onWorkspaceChange($event)">
+      <span class="workspace-mark">
+        {{ selectedWorkspace.shortName.charAt(0) }}
+      </span>
 
-      <option
+      <span class="workspace-trigger-copy">
+        <strong>{{ selectedWorkspace.shortName }}</strong>
+        <small>{{ selectedWorkspace.kind === 'network' ? 'Combined workspace' : 'Speaking and assignments' }}</small>
+      </span>
+
+      <span class="workspace-caret" aria-hidden="true">⌄</span>
+    </button>
+
+    <div
+      id="workspace-menu-options"
+      class="workspace-options"
+      [class.workspace-options--open]="menuOpen"
+      [attr.aria-hidden]="!menuOpen"
+      role="listbox"
+      aria-labelledby="workspace-menu-trigger">
+
+      <button
         *ngFor="let workspace of workspaces"
-        [value]="workspace.id">
+        type="button"
+        class="workspace-option"
+        [class.workspace-option--active]="workspace.id === selectedWorkspace.id"
+        [attr.aria-selected]="workspace.id === selectedWorkspace.id"
+        role="option"
+        (click)="selectWorkspace(workspace.id)">
 
-        {{ workspace.name }}
-      </option>
-    </select>
+        <span class="option-mark">{{ workspace.shortName.charAt(0) }}</span>
 
-    <span class="select-arrow" aria-hidden="true">⌄</span>
+        <span class="option-copy">
+          <strong>{{ workspace.name }}</strong>
+          <small>{{ workspace.description }}</small>
+        </span>
+
+        <span class="option-check" aria-hidden="true">
+          {{ workspace.id === selectedWorkspace.id ? '✓' : '' }}
+        </span>
+      </button>
+    </div>
   </div>
 </div>

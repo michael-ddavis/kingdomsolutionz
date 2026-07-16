@@ -79,6 +79,60 @@ describe('CareReferralService', () => {
     expect(referral).toBeUndefined();
   });
 
+  it('records staff-verified consent before allowing a referral', async () => {
+    service.verifyConsent(
+      4102,
+      'verbal-confirmation',
+      'Michael Davis'
+    );
+
+    const referral = service.sendReferral(
+      4102,
+      301,
+      'Consent was confirmed directly before this referral.'
+    );
+
+    expect(referral).toBeDefined();
+
+    const network = await firstValueFrom(
+      service.getAssignmentNetwork(2001).pipe(take(1))
+    );
+
+    const response = network.responses.find(
+      item => item.id === 4102
+    );
+
+    expect(response?.consentToShare).toBeTrue();
+    expect(response?.consentSource)
+      .toBe('verbal-confirmation');
+    expect(response?.consentRecordedBy)
+      .toBe('Michael Davis');
+  });
+
+  it('stops an incomplete referral when consent is withdrawn', async () => {
+    const referral = service.sendReferral(
+      4101,
+      302,
+      'Please accept this care referral.'
+    );
+
+    service.withdrawConsent(4101);
+
+    const network = await firstValueFrom(
+      service.getAssignmentNetwork(2001).pipe(take(1))
+    );
+
+    expect(
+      network.responses.find(item => item.id === 4101)
+        ?.consentToShare
+    ).toBeFalse();
+
+    expect(
+      network.referrals.find(item => item.id === referral?.id)
+        ?.status
+    ).toBe('expired');
+  });
+
   it('tracks viewing, acceptance and confirmed connection', async () => {
     const referral = service.sendReferral(
       4101,

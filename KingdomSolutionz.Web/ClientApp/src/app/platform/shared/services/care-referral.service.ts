@@ -15,7 +15,8 @@ import {
   CareReferral,
   CareReferralContext,
   CreateMinistryResponseInput,
-  MinistryResponse
+  MinistryResponse,
+  MinistryResponseConsentSource
 } from '../models/care-referral.model';
 
 import {
@@ -173,6 +174,7 @@ export class CareReferralService {
     input: CreateMinistryResponseInput
   ): MinistryResponse {
     const state = this.stateSubject.value;
+    const receivedUtc = new Date().toISOString();
     const ids = state.responses.map(
       response => response.id
     );
@@ -181,7 +183,16 @@ export class CareReferralService {
       id: ids.length
         ? Math.max(...ids) + 1
         : 4101,
-      receivedUtc: new Date().toISOString(),
+      consentSource: input.consentToShare
+        ? 'qr-form'
+        : 'not-recorded',
+      consentRecordedUtc: input.consentToShare
+        ? receivedUtc
+        : null,
+      consentRecordedBy: input.consentToShare
+        ? input.personName
+        : '',
+      receivedUtc,
       status: input.consentToShare
         ? 'ready-to-refer'
         : 'needs-review'
@@ -543,6 +554,56 @@ export class CareReferralService {
     );
   }
 
+  verifyConsent(
+    responseId: number,
+    source: Extract<
+      MinistryResponseConsentSource,
+      'verbal-confirmation' | 'written-confirmation'
+    >,
+    actor = 'Michael Davis'
+  ): void {
+    const state = this.stateSubject.value;
+    const response = state.responses.find(
+      item => item.id === responseId
+    );
+
+    if (!response || response.status === 'connected') {
+      return;
+    }
+
+    const consentRecordedUtc =
+      new Date().toISOString();
+
+    this.publish({
+      ...state,
+      responses: state.responses.map(item =>
+        item.id === responseId
+          ? {
+              ...item,
+              consentToShare: true,
+              consentSource: source,
+              consentRecordedUtc,
+              consentRecordedBy: actor,
+              status: 'ready-to-refer'
+            }
+          : item
+      )
+    });
+
+    this.assignmentService.addCareReferralActivity(
+      response.assignmentId,
+      {
+        type: 'note-added',
+        tone: 'success',
+        title: 'Consent verified',
+        description:
+          `${actor} confirmed ${response.personName}'s permission to share through ${source.replace('-', ' ')}.`,
+        actor,
+        section: 'responses'
+      }
+    );
+  }
+
   confirmConnected(
     referralId: number
   ): void {
@@ -664,10 +725,36 @@ export class CareReferralService {
               consentToShare:
                 status === 'withdrawn'
                   ? false
-                  : item.consentToShare
+                  : item.consentToShare,
+              consentSource:
+                status === 'withdrawn'
+                  ? 'not-recorded'
+                  : item.consentSource,
+              consentRecordedUtc:
+                status === 'withdrawn'
+                  ? null
+                  : item.consentRecordedUtc,
+              consentRecordedBy:
+                status === 'withdrawn'
+                  ? ''
+                  : item.consentRecordedBy
             }
           : item
-      )
+      ),
+      referrals:
+        status === 'withdrawn'
+          ? state.referrals.map(referral =>
+              referral.responseId === responseId &&
+              !['declined', 'expired', 'connected'].includes(referral.status)
+                ? {
+                    ...referral,
+                    status: 'expired' as const,
+                    respondedUtc: new Date().toISOString(),
+                    declineReason: 'Consent withdrawn by the person.'
+                  }
+                : referral
+            )
+          : state.referrals
     });
 
     this.assignmentService.addCareReferralActivity(
@@ -731,9 +818,31 @@ export class CareReferralService {
         );
 
       if (storedState) {
-        return JSON.parse(
+        const parsed = JSON.parse(
           storedState
         ) as CareNetworkState;
+
+        return {
+          ...parsed,
+          responses: parsed.responses.map(response => ({
+            ...response,
+            consentSource:
+              response.consentSource ??
+              (response.consentToShare
+                ? 'qr-form'
+                : 'not-recorded'),
+            consentRecordedUtc:
+              response.consentRecordedUtc ??
+              (response.consentToShare
+                ? response.receivedUtc
+                : null),
+            consentRecordedBy:
+              response.consentRecordedBy ??
+              (response.consentToShare
+                ? response.personName
+                : '')
+          }))
+        };
       }
     } catch {
       // Fall back to deterministic demo data.
@@ -832,6 +941,10 @@ export class CareReferralService {
           requestedSupport:
             'Wants to join a local foundations group and connect with a church community.',
           consentToShare: true,
+          consentSource: 'qr-form',
+          consentRecordedUtc:
+            '2026-08-30T20:42:00.000Z',
+          consentRecordedBy: 'Jasmine Lee',
           receivedUtc:
             '2026-08-30T20:42:00.000Z',
           status: 'ready-to-refer'
@@ -850,6 +963,9 @@ export class CareReferralService {
           requestedSupport:
             'Requested a follow-up conversation before selecting a local church.',
           consentToShare: false,
+          consentSource: 'not-recorded',
+          consentRecordedUtc: null,
+          consentRecordedBy: '',
           receivedUtc:
             '2026-08-30T20:49:00.000Z',
           status: 'needs-review'
@@ -868,6 +984,10 @@ export class CareReferralService {
           requestedSupport:
             'Asked to connect with a nearby church and a young-adult discipleship group.',
           consentToShare: true,
+          consentSource: 'qr-form',
+          consentRecordedUtc:
+            '2026-08-30T21:03:00.000Z',
+          consentRecordedBy: 'Aisha Morgan',
           receivedUtc:
             '2026-08-30T21:03:00.000Z',
           status: 'referred'

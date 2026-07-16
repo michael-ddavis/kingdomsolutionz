@@ -454,6 +454,8 @@ export class AssignmentContactsComponent
       notes: source.notes ||
         'Same person as the primary host contact.'
     });
+
+    targetControl.markAsDirty();
   }
 
   private createContactForm():

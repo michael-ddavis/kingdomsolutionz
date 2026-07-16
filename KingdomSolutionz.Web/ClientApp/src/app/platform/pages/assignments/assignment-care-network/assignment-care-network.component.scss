@@ -104,6 +104,15 @@ p {
   transform: translateY(-1px);
 }
 
+.primary-button:disabled {
+  border-color: var(--kos-border);
+  color: var(--kos-text-muted);
+  cursor: not-allowed;
+  box-shadow: none;
+  background: var(--kos-surface-muted);
+  transform: none;
+}
+
 .qr-button {
   display: inline-flex;
   min-height: var(--kos-control-height);
@@ -526,6 +535,109 @@ p {
   font-size: var(--kos-text-xs);
 }
 
+.secondary-button--danger {
+  border-color: rgb(168 81 76 / 30%);
+  color: var(--kos-red-600);
+}
+
+.secondary-button--danger:hover {
+  border-color: var(--kos-red-600);
+  color: var(--kos-red-600);
+  background: var(--kos-red-100);
+}
+
+.consent-confirmation {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  margin-top: 14px;
+  padding: 16px;
+  border: 1px solid rgb(168 81 76 / 24%);
+  border-radius: var(--kos-radius-md);
+  align-items: start;
+  gap: 13px;
+  background: var(--kos-red-100);
+  animation: kos-consent-confirmation-in 180ms var(--kos-ease-standard);
+}
+
+.confirmation-mark {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--kos-radius-sm);
+  color: #ffffff;
+  font-weight: 850;
+  place-items: center;
+  background: var(--kos-red-600);
+}
+
+.confirmation-copy h4 {
+  margin: 4px 0 5px;
+  color: var(--kos-text);
+  font-size: var(--kos-text-md);
+}
+
+.confirmation-copy > p:last-of-type {
+  margin: 0;
+  color: var(--kos-text-secondary);
+  font-size: var(--kos-text-sm);
+  line-height: 1.5;
+}
+
+.consent-source {
+  display: grid;
+  max-width: 340px;
+  margin-top: 12px;
+  gap: 6px;
+}
+
+.consent-source span {
+  color: var(--kos-text-secondary);
+  font-size: var(--kos-text-xs);
+  font-weight: 750;
+}
+
+.consent-source select {
+  min-height: var(--kos-control-height);
+  padding: 0 11px;
+  border: 1px solid var(--kos-border-strong);
+  border-radius: var(--kos-radius-sm);
+  color: var(--kos-text);
+  font: inherit;
+  font-size: var(--kos-text-sm);
+  background: var(--kos-surface-elevated);
+}
+
+.confirmation-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.danger-button {
+  min-height: var(--kos-control-height);
+  padding: 0 15px;
+  border: 1px solid var(--kos-red-600);
+  border-radius: var(--kos-radius-sm);
+  color: #ffffff;
+  font: inherit;
+  font-size: var(--kos-text-md);
+  font-weight: 750;
+  cursor: pointer;
+  background: var(--kos-red-600);
+}
+
+@keyframes kos-consent-confirmation-in {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .send-error {
   margin-top: 10px;
   padding: 9px 11px;
@@ -705,7 +817,8 @@ p {
   .reset-button,
   .qr-button,
   .primary-button,
-  .secondary-button {
+  .secondary-button,
+  .danger-button {
     width: 100%;
     justify-content: center;
   }
@@ -720,6 +833,16 @@ p {
   .response-detail,
   .accepted-detail {
     grid-template-columns: 1fr;
+  }
+
+  .consent-confirmation {
+    grid-template-columns: 40px minmax(0, 1fr);
+  }
+
+  .confirmation-actions {
+    grid-column: 1 / -1;
+    align-items: stretch;
+    flex-direction: column-reverse;
   }
 
 }

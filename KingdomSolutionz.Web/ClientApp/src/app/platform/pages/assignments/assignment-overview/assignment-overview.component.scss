@@ -82,7 +82,15 @@
 }
 
 .source-chevron {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--kos-border);
+  border-radius: var(--kos-radius-sm);
+  flex: 0 0 auto;
   color: var(--kos-text-muted);
+  line-height: 1;
+  place-items: center;
   transition: transform var(--kos-motion-fast) var(--kos-ease-standard);
 }
 

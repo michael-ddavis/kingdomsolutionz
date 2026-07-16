@@ -327,10 +327,28 @@ p {
 }
 
 .section-heading::after {
+  display: grid;
+  width: 40px;
+  height: 40px;
   margin-left: auto;
-  color: var(--kos-text-muted);
-  content: '+';
-  font-size: var(--kos-text-lg);
+  border: 1px solid var(--kos-border);
+  border-radius: var(--kos-radius-sm);
+  flex: 0 0 auto;
+  color: transparent;
+  content: '';
+  place-items: center;
+  background:
+    linear-gradient(var(--kos-text-muted), var(--kos-text-muted)) center / 12px 2px no-repeat,
+    linear-gradient(var(--kos-text-muted), var(--kos-text-muted)) center / 2px 12px no-repeat,
+    var(--kos-surface-elevated);
+  transition:
+    border-color 180ms var(--kos-ease-standard),
+    background-size 220ms var(--kos-ease-standard),
+    transform 220ms var(--kos-ease-standard);
+}
+
+.section-heading:hover::after {
+  border-color: var(--kos-blue-600);
 }
 
 .travel-section[open] .section-heading {
@@ -338,7 +356,8 @@ p {
 }
 
 .travel-section[open] .section-heading::after {
-  content: '−';
+  background-size: 12px 2px, 2px 0;
+  transform: rotate(180deg);
 }
 
 .section-number {
@@ -457,16 +476,27 @@ textarea::placeholder {
 }
 
 .save-panel {
-  position: sticky;
-  z-index: 10;
-  bottom: 15px;
+  position: static;
   display: flex;
   padding: 18px 20px;
-  border-color: var(--kos-champagne-300);
+  border-color: var(--kos-border);
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  box-shadow: var(--kos-shadow-md);
+  box-shadow: var(--kos-shadow-sm);
+  transition:
+    border-color var(--kos-motion-base) var(--kos-ease-standard),
+    box-shadow var(--kos-motion-base) var(--kos-ease-standard),
+    transform var(--kos-motion-base) var(--kos-ease-standard);
+}
+
+.save-panel--active {
+  position: sticky;
+  z-index: 10;
+  bottom: 15px;
+  border-color: rgb(53 91 159 / 32%);
+  box-shadow: 0 16px 36px rgb(17 26 41 / 16%);
+  transform: translateY(-2px);
 }
 
 .save-panel strong {
@@ -530,6 +560,21 @@ textarea::placeholder {
   .travel-heading,
   .coverage-notice,
   .save-panel {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .save-panel--active {
+    position: static;
+    transform: none;
+  }
+
+  .save-actions,
+  .save-button {
+    width: 100%;
+  }
+
+  .save-actions {
     align-items: stretch;
     flex-direction: column;
   }

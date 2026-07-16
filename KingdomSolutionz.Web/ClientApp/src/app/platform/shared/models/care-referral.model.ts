@@ -10,6 +10,12 @@ export type MinistryResponseStatus =
   | 'unreachable'
   | 'withdrawn';
 
+export type MinistryResponseConsentSource =
+  | 'qr-form'
+  | 'verbal-confirmation'
+  | 'written-confirmation'
+  | 'not-recorded';
+
 export type CareReferralStatus =
   | 'draft'
   | 'sent'
@@ -62,13 +68,21 @@ export interface MinistryResponse {
   requestedSupport: string;
 
   consentToShare: boolean;
+  consentSource: MinistryResponseConsentSource;
+  consentRecordedUtc: string | null;
+  consentRecordedBy: string;
   receivedUtc: string;
   status: MinistryResponseStatus;
 }
 
 export type CreateMinistryResponseInput = Omit<
   MinistryResponse,
-  'id' | 'receivedUtc' | 'status'
+  | 'id'
+  | 'receivedUtc'
+  | 'status'
+  | 'consentSource'
+  | 'consentRecordedUtc'
+  | 'consentRecordedBy'
 >;
 
 export interface CareReferral {
