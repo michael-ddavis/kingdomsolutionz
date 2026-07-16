@@ -2,13 +2,6 @@
   <form class="closeout-page" [formGroup]="form">
     <header><div><p class="eyebrow">Post-event closeout</p><h2>Complete the assignment record</h2><p>Capture the outcomes once, resolve operational follow-up and archive only when the final responsibilities are complete.</p></div><span [class.closed]="assignment.closeout.status === 'closed'">{{ assignment.closeout.status }}</span></header>
 
-    <section class="closeout-flow">
-      <article><span>1</span><div><strong>Outcomes</strong><small>Attendance and ministry results</small></div></article>
-      <article><span>2</span><div><strong>Reconcile</strong><small>Expenses and honorarium</small></div></article>
-      <article><span>3</span><div><strong>Relationship</strong><small>Feedback and thank-you</small></div></article>
-      <article><span>4</span><div><strong>Archive</strong><small>Close the assignment</small></div></article>
-    </section>
-
     <details class="closeout-section" open><summary><span>01</span><div><p class="eyebrow">Event record</p><h3>Attendance and ministry outcomes</h3></div></summary><div class="field-grid"><label><span>Actual attendance *</span><input type="number" min="1" formControlName="actualAttendance"></label><label class="wide"><span>Ministry outcomes *</span><textarea rows="5" formControlName="ministryOutcomes" placeholder="Summarize salvations, prayer ministry, leadership sessions and key outcomes."></textarea></label><label class="wide"><span>Testimonies</span><textarea rows="4" formControlName="testimonies" placeholder="Record approved stories or follow-up notes."></textarea></label></div></details>
 
     <details class="closeout-section" open><summary><span>02</span><div><p class="eyebrow">Operations</p><h3>Financial and relationship follow-up</h3></div></summary><div class="field-grid"><label class="wide"><span>Outstanding expenses or payment notes</span><textarea rows="3" formControlName="outstandingExpenses" placeholder="Use “None” when everything is resolved."></textarea></label><label class="wide"><span>Host feedback</span><textarea rows="4" formControlName="hostFeedback"></textarea></label><label class="check"><input type="checkbox" formControlName="honorariumReconciled"><span>Honorarium and expenses are reconciled</span></label><label class="check"><input type="checkbox" formControlName="thankYouSent"><span>Thank-you communication has been sent</span></label></div></details>

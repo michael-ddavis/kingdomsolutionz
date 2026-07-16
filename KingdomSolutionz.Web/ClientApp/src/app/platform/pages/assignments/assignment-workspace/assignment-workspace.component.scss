@@ -356,9 +356,16 @@ h1 {
 }
 
 .record-chevron {
+  display: grid;
+  width: 32px;
+  height: 32px;
   flex: 0 0 auto;
+  border: 1px solid rgb(53 91 159 / 18%);
+  border-radius: var(--kos-radius-sm);
   color: var(--kos-text-muted);
   font-size: 1rem;
+  line-height: 1;
+  place-items: center;
   transition: transform var(--kos-motion-fast) var(--kos-ease-standard);
 }
 

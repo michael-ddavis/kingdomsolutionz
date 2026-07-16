@@ -1,4 +1,8 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener
+} from '@angular/core';
 
 import { WorkspaceId } from '../../shared/models/workspace.model';
 import { WorkspaceService } from '../../shared/services/workspace.service';
@@ -14,15 +18,37 @@ export class WorkspaceSwitcherComponent {
   readonly selectedWorkspace$ =
     this.workspaceService.selectedWorkspace$;
 
+  menuOpen = false;
+
   constructor(
-    private readonly workspaceService: WorkspaceService
+    private readonly workspaceService: WorkspaceService,
+    private readonly elementRef: ElementRef<HTMLElement>
   ) {}
 
-  onWorkspaceChange(event: Event): void {
-    const selectElement = event.target as HTMLSelectElement;
+  toggleMenu(): void {
+    this.menuOpen = !this.menuOpen;
+  }
 
+  selectWorkspace(workspaceId: WorkspaceId): void {
     this.workspaceService.selectWorkspace(
-      selectElement.value as WorkspaceId
+      workspaceId
     );
+
+    this.menuOpen = false;
+  }
+
+  @HostListener('document:click', ['$event'])
+  closeOnOutsideClick(event: Event): void {
+    if (
+      this.menuOpen &&
+      !this.elementRef.nativeElement.contains(event.target as Node)
+    ) {
+      this.menuOpen = false;
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  closeOnEscape(): void {
+    this.menuOpen = false;
   }
 }
