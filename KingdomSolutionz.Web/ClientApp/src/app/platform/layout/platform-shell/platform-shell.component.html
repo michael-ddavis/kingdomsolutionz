@@ -6,7 +6,7 @@
     #sidebar
     class="platform-sidebar"
     id="platform-sidebar"
-    aria-label="KingdomOS navigation"
+    aria-label="KingdomOps navigation"
     [attr.role]="compactNavigation ? 'dialog' : null"
     [attr.aria-modal]="
       compactNavigation && sidebarOpen
@@ -29,7 +29,7 @@
       </div>
 
       <div class="brand-copy">
-        <strong>KingdomOS</strong>
+        <strong>KingdomOps</strong>
         <span>by KingdomSolutionz</span>
       </div>
     </div>
@@ -39,7 +39,7 @@
       </app-workspace-switcher>
     </section>
 
-    <nav class="platform-navigation" aria-label="KingdomOS navigation" *ngIf="
+    <nav class="platform-navigation" aria-label="KingdomOps navigation" *ngIf="
         navigationSections$ | async
           as navigationSections
       ">

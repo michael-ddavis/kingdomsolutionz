@@ -134,6 +134,8 @@
               ? 'Ask the host for final logistics'
               : assignment.hostCoordination.status === 'requested'
                 ? 'Waiting for host details'
+                : assignment.hostCoordination.status === 'in-progress'
+                  ? 'Host coordination in progress'
                 : assignment.hostCoordination.status === 'submitted'
                   ? 'Host details received'
                   : 'Host details reviewed'

@@ -47,6 +47,12 @@ export class AssignmentOverviewComponent {
     );
   }
 
+  reviewHostDetails(): void {
+    this.assignmentService.reviewHostCoordination(
+      this.assignmentId
+    );
+  }
+
   formatToken(value: string): string {
     return value
       .replace(/-/g, ' ')

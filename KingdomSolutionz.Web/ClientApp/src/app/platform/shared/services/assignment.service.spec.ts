@@ -217,6 +217,19 @@ describe('AssignmentService invitation prefill', () => {
         departurePickupPhone: '+1 404 555 0100',
         departurePickupInstructions: 'Hotel lobby at 8:00 AM.'
       },
+      generalTravelNotes: 'One checked bag.',
+      hostPastor: {
+        name: 'Pastor Avery Brooks',
+        role: 'Senior pastor',
+        phone: '+1 404 555 0130',
+        email: 'avery@example.com'
+      },
+      hostCoordinator: {
+        name: 'Aisha Morgan',
+        role: 'Primary host contact',
+        phone: '+1 404 555 0102',
+        email: 'aisha@example.com'
+      },
       travelContact: {
         name: 'Jordan Ellis',
         role: 'Travel coordinator',
@@ -238,8 +251,74 @@ describe('AssignmentService invitation prefill', () => {
         expect(updated?.travelItinerary.outboundFlight.flightNumber).toBe('DL 241');
         expect(updated?.travelItinerary.returnFlight.flightNumber).toBe('DL 310');
         expect(updated?.travelItinerary.hotel.hotelName).toBe('Hyatt Regency');
+        expect(updated?.travelItinerary.generalNotes).toBe('One checked bag.');
+        expect(updated?.contactDirectory.hostPastor.name).toBe('Pastor Avery Brooks');
+        expect(updated?.contactDirectory.hostCoordinator.name).toBe('Aisha Morgan');
         expect(updated?.contactDirectory.travelContact.name).toBe('Jordan Ellis');
       });
+  });
+
+  it('saves partial host progress before final review submission', async () => {
+    const assignment = service.createOrGetAssignment({
+      ...SEEDED_SPEAKING_REQUESTS[0],
+      status: 'approved'
+    });
+
+    service.requestHostCoordination(assignment.id);
+    service.saveHostCoordination(assignment.id, {
+      outboundFlight: assignment.travelItinerary.outboundFlight,
+      returnFlight: assignment.travelItinerary.returnFlight,
+      hotel: {
+        ...assignment.travelItinerary.hotel,
+        hotelName: 'The Westin Atlanta',
+        confirmationNumber: 'HOST44',
+        address: '210 Peachtree Street NW',
+        city: 'Atlanta',
+        state: 'GA',
+        checkInDate: '2026-08-27',
+        checkOutDate: '2026-08-31'
+      },
+      groundTransportation:
+        assignment.travelItinerary.groundTransportation,
+      generalTravelNotes: '',
+      hostPastor: {
+        name: '', role: '', phone: '', email: ''
+      },
+      hostCoordinator: {
+        name: assignment.contactDirectory.hostCoordinator.name,
+        role: assignment.contactDirectory.hostCoordinator.role,
+        phone: assignment.contactDirectory.hostCoordinator.phone,
+        email: assignment.contactDirectory.hostCoordinator.email
+      },
+      travelContact: {
+        name: '', role: '', phone: '', email: ''
+      },
+      mediaContact: {
+        name: '', role: '', phone: '', email: ''
+      },
+      emergencyContact: {
+        name: '', role: '', phone: '', email: ''
+      },
+      eventSchedule: 'Friday arrival and Sunday ministry.',
+      prayerFocus: '',
+      promotionalRequirements: '',
+      hostNotes: ''
+    });
+
+    const updated = await firstValueFrom(
+      service.getAssignment(assignment.id).pipe(take(1))
+    );
+
+    expect(updated?.hostCoordination.status).toBe('in-progress');
+    expect(updated?.hostCoordination.lastSavedUtc).not.toBeNull();
+    expect(updated?.hostCoordination.completionPercentage).toBeGreaterThan(0);
+    expect(updated?.travelItinerary.hotel.hotelName).toBe('The Westin Atlanta');
+    expect(
+      updated?.stages
+        .find(stage => stage.id === 'host-readiness')
+        ?.tasks.find(task => task.title === 'Confirm event schedule')
+        ?.status
+    ).toBe('complete');
   });
 
   it('allows multiple partially completed stages to remain in progress', async () => {

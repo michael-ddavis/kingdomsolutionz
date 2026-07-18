@@ -181,6 +181,20 @@ form,
 .known-details small { color: var(--ct-muted); font-size: 10px; }
 .known-details strong { margin-top: 4px; overflow: hidden; color: var(--ct-text); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
 
+.coordination-progress {
+  display: grid;
+  margin-top: 14px;
+  padding: 16px;
+  border: 1px solid var(--ct-border);
+  gap: 9px;
+  background: rgb(255 255 255 / 72%);
+}
+.coordination-progress > div { display: flex; align-items: center; justify-content: space-between; gap: 16px; color: var(--ct-text); font-size: 11px; font-weight: 750; }
+.coordination-progress > div strong { color: var(--ct-lime-dark); font-size: 14px; }
+.coordination-progress small { color: var(--ct-muted); font-size: 10px; line-height: 1.5; }
+.progress-track { display: block; height: 5px; overflow: hidden; background: #e9eadf; }
+.progress-track > span { display: block; width: 0; height: 100%; background: var(--ct-lime-dark); transition: width 260ms ease; }
+
 .speaker-packet {
   display: flex;
   margin-bottom: 18px;
@@ -273,29 +287,47 @@ fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
 .flight-stack fieldset + fieldset { padding-top: 24px; border-top: 1px solid var(--ct-border); }
 .flight-stack legend { margin-bottom: 17px; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
 
-.contact-groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.travel-notes { display: grid; margin-top: 18px; gap: 8px; }
+
+.contact-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .contact-groups fieldset { display: grid; padding: 16px; border: 1px solid var(--ct-border); gap: 10px; background: #fafbf6; }
 .contact-groups legend { padding: 0 5px; }
+.contact-groups fieldset > p { min-height: 33px; margin: 0; color: var(--ct-muted); font-size: 10px; line-height: 1.5; }
 
-.upload-section {
+.document-content {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  padding: 26px;
-  align-items: center;
+  margin-top: 30px;
   gap: 20px;
 }
 
-.upload-section h3 { margin: 6px 0; color: var(--ct-text); font-size: 18px; }
-.upload-section p:not(.section-eyebrow),
-.upload-section li { margin: 0; color: var(--ct-muted); font-size: 11px; }
-.upload-section ul { grid-column: 1 / -1; margin: 0; padding-left: 20px; }
-.upload-button { display: inline-flex; min-height: 46px; padding: 0 17px; border: 1px solid var(--ct-text); align-items: center; color: var(--ct-text); font-size: 12px; font-weight: 750; cursor: pointer; }
+.upload-button { display: flex; min-height: 76px; padding: 17px; border: 1px dashed var(--ct-lime-dark); align-items: flex-start; justify-content: center; flex-direction: column; gap: 5px; color: var(--ct-text); font-size: 12px; font-weight: 750; cursor: pointer; background: #fbfced; transition: border-color 180ms ease, background 180ms ease, transform 180ms ease; }
+.upload-button:hover { border-color: var(--ct-text); background: #f7f9df; transform: translateY(-1px); }
+.upload-button small { color: var(--ct-muted); font-size: 10px; font-weight: 500; }
 .upload-button input { position: absolute; width: 1px; height: 1px; padding: 0; opacity: 0; }
+.upload-error,
+.document-empty { margin: 0; color: var(--ct-muted); font-size: 11px; line-height: 1.6; }
+.upload-error { color: #9b3c34; }
+.document-list { display: grid; gap: 12px; }
+.document-draft { padding: 16px; border: 1px solid var(--ct-border); background: #fafbf6; }
+.document-heading { display: flex; margin-bottom: 14px; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.document-heading div { min-width: 0; }
+.document-heading strong,
+.document-heading small { display: block; }
+.document-heading strong { overflow: hidden; color: var(--ct-text); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.document-heading small { margin-top: 4px; color: var(--ct-muted); font-size: 10px; }
+.document-heading button { padding: 4px 0; border: 0; color: #8a3d35; font: inherit; font-size: 10px; font-weight: 750; cursor: pointer; background: transparent; }
+.document-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.document-fields label { display: grid; gap: 7px; }
+.document-fields .wide { grid-column: 1 / -1; }
 
 .form-footer { display: flex; padding: 8px 0 0; align-items: center; justify-content: space-between; gap: 24px; }
 .form-footer p { max-width: 500px; margin: 0; color: var(--ct-muted); font-size: 11px; line-height: 1.6; }
 .form-footer button { display: inline-flex; min-height: 52px; padding: 0 22px; border: 1px solid var(--ct-black); align-items: center; gap: 14px; color: white; font: inherit; font-size: 12px; font-weight: 750; cursor: pointer; background: var(--ct-black); }
 .form-footer button:hover { background: #1d201c; }
+.form-actions { display: flex; flex: 0 0 auto; align-items: center; justify-content: flex-end; gap: 10px; }
+.form-footer .save-button { border-color: var(--ct-border); color: var(--ct-text); background: var(--ct-white); }
+.form-footer .save-button:hover { border-color: var(--ct-text); background: #f8f8f3; }
+.save-confirmation { color: var(--ct-lime-dark); font-size: 10px; font-weight: 750; }
 
 .success-card { margin-top: 8vh; padding: clamp(30px, 5vw, 54px); }
 .success-mark { display: grid; width: 48px; height: 48px; margin-bottom: 24px; color: var(--ct-lime-dark); font-weight: 800; place-items: center; background: #f8f9df; }
@@ -326,6 +358,7 @@ fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
   .known-details,
   .field-grid,
   .contact-groups,
+  .document-fields,
   .success-card dl { grid-template-columns: 1fr; }
   .known-details span,
   .success-card dl div { border-top: 1px solid var(--ct-border); border-left: 0; }
@@ -334,10 +367,14 @@ fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
   .speaker-packet,
   .form-footer { align-items: stretch; flex-direction: column; }
   .speaker-packet > small { max-width: none; text-align: left; }
-  .upload-section { grid-template-columns: 1fr; }
+  .document-fields .wide { grid-column: auto; }
+  .form-actions { align-items: stretch; flex-direction: column; }
+  .form-actions .save-confirmation { text-align: center; }
   .form-footer button { justify-content: center; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .summary-chevron { transition: none; }
+  .summary-chevron,
+  .progress-track > span,
+  .upload-button { transition: none; }
 }

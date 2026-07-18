@@ -21,8 +21,8 @@
       <h1>Prepare<br>the details</h1>
 
       <p class="brand-description">
-        Share the final travel, lodging, schedule and local-team
-        information for {{ assignment.eventName }} in one secure place.
+        Share travel, lodging, contacts, schedules and supporting
+        documents for {{ assignment.eventName }} in one secure place.
       </p>
 
       <div class="brand-divider"></div>
@@ -34,7 +34,7 @@
     </div>
 
     <div class="brand-footer">
-      <span>Travel</span>
+      <span>Prayer</span>
       <span>Preparation</span>
       <span>Ministry</span>
     </div>
@@ -50,8 +50,8 @@
       <p class="page-eyebrow">Details received</p>
       <h2>Thank you, {{ assignment.contactDirectory.hostCoordinator.name }}.</h2>
       <p>
-        Your information has populated the ministry assignment and is ready
-        for the coordinator’s review.
+        Your travel, contacts, event details and documents have populated
+        the ministry assignment and are ready for the coordinator’s review.
       </p>
 
       <dl>
@@ -83,6 +83,23 @@
             <small>Reference</small>
             <strong>ASN-{{ assignment.id }}</strong>
           </span>
+        </div>
+
+        <div class="coordination-progress">
+          <div>
+            <span>Coordination progress</span>
+            <strong>{{ assignment.hostCoordination.completionPercentage || 0 }}%</strong>
+          </div>
+          <span class="progress-track" role="progressbar"
+            aria-label="Host coordination progress"
+            aria-valuemin="0" aria-valuemax="100"
+            [attr.aria-valuenow]="assignment.hostCoordination.completionPercentage || 0">
+            <span [style.width.%]="assignment.hostCoordination.completionPercentage || 0"></span>
+          </span>
+          <small>
+            Save at any time. The ministry team can see completed information
+            immediately and will review it after final submission.
+          </small>
         </div>
       </header>
 
@@ -162,13 +179,13 @@
           </div>
         </details>
 
-        <details class="form-section" formGroupName="groundTransportation">
+        <details class="form-section">
           <summary>
             <span class="section-number">03</span>
             <div><small>Ground transportation</small><h3>Airport pickup and local travel</h3></div>
             <span class="summary-chevron" aria-hidden="true"></span>
           </summary>
-          <div class="field-grid section-fields">
+          <div class="field-grid section-fields" formGroupName="groundTransportation">
             <label><span>Arrival contact</span><input formControlName="arrivalPickupContact"></label>
             <label><span>Arrival phone</span><input type="tel" formControlName="arrivalPickupPhone"></label>
             <label class="wide"><span>Arrival instructions</span><textarea rows="3" formControlName="arrivalPickupInstructions"></textarea></label>
@@ -177,6 +194,7 @@
             <label class="wide"><span>Departure instructions</span><textarea rows="3" formControlName="departurePickupInstructions"></textarea></label>
             <label class="wide"><span>Local transportation plan</span><textarea rows="3" formControlName="localTransportationDetails"></textarea></label>
           </div>
+          <label class="travel-notes"><span>General travel notes</span><textarea rows="3" formControlName="generalTravelNotes" placeholder="Add baggage, accessibility, arrival or other travel details the ministry team should know."></textarea></label>
         </details>
 
         <details class="form-section">
@@ -186,6 +204,8 @@
             <span class="summary-chevron" aria-hidden="true"></span>
           </summary>
           <div class="contact-groups section-fields">
+            <fieldset formGroupName="hostCoordinator"><legend>Primary host contact</legend><p>Prefilled from the invitation. Confirm or update anything that changed.</p><input formControlName="name" placeholder="Name"><input formControlName="role" placeholder="Role"><input type="tel" formControlName="phone" placeholder="International phone"><input type="email" formControlName="email" placeholder="Email"></fieldset>
+            <fieldset formGroupName="hostPastor"><legend>Host pastor or leader</legend><p>The senior host or ministry leader responsible for the invitation.</p><input formControlName="name" placeholder="Name"><input formControlName="role" placeholder="Role"><input type="tel" formControlName="phone" placeholder="International phone"><input type="email" formControlName="email" placeholder="Email"></fieldset>
             <fieldset formGroupName="travelContact"><legend>Travel contact</legend><input formControlName="name" placeholder="Name"><input formControlName="role" placeholder="Role"><input type="tel" formControlName="phone" placeholder="International phone"><input type="email" formControlName="email" placeholder="Email"></fieldset>
             <fieldset formGroupName="mediaContact"><legend>Media contact</legend><input formControlName="name" placeholder="Name"><input formControlName="role" placeholder="Role"><input type="tel" formControlName="phone" placeholder="International phone"><input type="email" formControlName="email" placeholder="Email"></fieldset>
             <fieldset formGroupName="emergencyContact"><legend>Emergency contact</legend><input formControlName="name" placeholder="Name"><input formControlName="role" placeholder="Role"><input type="tel" formControlName="phone" placeholder="International phone"><input type="email" formControlName="email" placeholder="Email"></fieldset>
@@ -206,18 +226,59 @@
           </div>
         </details>
 
-        <section class="upload-section">
-          <div><p class="section-eyebrow">Documents</p><h3>Upload schedules or confirmations</h3><p>PDF, image or office files; up to five for this demo.</p></div>
-          <label class="upload-button">Choose files<input type="file" multiple (change)="onFilesSelected($event)"></label>
-          <ul *ngIf="selectedFiles.length"><li *ngFor="let file of selectedFiles">{{ file.name }}</li></ul>
-        </section>
+        <details class="form-section document-section" open>
+          <summary>
+            <span class="section-number">06</span>
+            <div><small>Documents</small><h3>Schedules, confirmations and host files</h3></div>
+            <span class="summary-chevron" aria-hidden="true"></span>
+          </summary>
+
+          <div class="document-content">
+            <label class="upload-button">
+              <span>+ Add documents</span>
+              <small>PDF, Office document or image · maximum 25 MB each</small>
+              <input type="file" multiple
+                accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.ppt,.pptx,.xls,.xlsx"
+                (change)="onFilesSelected($event)">
+            </label>
+
+            <p class="upload-error" *ngIf="uploadError">{{ uploadError }}</p>
+
+            <div class="document-list" *ngIf="selectedDocuments.length">
+              <article class="document-draft" *ngFor="let document of selectedDocuments">
+                <div class="document-heading">
+                  <div>
+                    <strong>{{ document.file.name }}</strong>
+                    <small>{{ formatFileSize(document.file.size) }}</small>
+                  </div>
+                  <button type="button" (click)="removeDocument(document.id)" [attr.aria-label]="'Remove ' + document.file.name">Remove</button>
+                </div>
+
+                <div class="document-fields">
+                  <label><span>Document type</span><select [value]="document.category" (change)="updateDocumentCategory(document, $event)"><option *ngFor="let category of documentCategories" [value]="category.value">{{ category.label }}</option></select></label>
+                  <label><span>Document title</span><input [value]="document.title" (input)="updateDocumentTitle(document, $event)"></label>
+                  <label class="wide"><span>Notes for the ministry team</span><textarea rows="2" [value]="document.notes" (input)="updateDocumentNotes(document, $event)"></textarea></label>
+                </div>
+              </article>
+            </div>
+
+            <p class="document-empty" *ngIf="!selectedDocuments.length">
+              Add the final schedule, flight or hotel confirmations, agreements,
+              promotional files or any host packet the team will need.
+            </p>
+          </div>
+        </details>
 
         <footer class="form-footer">
           <p>
             Submitting updates the Travel, Contacts and Documents sections
             automatically. The coordinator will review the details before they are final.
           </p>
-          <button type="submit">Submit host details <span>→</span></button>
+          <div class="form-actions">
+            <span class="save-confirmation" *ngIf="saved" aria-live="polite">✓ Progress saved</span>
+            <button type="button" class="save-button" (click)="saveProgress(assignment)">Save progress</button>
+            <button type="submit">Submit for review <span>→</span></button>
+          </div>
         </footer>
       </form>
     </ng-template>

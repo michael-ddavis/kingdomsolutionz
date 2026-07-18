@@ -15,11 +15,17 @@
       <article class="overview-card">
         <div class="card-heading"><div><p class="eyebrow">Host coordination</p><h2>External details</h2></div><span class="coordinator-avatar">H</span></div>
         <strong class="next-action-title">
-          {{ assignment.hostCoordination.status === 'not-requested' ? 'Link not sent' : assignment.hostCoordination.status === 'requested' ? 'Waiting for host' : assignment.hostCoordination.status === 'submitted' ? 'Ready for review' : 'Reviewed' }}
+          {{ assignment.hostCoordination.status === 'not-requested' ? 'Link not sent' : assignment.hostCoordination.status === 'requested' ? 'Waiting for host' : assignment.hostCoordination.status === 'in-progress' ? 'Host is adding details' : assignment.hostCoordination.status === 'submitted' ? 'Ready for review' : 'Reviewed' }}
         </strong>
         <p>Collect lodging, ground travel, contacts, schedule, promotion, prayer focus and files in one host-facing form.</p>
+        <div class="host-progress" *ngIf="assignment.hostCoordination.status !== 'not-requested'">
+          <span><small>Host completion</small><strong>{{ assignment.hostCoordination.completionPercentage || 0 }}%</strong></span>
+          <span class="host-progress-track"><span [style.width.%]="assignment.hostCoordination.completionPercentage || 0"></span></span>
+          <small *ngIf="assignment.hostCoordination.lastSavedUtc">Last saved {{ assignment.hostCoordination.lastSavedUtc | date:'MMM d, h:mm a' }}</small>
+        </div>
         <button *ngIf="assignment.hostCoordination.status === 'not-requested'" type="button" class="card-action overview-button" (click)="requestHostDetails()">Create host coordination link <span>→</span></button>
         <a *ngIf="assignment.hostCoordination.status !== 'not-requested'" [routerLink]="['/coordinate/assignments', assignment.id]" class="card-action">Open host coordination link <span>→</span></a>
+        <button *ngIf="assignment.hostCoordination.status === 'submitted'" type="button" class="card-action overview-button review-host-button" (click)="reviewHostDetails()">Mark host information reviewed <span>✓</span></button>
       </article>
     </section>
 

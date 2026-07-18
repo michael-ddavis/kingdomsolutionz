@@ -408,10 +408,11 @@ export class AssignmentService {
           return assignment;
         }
 
-        const assignmentWithTravel: Assignment = {
-          ...assignment,
-          travelItinerary: updatedItinerary
-        };
+        const assignmentWithTravel =
+          this.refreshHostCoordinationCompletion({
+            ...assignment,
+            travelItinerary: updatedItinerary
+          });
 
         const assignmentWithChecklist =
           this.syncTravelChecklist(
@@ -475,7 +476,7 @@ export class AssignmentService {
             tone: 'neutral',
             title: 'Host coordination requested',
             description:
-              'A secure coordination link is ready for the host to provide lodging, transportation and event details.',
+              'A secure coordination link is ready for the host to provide travel, lodging, contacts, event details and documents.',
             actor,
             section: 'travel',
             createdUtc
@@ -490,6 +491,33 @@ export class AssignmentService {
     assignmentId: number,
     input: AssignmentHostCoordinationInput,
     actor = 'Host team'
+  ): void {
+    this.updateHostCoordination(
+      assignmentId,
+      input,
+      true,
+      actor
+    );
+  }
+
+  saveHostCoordination(
+    assignmentId: number,
+    input: AssignmentHostCoordinationInput,
+    actor = 'Host team'
+  ): void {
+    this.updateHostCoordination(
+      assignmentId,
+      input,
+      false,
+      actor
+    );
+  }
+
+  private updateHostCoordination(
+    assignmentId: number,
+    input: AssignmentHostCoordinationInput,
+    submitForReview: boolean,
+    actor: string
   ): void {
     const createdUtc = new Date().toISOString();
 
@@ -506,6 +534,8 @@ export class AssignmentService {
           hotel: input.hotel,
           groundTransportation:
             input.groundTransportation,
+          generalNotes:
+            input.generalTravelNotes.trim(),
           readinessPercentage: 0,
           lastUpdatedUtc: createdUtc
         };
@@ -516,11 +546,23 @@ export class AssignmentService {
             this.calculateTravelReadiness(itinerary)
         };
 
-        const withHostResponse: Assignment = {
+        let withHostResponse: Assignment = {
           ...assignment,
           travelItinerary: updatedItinerary,
           contactDirectory: {
             ...assignment.contactDirectory,
+            hostPastor:
+              this.mergeHostLocalContact(
+                assignment.contactDirectory.hostPastor,
+                input.hostPastor,
+                assignment.organizationName
+              ),
+            hostCoordinator:
+              this.mergeHostLocalContact(
+                assignment.contactDirectory.hostCoordinator,
+                input.hostCoordinator,
+                assignment.organizationName
+              ),
             travelContact:
               this.mergeHostLocalContact(
                 assignment.contactDirectory.travelContact,
@@ -544,8 +586,13 @@ export class AssignmentService {
           },
           hostCoordination: {
             ...assignment.hostCoordination,
-            status: 'submitted',
-            submittedUtc: createdUtc,
+            status: submitForReview
+              ? 'submitted'
+              : 'in-progress',
+            lastSavedUtc: createdUtc,
+            submittedUtc: submitForReview
+              ? createdUtc
+              : assignment.hostCoordination.submittedUtc,
             reviewedUtc: null,
             eventSchedule:
               input.eventSchedule.trim(),
@@ -566,11 +613,18 @@ export class AssignmentService {
             )
         };
 
+        withHostResponse =
+          this.refreshHostCoordinationCompletion(
+            withHostResponse
+          );
+
         const recalculated =
           this.recalculateAssignment(
-            this.syncContactChecklist(
-              this.syncTravelChecklist(
-                withHostResponse
+            this.syncHostCoordinationChecklist(
+              this.syncContactChecklist(
+                this.syncTravelChecklist(
+                  withHostResponse
+                )
               )
             )
           );
@@ -578,11 +632,19 @@ export class AssignmentService {
         return this.appendActivity(
           recalculated,
           {
-            type: 'host-coordination-submitted',
-            tone: 'attention',
-            title: 'Host details received',
+            type: submitForReview
+              ? 'host-coordination-submitted'
+              : 'note-added',
+            tone: submitForReview
+              ? 'attention'
+              : 'neutral',
+            title: submitForReview
+              ? 'Host details received'
+              : 'Host progress saved',
             description:
-              'The host submitted lodging, transportation and event coordination details for team review.',
+              submitForReview
+                ? 'The host submitted travel, contacts, documents and event coordination details for team review.'
+                : `The host saved coordination progress. Completion is now ${withHostResponse.hostCoordination.completionPercentage}%.`,
             actor,
             section: 'travel',
             createdUtc
@@ -705,10 +767,11 @@ export class AssignmentService {
           return assignment;
         }
 
-        const assignmentWithContacts: Assignment = {
-          ...assignment,
-          contactDirectory: updatedDirectory
-        };
+        const assignmentWithContacts =
+          this.refreshHostCoordinationCompletion({
+            ...assignment,
+            contactDirectory: updatedDirectory
+          });
 
         const assignmentWithChecklist =
           this.syncContactChecklist(
@@ -1061,8 +1124,10 @@ export class AssignmentService {
       hostCoordination: {
         status: 'not-requested',
         requestedUtc: null,
+        lastSavedUtc: null,
         submittedUtc: null,
         reviewedUtc: null,
+        completionPercentage: 0,
         eventSchedule: '',
         prayerFocus: '',
         promotionalRequirements: '',
@@ -1530,7 +1595,36 @@ export class AssignmentService {
       );
 
       if (stored) {
-        return JSON.parse(stored) as Assignment[];
+        const assignments =
+          JSON.parse(stored) as Assignment[];
+
+        return assignments.map(assignment => {
+          const normalized: Assignment = {
+            ...assignment,
+            hostCoordination: {
+              ...assignment.hostCoordination,
+              lastSavedUtc:
+                assignment.hostCoordination.lastSavedUtc ?? null,
+              completionPercentage:
+                assignment.hostCoordination.completionPercentage ?? 0
+            }
+          };
+
+          if (
+            assignment.hostCoordination
+              .completionPercentage === undefined
+          ) {
+            normalized.hostCoordination = {
+              ...normalized.hostCoordination,
+              completionPercentage:
+                this.calculateHostCoordinationCompletion(
+                  normalized
+                )
+            };
+          }
+
+          return normalized;
+        });
       }
     } catch {
       // Fall through to a clean invitation-first demo.
@@ -2015,6 +2109,93 @@ export class AssignmentService {
     };
   }
 
+  private calculateHostCoordinationCompletion(
+    assignment: Assignment
+  ): number {
+    const sectionScores = [
+      assignment.travelItinerary.readinessPercentage,
+      assignment.contactDirectory.readinessPercentage,
+      assignment.hostCoordination.eventSchedule.trim()
+        ? 100
+        : 0,
+      assignment.hostCoordination.promotionalRequirements.trim()
+        ? 100
+        : 0,
+      assignment.hostCoordination.prayerFocus.trim()
+        ? 100
+        : 0
+    ];
+
+    return Math.round(
+      sectionScores.reduce(
+        (total, score) => total + score,
+        0
+      ) / sectionScores.length
+    );
+  }
+
+  private refreshHostCoordinationCompletion(
+    assignment: Assignment
+  ): Assignment {
+    return {
+      ...assignment,
+      hostCoordination: {
+        ...assignment.hostCoordination,
+        completionPercentage:
+          this.calculateHostCoordinationCompletion(
+            assignment
+          )
+      }
+    };
+  }
+
+  private syncHostCoordinationChecklist(
+    assignment: Assignment
+  ): Assignment {
+    const hostCoordination =
+      assignment.hostCoordination;
+
+    const updatedStages =
+      assignment.stages.map(stage => ({
+        ...stage,
+        tasks: stage.tasks.map(task => {
+          let hasInformation = false;
+
+          if (task.title === 'Confirm event schedule') {
+            hasInformation = Boolean(
+              hostCoordination.eventSchedule.trim()
+            );
+          } else if (
+            task.title === 'Receive promotional requirements'
+          ) {
+            hasInformation = Boolean(
+              hostCoordination.promotionalRequirements.trim()
+            );
+          } else if (
+            task.title === 'Gather host prayer focus'
+          ) {
+            hasInformation = Boolean(
+              hostCoordination.prayerFocus.trim()
+            );
+          } else {
+            return task;
+          }
+
+          return {
+            ...task,
+            status: hasInformation
+              ? 'complete' as const
+              : 'not-started' as const
+          };
+        })
+      }));
+
+    return {
+      ...assignment,
+      stages: updatedStages
+    };
+  }
+
   private createEmptyDocumentLibrary():
     AssignmentDocumentLibrary {
     return {
@@ -2160,7 +2341,7 @@ export class AssignmentService {
           title: 'Assignment created',
           description:
             'The ministry assignment was created from an approved host invitation. Known event details and the primary host contact were carried forward automatically.',
-          actor: 'KingdomOS',
+          actor: 'KingdomOps',
           createdUtc,
           section: 'overview'
         }

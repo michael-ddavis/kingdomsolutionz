@@ -1,6 +1,6 @@
 # KingdomSolutionz
 
-KingdomSolutionz is an ASP.NET Core and Angular application containing the public KingdomSolutionz website, project-intake flow, and the KingdomOS ministry-operations prototype.
+KingdomSolutionz is an ASP.NET Core and Angular application containing the public KingdomSolutionz website, project-intake flow, and the KingdomOps ministry-operations prototype.
 
 ## Technology
 
@@ -47,12 +47,12 @@ dotnet run --project KingdomSolutionz.Web/KingdomSolutionz.Web.csproj
 - `/invite/apostle-cynthia/requests/:id/update` — host correction and resubmission link
 - `/coordinate/assignments/:id` — host logistics, contacts, schedule, prayer, promotion, and file intake
 - `/respond/assignments/:id` — public/QR ministry-response intake
-- `/app/login` — KingdomOS demonstration entry
-- `/app` — KingdomOS workspace prototype
+- `/app/login` — KingdomOps demonstration entry
+- `/app` — KingdomOps workspace prototype
 - `/app/assignments/2001/care-network` — event responses, local care partners, and accountable referral demonstration
 - `/app/speaker-profile` — reusable biography, assets, preferences, documents, and team contacts
 
-## KingdomOS design foundation
+## KingdomOps design foundation
 
 Shared platform tokens and primitives live in:
 
@@ -63,22 +63,22 @@ Shared platform tokens and primitives live in:
 
 New platform UI should use these shared values before introducing component-specific colors, type sizes, spacing, controls, or focus treatments.
 
-The authenticated KingdomOS interface uses the **Quiet Authority** direction: obsidian navigation and primary actions, warm ivory work surfaces, restrained champagne accents, and functional status colors reserved for operational meaning. The public KingdomSolutionz site and invitation intake remain visually independent.
+The authenticated KingdomOps interface uses the **Quiet Authority** direction: obsidian navigation and primary actions, warm ivory work surfaces, restrained champagne accents, and functional status colors reserved for operational meaning. The public KingdomSolutionz site and invitation intake remain visually independent.
 
 Approved speaking requests are the source record for assignment creation. Event details, dates, venue, requested ministry, attendance, coverage commitments, and the primary host contact carry into the assignment automatically. Assignment sections collect only information that was not already supplied, while preserving a link to the original invitation.
 
 ## Prototype limitations
 
-KingdomOS is currently a product demonstration, not a production tenant application:
+KingdomOps is currently a product demonstration, not a production tenant application:
 
-- the KingdomOS login does not authenticate a user;
+- the KingdomOps login does not authenticate a user;
 - speaking-request, assignment, and care-network state is stored in browser local storage so host links and the full demo sequence survive a refresh;
 - invitation notifications and referral email delivery are simulated; a production provider and signed, expiring links are still required;
 - document uploads use temporary browser object URLs;
 - the Speaking Requests page includes a Reset ACT demo action that restores the single pending invitation;
 - administrative lead endpoints must be protected before production use.
 
-Authentication, authorization, durable APIs, database migrations, and document storage are required before onboarding real KingdomOS users.
+Authentication, authorization, durable APIs, database migrations, and document storage are required before onboarding real KingdomOps users.
 
 ## Validation and deployment
 

@@ -157,14 +157,17 @@ export interface AssignmentTravelItinerary {
 export type AssignmentHostCoordinationStatus =
   | 'not-requested'
   | 'requested'
+  | 'in-progress'
   | 'submitted'
   | 'reviewed';
 
 export interface AssignmentHostCoordination {
   status: AssignmentHostCoordinationStatus;
   requestedUtc: string | null;
+  lastSavedUtc: string | null;
   submittedUtc: string | null;
   reviewedUtc: string | null;
+  completionPercentage: number;
   eventSchedule: string;
   prayerFocus: string;
   promotionalRequirements: string;
@@ -181,6 +184,9 @@ export interface AssignmentHostCoordinationInput {
   prayerFocus: string;
   promotionalRequirements: string;
   hostNotes: string;
+  generalTravelNotes: string;
+  hostPastor: AssignmentHostLocalContact;
+  hostCoordinator: AssignmentHostLocalContact;
   travelContact: AssignmentHostLocalContact;
   mediaContact: AssignmentHostLocalContact;
   emergencyContact: AssignmentHostLocalContact;

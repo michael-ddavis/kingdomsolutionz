@@ -346,6 +346,15 @@ p {
   cursor: pointer;
 }
 
+.host-progress { display: grid; margin-top: 14px; gap: 6px; }
+.host-progress > span:first-child { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.host-progress small { color: var(--kos-text-muted); font-size: var(--kos-text-xs); }
+.host-progress strong { color: var(--kos-green-600); font-size: var(--kos-text-sm); }
+.host-progress-track { height: 5px; overflow: hidden; border-radius: 999px; background: var(--kos-surface-muted); }
+.host-progress-track span { display: block; height: 100%; border-radius: inherit; background: var(--kos-green-600); transition: width var(--kos-motion-base) var(--kos-ease-standard); }
+.review-host-button { margin-top: 9px; border-color: var(--kos-green-600); color: var(--kos-green-600); background: var(--kos-green-100); box-shadow: none; }
+.review-host-button span { color: var(--kos-green-600); }
+
 .card-action span {
   color: var(--kos-champagne-300);
 }
