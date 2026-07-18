@@ -38,6 +38,9 @@ import {
   AssignmentWorkspaceComponent
 } from './pages/assignments/assignment-workspace/assignment-workspace.component';
 import {
+  CareNetworkInboxComponent
+} from './pages/care-network/care-network-inbox.component';
+import {
   PlatformDashboardComponent
 } from './pages/platform-dashboard/platform-dashboard.component';
 import {
@@ -76,6 +79,10 @@ const routes: Routes = [
       {
         path: 'speaking-requests',
         component: SpeakingRequestListComponent
+      },
+      {
+        path: 'care-network',
+        component: CareNetworkInboxComponent
       },
       {
         path: 'speaker-profile',

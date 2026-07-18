@@ -245,7 +245,7 @@ export class AssignmentCareNetworkComponent {
     }
 
     const partner = this.careReferralService.addCarePartner({
-      assignmentId: this.assignmentId,
+      assignmentId: null,
       name: this.newPartner.name,
       city: this.newPartner.city,
       state: this.newPartner.state,

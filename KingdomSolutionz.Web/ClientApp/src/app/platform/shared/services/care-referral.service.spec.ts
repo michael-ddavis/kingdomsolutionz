@@ -197,7 +197,7 @@ describe('CareReferralService', () => {
     ).toBe('declined');
   });
 
-  it('tracks care ownership, due dates and contact attempts', async () => {
+  it('tracks follow-up responsibility, due dates and contact attempts', async () => {
     service.updateCasePlan(
       4101,
       'Care Coordinator',
@@ -292,9 +292,9 @@ describe('CareReferralService', () => {
     expect(context?.response.closedUtc).not.toBeNull();
   });
 
-  it('adds a trusted local care partner for the assignment', async () => {
+  it('adds a trusted local care partner that is reusable across assignments', async () => {
     const partner = service.addCarePartner({
-      assignmentId: 2001,
+      assignmentId: null,
       name: 'Atlanta Hope Church',
       city: 'Atlanta',
       state: 'GA',
@@ -316,9 +316,18 @@ describe('CareReferralService', () => {
       service.getAssignmentNetwork(2001).pipe(take(1))
     );
 
+    const anotherAssignmentNetwork = await firstValueFrom(
+      service.getAssignmentNetwork(2002).pipe(take(1))
+    );
+
     expect(partner.isActive).toBeTrue();
     expect(
       network.partners.some(item => item.id === partner.id)
+    ).toBeTrue();
+    expect(
+      anotherAssignmentNetwork.partners.some(
+        item => item.id === partner.id
+      )
     ).toBeTrue();
   });
 });

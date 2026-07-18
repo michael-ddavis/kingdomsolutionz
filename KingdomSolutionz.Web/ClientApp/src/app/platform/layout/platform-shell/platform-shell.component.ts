@@ -20,7 +20,7 @@ export interface PlatformNavigationItem {
   label: string;
   description?: string;
   route: string;
-  icon: 'dashboard' | 'requests' | 'assignments';
+  icon: 'dashboard' | 'requests' | 'assignments' | 'care';
   exact?: boolean;
 }
 
@@ -274,6 +274,18 @@ export class PlatformShellComponent
             icon: 'requests'
           }
         ]
+      },
+      {
+        label: 'KingdomOps Care Network',
+        items: [
+          {
+            label: 'Care Inbox',
+            description:
+              'Responses, referrals and local partners',
+            route: '/app/care-network',
+            icon: 'care'
+          }
+        ]
       }
     ];
   }
@@ -312,6 +324,13 @@ export class PlatformShellComponent
             icon: 'assignments'
           },
           {
+            label: 'Care Network',
+            description:
+              'Cross-assignment follow-up inbox',
+            route: '/app/care-network',
+            icon: 'care'
+          },
+          {
             label: 'Speaker Profile',
             description:
               'Approved bio, assets and preferences',
@@ -336,6 +355,18 @@ export class PlatformShellComponent
             route: '/app/dashboard',
             icon: 'dashboard',
             exact: true
+          }
+        ]
+      },
+      {
+        label: 'Care Ministry',
+        items: [
+          {
+            label: 'Care Network',
+            description:
+              'Responses, referrals and connections',
+            route: '/app/care-network',
+            icon: 'care'
           }
         ]
       }

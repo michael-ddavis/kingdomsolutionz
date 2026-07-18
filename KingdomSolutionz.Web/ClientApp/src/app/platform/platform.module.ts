@@ -36,6 +36,9 @@ import {
   AssignmentWorkspaceComponent
 } from './pages/assignments/assignment-workspace/assignment-workspace.component';
 import {
+  CareNetworkInboxComponent
+} from './pages/care-network/care-network-inbox.component';
+import {
   PlatformDashboardComponent
 } from './pages/platform-dashboard/platform-dashboard.component';
 import {
@@ -66,6 +69,7 @@ import {
     AssignmentOverviewComponent,
     AssignmentTravelComponent,
     AssignmentWorkspaceComponent,
+    CareNetworkInboxComponent,
     KosDrawerComponent,
     PlatformDashboardComponent,
     PlatformLoginComponent,

@@ -49,7 +49,8 @@ dotnet run --project KingdomSolutionz.Web/KingdomSolutionz.Web.csproj
 - `/respond/assignments/:id` — public/QR ministry-response intake
 - `/app/login` — KingdomOps demonstration entry
 - `/app` — KingdomOps workspace prototype
-- `/app/assignments/2001/care-network` — consented response intake, owned care cases, trusted local partners, referral SLAs, reassignment, and accountable connection tracking
+- `/app/care-network` — cross-assignment Care Inbox and reusable trusted-partner directory
+- `/app/assignments/2001/care-network` — consented response intake, assigned care follow-up, trusted local partners, referral SLAs, reassignment, and accountable connection tracking
 - `/app/speaker-profile` — reusable biography, assets, preferences, documents, and team contacts
 
 ## KingdomOps design foundation
@@ -67,7 +68,7 @@ The authenticated KingdomOps interface uses the **Quiet Authority** direction: o
 
 Approved speaking requests are the source record for assignment creation. Event details, dates, venue, requested ministry, attendance, coverage commitments, and the primary host contact carry into the assignment automatically. Assignment sections collect only information that was not already supplied, while preserving a link to the original invitation.
 
-KingdomOps Care Network keeps responsibility with the ministry until a receiving partner accepts the referral. Each response records consent provenance, a KingdomOps owner, priority, next follow-up, contact attempts, referral deadlines and reminders. Declined, expired, cancelled, unreachable and consent-withdrawn cases retain their history so reassignment and closure remain auditable.
+KingdomOps Care Network keeps responsibility with the ministry until a receiving partner accepts the referral. The Care Inbox brings cases from every assignment into one queue, while verified partner churches remain reusable across future assignments. Each response records consent provenance, an assigned care coordinator, priority, next follow-up, contact attempts, referral deadlines and reminders. Declined, expired, cancelled, unreachable and consent-withdrawn cases retain their history so reassignment and closure remain auditable.
 
 ## Prototype limitations
 

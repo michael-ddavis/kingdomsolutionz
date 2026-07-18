@@ -1,0 +1,251 @@
+<ng-container *ngIf="viewModel$ | async as vm">
+  <section class="care-inbox-page">
+    <header class="page-heading">
+      <div>
+        <p class="eyebrow">KingdomOps Care Network</p>
+        <h1>Care Inbox</h1>
+        <p>
+          Keep every consented response, local referral and next
+          follow-up visible across assignments.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="primary-button"
+        (click)="togglePartnerForm()">
+        {{ partnerFormVisible ? 'Close partner form' : '+ Add trusted partner' }}
+      </button>
+    </header>
+
+    <section class="metric-grid" aria-label="Care Network summary">
+      <article class="metric-card">
+        <span>Open cases</span>
+        <strong>{{ countOpen(vm.cases) }}</strong>
+        <small>Follow-up still active</small>
+      </article>
+
+      <article class="metric-card metric-card--attention">
+        <span>Needs attention</span>
+        <strong>{{ countNeedsAction(vm.cases) }}</strong>
+        <small>Consent, referral or follow-up due</small>
+      </article>
+
+      <article class="metric-card">
+        <span>Awaiting church</span>
+        <strong>{{ countAwaiting(vm.cases) }}</strong>
+        <small>KingdomOps still monitors</small>
+      </article>
+
+      <article class="metric-card metric-card--success">
+        <span>Connections completed</span>
+        <strong>{{ countConnected(vm.cases) }}</strong>
+        <small>Accountable handoffs closed</small>
+      </article>
+    </section>
+
+    <section class="partner-builder" *ngIf="partnerFormVisible">
+      <header>
+        <div>
+          <p class="eyebrow">Reusable partner directory</p>
+          <h2>Add a trusted local church</h2>
+        </div>
+        <span>Available to future assignments in its service area</span>
+      </header>
+
+      <div class="partner-form-grid">
+        <label>
+          <span>Church or ministry *</span>
+          <input type="text" [value]="newPartner.name" (input)="updateNewPartnerField('name', $event)" />
+        </label>
+        <label>
+          <span>City *</span>
+          <input type="text" [value]="newPartner.city" (input)="updateNewPartnerField('city', $event)" />
+        </label>
+        <label>
+          <span>State / region</span>
+          <input type="text" [value]="newPartner.state" (input)="updateNewPartnerField('state', $event)" />
+        </label>
+        <label>
+          <span>Care contact *</span>
+          <input type="text" [value]="newPartner.contactName" (input)="updateNewPartnerField('contactName', $event)" />
+        </label>
+        <label>
+          <span>Contact role</span>
+          <input type="text" [value]="newPartner.contactRole" (input)="updateNewPartnerField('contactRole', $event)" />
+        </label>
+        <label>
+          <span>Contact email *</span>
+          <input type="email" [value]="newPartner.contactEmail" (input)="updateNewPartnerField('contactEmail', $event)" />
+        </label>
+        <label>
+          <span>Contact phone</span>
+          <input type="tel" [value]="newPartner.contactPhone" (input)="updateNewPartnerField('contactPhone', $event)" />
+        </label>
+        <label>
+          <span>Response window</span>
+          <select [value]="newPartner.responseSlaHours" (change)="updateNewPartnerField('responseSlaHours', $event)">
+            <option [value]="24">24 hours</option>
+            <option [value]="48">48 hours</option>
+            <option [value]="72">72 hours</option>
+          </select>
+        </label>
+        <label class="field-wide">
+          <span>Ministries (comma separated)</span>
+          <input type="text" [value]="newPartner.ministries" (input)="updateNewPartnerField('ministries', $event)" />
+        </label>
+        <label>
+          <span>Languages</span>
+          <input type="text" [value]="newPartner.languages" (input)="updateNewPartnerField('languages', $event)" />
+        </label>
+        <label class="field-wide">
+          <span>Service area</span>
+          <input type="text" [value]="newPartner.serviceArea" (input)="updateNewPartnerField('serviceArea', $event)" />
+        </label>
+        <label class="field-wide">
+          <span>Internal notes</span>
+          <textarea rows="2" [value]="newPartner.notes" (input)="updateNewPartnerField('notes', $event)"></textarea>
+        </label>
+      </div>
+
+      <footer>
+        <p class="form-error" *ngIf="partnerError">{{ partnerError }}</p>
+        <button type="button" class="primary-button" (click)="addPartner()">
+          Add to partner directory
+        </button>
+      </footer>
+    </section>
+
+    <section class="inbox-panel">
+      <header class="panel-heading">
+        <div>
+          <p class="eyebrow">Follow-up responsibility</p>
+          <h2>All care cases</h2>
+        </div>
+        <span>{{ getFilteredCases(vm.cases).length }} shown</span>
+      </header>
+
+      <nav class="queue-filters" aria-label="Filter care cases">
+        <button type="button" [class.queue-filter--active]="queueFilter === 'all'" (click)="setQueueFilter('all')">
+          All <span>{{ vm.cases.length }}</span>
+        </button>
+        <button type="button" [class.queue-filter--active]="queueFilter === 'action'" (click)="setQueueFilter('action')">
+          Needs action <span>{{ countNeedsAction(vm.cases) }}</span>
+        </button>
+        <button type="button" [class.queue-filter--active]="queueFilter === 'awaiting'" (click)="setQueueFilter('awaiting')">
+          Awaiting church <span>{{ countAwaiting(vm.cases) }}</span>
+        </button>
+        <button type="button" [class.queue-filter--active]="queueFilter === 'accepted'" (click)="setQueueFilter('accepted')">
+          Accepted <span>{{ countAccepted(vm.cases) }}</span>
+        </button>
+        <button type="button" [class.queue-filter--active]="queueFilter === 'closed'" (click)="setQueueFilter('closed')">
+          Closed
+        </button>
+      </nav>
+
+      <div class="case-table" role="table" aria-label="Care cases">
+        <div class="case-table-heading" role="row">
+          <span>Person and request</span>
+          <span>Assignment</span>
+          <span>Responsibility</span>
+          <span>Status and next action</span>
+          <span></span>
+        </div>
+
+        <article
+          class="case-row"
+          role="row"
+          *ngFor="let item of getFilteredCases(vm.cases)">
+          <div class="person-cell">
+            <span class="person-avatar" aria-hidden="true">
+              {{ item.response.personName.charAt(0) }}
+            </span>
+            <div>
+              <strong>{{ item.response.personName }}</strong>
+              <small>{{ item.response.responseType }} · {{ item.response.city }}, {{ item.response.state }}</small>
+              <span *ngIf="item.response.priority === 'urgent'">Urgent</span>
+            </div>
+          </div>
+
+          <div class="assignment-cell">
+            <small>Assignment</small>
+            <strong>{{ item.assignment?.eventName || 'Assignment #' + item.response.assignmentId }}</strong>
+            <span>{{ item.assignment?.organizationName || 'Ministry response' }}</span>
+          </div>
+
+          <div class="responsibility-cell">
+            <small>Assigned care coordinator</small>
+            <strong>{{ item.response.assignedCoordinator || 'Unassigned' }}</strong>
+            <span [class.overdue]="isFollowUpDue(item.response)">
+              {{ item.response.nextFollowUpUtc ? ('Due ' + (item.response.nextFollowUpUtc | date:'MMM d, h:mm a')) : 'No follow-up due' }}
+            </span>
+          </div>
+
+          <div class="status-cell">
+            <span [ngClass]="['status-pill', 'status-pill--' + getStatusTone(item)]">
+              {{ getStatusLabel(item) }}
+            </span>
+            <strong>{{ getNextAction(item) }}</strong>
+            <small *ngIf="item.partner">{{ item.partner.name }}</small>
+          </div>
+
+          <a
+            class="open-case"
+            [routerLink]="['/app/assignments', item.response.assignmentId, 'care-network']">
+            Open case <span aria-hidden="true">→</span>
+          </a>
+        </article>
+
+        <div class="empty-state" *ngIf="getFilteredCases(vm.cases).length === 0">
+          <h3>No cases in this view</h3>
+          <p>Choose another filter to see the rest of the Care Network queue.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="directory-panel">
+      <header class="panel-heading">
+        <div>
+          <p class="eyebrow">Reusable network</p>
+          <h2>Trusted partner directory</h2>
+        </div>
+        <span>{{ vm.partners.length }} verified partners</span>
+      </header>
+
+      <div class="partner-grid">
+        <article class="partner-card" *ngFor="let partner of vm.partners">
+          <header>
+            <span>{{ partner.name.charAt(0) }}</span>
+            <div>
+              <strong>{{ partner.name }}</strong>
+              <small>{{ partner.city }}, {{ partner.state }}</small>
+            </div>
+          </header>
+
+          <p>{{ partner.serviceArea }}</p>
+          <small>{{ partner.ministries.join(' · ') }}</small>
+
+          <dl>
+            <div>
+              <dt>Care contact</dt>
+              <dd>{{ partner.contactName }}</dd>
+            </div>
+            <div>
+              <dt>Response window</dt>
+              <dd>{{ partner.responseSlaHours }} hours</dd>
+            </div>
+          </dl>
+
+          <label>
+            <span>Current capacity</span>
+            <select [value]="partner.availability" (change)="updatePartnerAvailability(partner, $event)">
+              <option value="available">Available</option>
+              <option value="limited">Limited</option>
+              <option value="unavailable">Unavailable</option>
+            </select>
+          </label>
+        </article>
+      </div>
+    </section>
+  </section>
+</ng-container>

@@ -18,6 +18,10 @@ import {
 } from '../../shared/models/assignment.model';
 
 import {
+  CareNetworkState
+} from '../../shared/models/care-referral.model';
+
+import {
   Workspace
 } from '../../shared/models/workspace.model';
 
@@ -28,6 +32,10 @@ import {
 import {
   AssignmentService
 } from '../../shared/services/assignment.service';
+
+import {
+  CareReferralService
+} from '../../shared/services/care-referral.service';
 
 import {
   WorkspaceService
@@ -117,18 +125,21 @@ export class PlatformDashboardComponent {
     combineLatest([
       this.workspaceService.selectedWorkspace$,
       this.speakingRequestService.speakingRequests$,
-      this.assignmentService.assignments$
+      this.assignmentService.assignments$,
+      this.careReferralService.state$
     ]).pipe(
       map(
         ([
           workspace,
           speakingRequests,
-          assignments
+          assignments,
+          careNetwork
         ]) =>
           this.buildDashboard(
             workspace,
             speakingRequests,
-            assignments
+            assignments,
+            careNetwork
           )
       )
     );
@@ -142,6 +153,9 @@ export class PlatformDashboardComponent {
 
     private readonly assignmentService:
       AssignmentService,
+
+    private readonly careReferralService:
+      CareReferralService,
 
     private readonly router: Router
   ) {}
@@ -159,7 +173,8 @@ export class PlatformDashboardComponent {
   private buildDashboard(
     workspace: Workspace,
     speakingRequests: readonly SpeakingRequest[],
-    assignments: readonly Assignment[]
+    assignments: readonly Assignment[],
+    careNetwork: CareNetworkState
   ): DashboardViewModel {
     switch (workspace.id) {
       case 'apostle-cynthia':
@@ -177,7 +192,8 @@ export class PlatformDashboardComponent {
         return this.buildAllMinistriesDashboard(
           workspace,
           speakingRequests,
-          assignments
+          assignments,
+          careNetwork
         );
     }
   }
@@ -185,7 +201,8 @@ export class PlatformDashboardComponent {
   private buildAllMinistriesDashboard(
     workspace: Workspace,
     speakingRequests: readonly SpeakingRequest[],
-    assignments: readonly Assignment[]
+    assignments: readonly Assignment[],
+    careNetwork: CareNetworkState
   ): DashboardViewModel {
     const orderedRequests =
       this.orderRequestsByNewest(speakingRequests);
@@ -215,6 +232,28 @@ export class PlatformDashboardComponent {
         activeAssignments
       );
 
+    const openCareCases =
+      careNetwork.responses.filter(response =>
+        ![
+          'connected',
+          'unreachable',
+          'withdrawn'
+        ].includes(response.status)
+      );
+
+    const careAttentionCount =
+      openCareCases.filter(response =>
+        [
+          'needs-review',
+          'ready-to-refer'
+        ].includes(response.status) ||
+        Boolean(
+          response.nextFollowUpUtc &&
+          new Date(response.nextFollowUpUtc).getTime() <=
+            Date.now()
+        )
+      ).length;
+
     const requestPriorities =
       this.buildRequestPriorities(
         orderedRequests
@@ -233,7 +272,8 @@ export class PlatformDashboardComponent {
     const openPriorityCount =
       awaitingReview.length +
       informationNeeded.length +
-      assignmentAttentionCount;
+      assignmentAttentionCount +
+      careAttentionCount;
 
     return {
       workspace,
@@ -295,6 +335,21 @@ export class PlatformDashboardComponent {
             ) + '%',
           secondaryLabel: 'Readiness',
           tone: 'violet'
+        },
+        {
+          name: 'KingdomOps Care Network',
+          description:
+            'Consented responses, local referrals and accountable follow-up.',
+          primaryMetric:
+            openCareCases.length.toString(),
+          primaryLabel: 'Open care cases',
+          secondaryMetric:
+            careNetwork.responses.filter(
+              response =>
+                response.status === 'connected'
+            ).length.toString(),
+          secondaryLabel: 'Connected',
+          tone: 'blue'
         }
       ]
     };

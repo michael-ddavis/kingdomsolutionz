@@ -54,7 +54,7 @@ export interface CareContactAttempt {
 
 export interface CarePartner {
   id: number;
-  assignmentId: number;
+  assignmentId: number | null;
 
   name: string;
   city: string;

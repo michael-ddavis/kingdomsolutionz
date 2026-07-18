@@ -55,7 +55,8 @@ export class CareReferralService {
       map(state => ({
         partners: state.partners.filter(
           partner =>
-            partner.assignmentId === assignmentId
+            partner.assignmentId === assignmentId ||
+            partner.assignmentId === null
         ),
         responses: state.responses.filter(
           response =>
@@ -254,8 +255,10 @@ export class CareReferralService {
       !response ||
       !partner ||
       !response.consentToShare ||
-      response.assignmentId !==
-        partner.assignmentId
+      (
+        partner.assignmentId !== null &&
+        response.assignmentId !== partner.assignmentId
+      )
     ) {
       return undefined;
     }
@@ -752,18 +755,20 @@ export class CareReferralService {
       partners: [...state.partners, partner]
     });
 
-    this.assignmentService.addCareReferralActivity(
-      input.assignmentId,
-      {
-        type: 'note-added',
-        tone: 'neutral',
-        title: 'Local care partner added',
-        description:
-          `${partner.name} was added to the trusted partner list for this assignment.`,
-        actor: 'Michael Davis',
-        section: 'follow-up'
-      }
-    );
+    if (input.assignmentId !== null) {
+      this.assignmentService.addCareReferralActivity(
+        input.assignmentId,
+        {
+          type: 'note-added',
+          tone: 'neutral',
+          title: 'Local care partner added',
+          description:
+            `${partner.name} was added to the trusted partner list for this assignment.`,
+          actor: 'Michael Davis',
+          section: 'follow-up'
+        }
+      );
+    }
 
     return partner;
   }
@@ -1218,6 +1223,10 @@ export class CareReferralService {
           ...parsed,
           partners: (parsed.partners ?? []).map(partner => ({
             ...partner,
+            assignmentId:
+              partner.relationship === 'verified-partner'
+                ? null
+                : partner.assignmentId,
             contactPhone: partner.contactPhone ?? '',
             notes: partner.notes ?? '',
             isActive: partner.isActive ?? true
@@ -1317,7 +1326,7 @@ export class CareReferralService {
         },
         {
           id: 302,
-          assignmentId: 2001,
+          assignmentId: null,
           name: 'Greater Atlanta Community Church',
           city: 'Decatur',
           state: 'GA',
@@ -1344,7 +1353,7 @@ export class CareReferralService {
         },
         {
           id: 303,
-          assignmentId: 2001,
+          assignmentId: null,
           name: 'Eastside Fellowship',
           city: 'Stone Mountain',
           state: 'GA',
