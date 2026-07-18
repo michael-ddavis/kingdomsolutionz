@@ -57,6 +57,8 @@ export class PartnerReferralResponseComponent
     );
 
   declineMode = false;
+  connectionNote = '';
+  releaseReason = '';
 
   readonly responseForm =
     this.formBuilder.nonNullable.group({
@@ -219,6 +221,30 @@ export class PartnerReferralResponseComponent
     ]);
   }
 
+  confirmConnection(
+    context: CareReferralContext
+  ): void {
+    this.careReferralService.confirmConnected(
+      context.referral.id,
+      context.partner.name,
+      this.connectionNote ||
+        'The receiving church confirmed that direct connection was completed.'
+    );
+    this.connectionNote = '';
+  }
+
+  releaseAcceptedReferral(
+    context: CareReferralContext
+  ): void {
+    this.careReferralService.returnReferralToQueue(
+      context.referral.id,
+      this.releaseReason ||
+        'The receiving church could not complete the connection.',
+      context.partner.name
+    );
+    this.releaseReason = '';
+  }
+
   getStatusLabel(
     status: CareReferralStatus
   ): string {
@@ -240,6 +266,9 @@ export class PartnerReferralResponseComponent
 
       case 'expired':
         return 'Response window expired';
+
+      case 'cancelled':
+        return 'Returned for reassignment';
 
       case 'connected':
         return 'Connection confirmed';

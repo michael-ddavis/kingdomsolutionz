@@ -410,7 +410,9 @@
   background: var(--kos-green-100);
 }
 
-.response-recorded--declined {
+.response-recorded--declined,
+.response-recorded--expired,
+.response-recorded--cancelled {
   border-top-color: rgb(168 81 76 / 22%);
   background: var(--kos-red-100);
 }
@@ -427,7 +429,9 @@
   background: rgb(255 255 255 / 65%);
 }
 
-.response-recorded--declined .recorded-icon {
+.response-recorded--declined .recorded-icon,
+.response-recorded--expired .recorded-icon,
+.response-recorded--cancelled .recorded-icon {
   color: var(--kos-red-600);
 }
 
@@ -445,7 +449,9 @@
   text-transform: uppercase;
 }
 
-.response-recorded--declined p {
+.response-recorded--declined p,
+.response-recorded--expired p,
+.response-recorded--cancelled p {
   color: var(--kos-red-600);
 }
 
@@ -461,6 +467,65 @@
   color: var(--kos-text-secondary);
   font-size: var(--kos-text-sm);
   line-height: 1.5;
+}
+
+.connection-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgb(52 121 94 / 22%);
+  align-items: end;
+  gap: 10px;
+}
+
+.connection-actions label {
+  display: grid;
+  gap: 6px;
+}
+
+.connection-actions label > span {
+  color: var(--kos-text-secondary);
+  font-size: var(--kos-text-xs);
+  font-weight: 750;
+}
+
+.connection-actions input,
+.connection-actions textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--kos-control-height);
+  padding: 10px 11px;
+  border: 1px solid var(--kos-border-strong);
+  border-radius: var(--kos-radius-sm);
+  outline: none;
+  color: var(--kos-text);
+  font: inherit;
+  font-size: var(--kos-text-sm);
+  background: var(--kos-surface-elevated);
+}
+
+.connection-actions textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+.connection-actions input:focus,
+.connection-actions textarea:focus {
+  border-color: var(--kos-blue-600);
+  box-shadow: 0 0 0 3px rgb(53 91 159 / 14%);
+}
+
+.connection-actions .connection-button {
+  border-color: var(--kos-green-600);
+  color: white;
+  background: var(--kos-green-600);
+}
+
+.connection-actions .release-button {
+  border-color: rgb(168 81 76 / 35%);
+  color: var(--kos-red-600);
+  background: var(--kos-surface-elevated);
 }
 
 .not-found {
@@ -544,6 +609,10 @@
   .preview-banner button,
   .response-recorded button {
     width: 100%;
+  }
+
+  .connection-actions {
+    grid-template-columns: 1fr;
   }
 }
 

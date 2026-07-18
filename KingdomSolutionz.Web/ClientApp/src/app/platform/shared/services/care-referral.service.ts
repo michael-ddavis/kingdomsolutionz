@@ -10,10 +10,15 @@ import {
 } from '../models/assignment.model';
 
 import {
+  CareCasePriority,
+  CareContactAttempt,
+  CareContactMethod,
+  CareContactOutcome,
   CareNetworkState,
   CarePartner,
   CareReferral,
   CareReferralContext,
+  CreateCarePartnerInput,
   CreateMinistryResponseInput,
   MinistryResponse,
   MinistryResponseConsentSource
@@ -136,6 +141,7 @@ export class CareReferralService {
         hostContact.role ||
         'Care coordinator',
       contactEmail: hostContact.email,
+      contactPhone: hostContact.phone,
       relationship: 'host-church',
       serviceArea:
         `${assignment.city} and surrounding communities`,
@@ -145,7 +151,9 @@ export class CareReferralService {
       ],
       languages: ['English'],
       availability: 'available',
-      responseSlaHours: 48
+      responseSlaHours: 48,
+      notes: 'Host church for this assignment.',
+      isActive: true
     };
 
     this.publish({
@@ -164,7 +172,7 @@ export class CareReferralService {
     return state.referrals.find(
       referral =>
         referral.responseId === responseId &&
-        !['declined', 'expired'].includes(
+        !['declined', 'expired', 'cancelled'].includes(
           referral.status
         )
     );
@@ -195,7 +203,15 @@ export class CareReferralService {
       receivedUtc,
       status: input.consentToShare
         ? 'ready-to-refer'
-        : 'needs-review'
+        : 'needs-review',
+      assignedCoordinator: 'Michael Davis',
+      priority: 'standard',
+      nextFollowUpUtc:
+        this.addHours(receivedUtc, 24),
+      lastContactUtc: null,
+      contactAttempts: [],
+      closedUtc: null,
+      closureNote: ''
     };
 
     this.publish({
@@ -256,6 +272,15 @@ export class CareReferralService {
 
     const sentUtc = new Date().toISOString();
 
+    const previousReferral = [...state.referrals]
+      .reverse()
+      .find(item =>
+        item.responseId === responseId &&
+        ['declined', 'expired', 'cancelled'].includes(
+          item.status
+        )
+      );
+
     const referral: CareReferral = {
       id: this.getNextReferralId(state),
       assignmentId: response.assignmentId,
@@ -268,9 +293,19 @@ export class CareReferralService {
       viewedUtc: null,
       respondedUtc: null,
       connectedUtc: null,
+      expiresUtc: this.addHours(
+        sentUtc,
+        partner.responseSlaHours
+      ),
+      lastReminderUtc: null,
+      reminderCount: 0,
+      reassignedFromReferralId:
+        previousReferral?.id ?? null,
       assignedOwner: '',
       nextStep: '',
-      declineReason: ''
+      declineReason: '',
+      connectionConfirmedBy: '',
+      connectionNote: ''
     };
 
     this.publish({
@@ -279,7 +314,10 @@ export class CareReferralService {
         item.id === responseId
           ? {
             ...item,
-            status: 'referred'
+            status: 'referred',
+            nextFollowUpUtc: referral.expiresUtc,
+            closedUtc: null,
+            closureNote: ''
           }
           : item
       ),
@@ -383,6 +421,15 @@ export class CareReferralService {
 
     this.publish({
       ...state,
+      responses: state.responses.map(response =>
+        response.id === context.response.id
+          ? {
+            ...response,
+            nextFollowUpUtc:
+              this.addHours(respondedUtc, 48)
+          }
+          : response
+      ),
       referrals: state.referrals.map(referral =>
         referral.id === referralId
           ? {
@@ -446,7 +493,9 @@ export class CareReferralService {
           context.response.id
           ? {
             ...response,
-            status: 'ready-to-refer'
+            status: 'ready-to-refer',
+            nextFollowUpUtc: respondedUtc,
+            closureNote: ''
           }
           : response
       ),
@@ -504,7 +553,12 @@ export class CareReferralService {
       ...state,
       responses: state.responses.map(response =>
         response.id === context.response.id
-          ? { ...response, status: 'ready-to-refer' }
+          ? {
+              ...response,
+              status: 'ready-to-refer',
+              nextFollowUpUtc: respondedUtc,
+              closureNote: ''
+            }
           : response
       ),
       referrals: state.referrals.map(referral =>
@@ -584,7 +638,10 @@ export class CareReferralService {
               consentSource: source,
               consentRecordedUtc,
               consentRecordedBy: actor,
-              status: 'ready-to-refer'
+              status: 'ready-to-refer',
+              nextFollowUpUtc: consentRecordedUtc,
+              closedUtc: null,
+              closureNote: ''
             }
           : item
       )
@@ -605,7 +662,9 @@ export class CareReferralService {
   }
 
   confirmConnected(
-    referralId: number
+    referralId: number,
+    actor = 'Michael Davis',
+    connectionNote = 'Local connection confirmed.'
   ): void {
     const state = this.stateSubject.value;
     const context =
@@ -631,7 +690,10 @@ export class CareReferralService {
           context.response.id
           ? {
             ...response,
-            status: 'connected'
+            status: 'connected',
+            nextFollowUpUtc: null,
+            closedUtc: connectedUtc,
+            closureNote: connectionNote.trim()
           }
           : response
       ),
@@ -640,7 +702,9 @@ export class CareReferralService {
           ? {
             ...referral,
             status: 'connected',
-            connectedUtc
+            connectedUtc,
+            connectionConfirmedBy: actor,
+            connectionNote: connectionNote.trim()
           }
           : referral
       )
@@ -655,10 +719,305 @@ export class CareReferralService {
           title: 'Local connection confirmed',
           description:
             `${context.response.personName} was connected with ${context.partner.name}. CTG's accountable handoff is complete.`,
-          actor: 'Michael Davis',
+          actor,
           section: 'follow-up'
         }
       );
+  }
+
+  addCarePartner(
+    input: CreateCarePartnerInput
+  ): CarePartner {
+    const state = this.stateSubject.value;
+
+    const partner: CarePartner = {
+      ...input,
+      id: this.getNextPartnerId(state),
+      name: input.name.trim(),
+      contactName: input.contactName.trim(),
+      contactEmail: input.contactEmail.trim(),
+      contactPhone: input.contactPhone.trim(),
+      ministries: input.ministries
+        .map(item => item.trim())
+        .filter(Boolean),
+      languages: input.languages
+        .map(item => item.trim())
+        .filter(Boolean),
+      notes: input.notes.trim(),
+      isActive: true
+    };
+
+    this.publish({
+      ...state,
+      partners: [...state.partners, partner]
+    });
+
+    this.assignmentService.addCareReferralActivity(
+      input.assignmentId,
+      {
+        type: 'note-added',
+        tone: 'neutral',
+        title: 'Local care partner added',
+        description:
+          `${partner.name} was added to the trusted partner list for this assignment.`,
+        actor: 'Michael Davis',
+        section: 'follow-up'
+      }
+    );
+
+    return partner;
+  }
+
+  setPartnerAvailability(
+    partnerId: number,
+    availability: CarePartner['availability']
+  ): void {
+    const state = this.stateSubject.value;
+    const partner = state.partners.find(
+      item => item.id === partnerId
+    );
+
+    if (!partner) {
+      return;
+    }
+
+    this.publish({
+      ...state,
+      partners: state.partners.map(item =>
+        item.id === partnerId
+          ? { ...item, availability }
+          : item
+      )
+    });
+  }
+
+  updateCasePlan(
+    responseId: number,
+    assignedCoordinator: string,
+    priority: CareCasePriority,
+    nextFollowUpUtc: string | null
+  ): void {
+    const state = this.stateSubject.value;
+    const response = state.responses.find(
+      item => item.id === responseId
+    );
+
+    if (!response || response.status === 'connected') {
+      return;
+    }
+
+    const owner = assignedCoordinator.trim();
+    const dueUtc = nextFollowUpUtc
+      ? new Date(nextFollowUpUtc).toISOString()
+      : null;
+
+    this.publish({
+      ...state,
+      responses: state.responses.map(item =>
+        item.id === responseId
+          ? {
+              ...item,
+              assignedCoordinator: owner,
+              priority,
+              nextFollowUpUtc: dueUtc
+            }
+          : item
+      )
+    });
+
+    this.assignmentService.addCareReferralActivity(
+      response.assignmentId,
+      {
+        type: 'note-added',
+        tone: priority === 'urgent'
+          ? 'attention'
+          : 'neutral',
+        title: 'Care plan updated',
+        description:
+          `${owner || 'The care team'} owns ${response.personName}'s follow-up${dueUtc ? ` due ${new Date(dueUtc).toLocaleString()}` : ''}.`,
+        actor: 'Michael Davis',
+        section: 'follow-up'
+      }
+    );
+  }
+
+  recordContactAttempt(
+    responseId: number,
+    method: CareContactMethod,
+    outcome: CareContactOutcome,
+    note: string,
+    actor = 'Michael Davis'
+  ): CareContactAttempt | undefined {
+    const state = this.stateSubject.value;
+    const response = state.responses.find(
+      item => item.id === responseId
+    );
+
+    if (
+      !response ||
+      ['connected', 'withdrawn'].includes(response.status)
+    ) {
+      return undefined;
+    }
+
+    const createdUtc = new Date().toISOString();
+    const attempt: CareContactAttempt = {
+      id: this.getNextContactAttemptId(state),
+      responseId,
+      method,
+      outcome,
+      note: note.trim(),
+      createdUtc,
+      createdBy: actor
+    };
+
+    this.publish({
+      ...state,
+      responses: state.responses.map(item =>
+        item.id === responseId
+          ? {
+              ...item,
+              lastContactUtc: createdUtc,
+              contactAttempts: [
+                attempt,
+                ...item.contactAttempts
+              ],
+              nextFollowUpUtc:
+                outcome === 'reached'
+                  ? item.nextFollowUpUtc
+                  : this.addHours(createdUtc, 24)
+            }
+          : item
+      )
+    });
+
+    this.assignmentService.addCareReferralActivity(
+      response.assignmentId,
+      {
+        type: 'note-added',
+        tone: outcome === 'reached'
+          ? 'success'
+          : 'neutral',
+        title: 'Care contact attempt recorded',
+        description:
+          `${actor} contacted ${response.personName} by ${method}; outcome: ${outcome.replace('-', ' ')}${attempt.note ? `. ${attempt.note}` : ''}`,
+        actor,
+        section: 'follow-up'
+      }
+    );
+
+    return attempt;
+  }
+
+  sendReferralReminder(
+    referralId: number
+  ): void {
+    const state = this.stateSubject.value;
+    const context = this.getContextFromState(
+      referralId,
+      state
+    );
+
+    if (
+      !context ||
+      !['sent', 'viewed'].includes(
+        context.referral.status
+      )
+    ) {
+      return;
+    }
+
+    const lastReminderUtc =
+      new Date().toISOString();
+
+    this.publish({
+      ...state,
+      referrals: state.referrals.map(referral =>
+        referral.id === referralId
+          ? {
+              ...referral,
+              lastReminderUtc,
+              reminderCount:
+                referral.reminderCount + 1
+            }
+          : referral
+      )
+    });
+
+    this.assignmentService.addCareReferralActivity(
+      context.referral.assignmentId,
+      {
+        type: 'note-added',
+        tone: 'attention',
+        title: 'Care referral reminder sent',
+        description:
+          `${context.partner.name} was reminded to respond to ${context.response.personName}'s referral.`,
+        actor: 'Michael Davis',
+        section: 'follow-up'
+      }
+    );
+  }
+
+  returnReferralToQueue(
+    referralId: number,
+    reason: string,
+    actor = 'Michael Davis'
+  ): void {
+    const state = this.stateSubject.value;
+    const context = this.getContextFromState(
+      referralId,
+      state
+    );
+
+    if (
+      !context ||
+      !['sent', 'viewed', 'accepted'].includes(
+        context.referral.status
+      )
+    ) {
+      return;
+    }
+
+    const returnedUtc = new Date().toISOString();
+    const returnReason = reason.trim() ||
+      'Referral returned for reassignment.';
+
+    this.publish({
+      ...state,
+      responses: state.responses.map(response =>
+        response.id === context.response.id
+          ? {
+              ...response,
+              status: 'ready-to-refer',
+              nextFollowUpUtc: returnedUtc,
+              closureNote: ''
+            }
+          : response
+      ),
+      referrals: state.referrals.map(referral =>
+        referral.id === referralId
+          ? {
+              ...referral,
+              status: 'cancelled',
+              respondedUtc: returnedUtc,
+              declineReason: returnReason
+            }
+          : referral
+      )
+    });
+
+    this.assignmentService.addCareReferralActivity(
+      context.referral.assignmentId,
+      {
+        type: 'referral-declined',
+        tone: 'attention',
+        title: 'Referral returned for reassignment',
+        description:
+          `${context.response.personName}'s referral was returned from ${context.partner.name}. Reason: ${returnReason}`,
+        actor,
+        section: 'follow-up'
+      }
+    );
   }
 
   resetDemo(): void {
@@ -711,9 +1070,14 @@ export class CareReferralService {
       item => item.id === responseId
     );
 
-    if (!response) {
+    if (!response || response.status === 'connected') {
       return;
     }
+
+    const closedUtc = new Date().toISOString();
+    const closureNote = status === 'withdrawn'
+      ? 'The person withdrew permission to share their care request.'
+      : 'The ministry team could not reach the person after follow-up attempts.';
 
     this.publish({
       ...state,
@@ -737,24 +1101,29 @@ export class CareReferralService {
               consentRecordedBy:
                 status === 'withdrawn'
                   ? ''
-                  : item.consentRecordedBy
+                  : item.consentRecordedBy,
+              nextFollowUpUtc: null,
+              closedUtc,
+              closureNote
             }
           : item
       ),
-      referrals:
-        status === 'withdrawn'
-          ? state.referrals.map(referral =>
-              referral.responseId === responseId &&
-              !['declined', 'expired', 'connected'].includes(referral.status)
-                ? {
-                    ...referral,
-                    status: 'expired' as const,
-                    respondedUtc: new Date().toISOString(),
-                    declineReason: 'Consent withdrawn by the person.'
-                  }
-                : referral
-            )
-          : state.referrals
+      referrals: state.referrals.map(referral =>
+        referral.responseId === responseId &&
+        ![
+          'declined',
+          'expired',
+          'cancelled',
+          'connected'
+        ].includes(referral.status)
+          ? {
+              ...referral,
+              status: 'cancelled' as const,
+              respondedUtc: closedUtc,
+              declineReason: closureNote
+            }
+          : referral
+      )
     });
 
     this.assignmentService.addCareReferralActivity(
@@ -795,6 +1164,29 @@ export class CareReferralService {
       ) + 1;
   }
 
+  private getNextContactAttemptId(
+    state: CareNetworkState
+  ): number {
+    const ids = state.responses.flatMap(
+      response => response.contactAttempts.map(
+        attempt => attempt.id
+      )
+    );
+
+    return ids.length === 0
+      ? 7001
+      : Math.max(...ids) + 1;
+  }
+
+  private addHours(
+    dateTime: string,
+    hours: number
+  ): string {
+    const date = new Date(dateTime);
+    date.setHours(date.getHours() + hours);
+    return date.toISOString();
+  }
+
   private publish(
     state: CareNetworkState
   ): void {
@@ -824,7 +1216,13 @@ export class CareReferralService {
 
         return {
           ...parsed,
-          responses: parsed.responses.map(response => ({
+          partners: (parsed.partners ?? []).map(partner => ({
+            ...partner,
+            contactPhone: partner.contactPhone ?? '',
+            notes: partner.notes ?? '',
+            isActive: partner.isActive ?? true
+          })),
+          responses: (parsed.responses ?? []).map(response => ({
             ...response,
             consentSource:
               response.consentSource ??
@@ -840,7 +1238,40 @@ export class CareReferralService {
               response.consentRecordedBy ??
               (response.consentToShare
                 ? response.personName
-                : '')
+                : ''),
+            assignedCoordinator:
+              response.assignedCoordinator ??
+              'Michael Davis',
+            priority:
+              response.priority ?? 'standard',
+            nextFollowUpUtc:
+              response.nextFollowUpUtc ?? null,
+            lastContactUtc:
+              response.lastContactUtc ?? null,
+            contactAttempts:
+              response.contactAttempts ?? [],
+            closedUtc:
+              response.closedUtc ?? null,
+            closureNote:
+              response.closureNote ?? ''
+          })),
+          referrals: (parsed.referrals ?? []).map(referral => ({
+            ...referral,
+            expiresUtc:
+              referral.expiresUtc ??
+              (referral.sentUtc
+                ? this.addHours(referral.sentUtc, 48)
+                : null),
+            lastReminderUtc:
+              referral.lastReminderUtc ?? null,
+            reminderCount:
+              referral.reminderCount ?? 0,
+            reassignedFromReferralId:
+              referral.reassignedFromReferralId ?? null,
+            connectionConfirmedBy:
+              referral.connectionConfirmedBy ?? '',
+            connectionNote:
+              referral.connectionNote ?? ''
           }))
         };
       }
@@ -865,6 +1296,7 @@ export class CareReferralService {
           contactRole: 'Discipleship pastor',
           contactEmail:
             'simone@newcovenant.example',
+          contactPhone: '(404) 555-0110',
           relationship: 'host-church',
           serviceArea:
             'Central Atlanta and nearby communities',
@@ -878,7 +1310,10 @@ export class CareReferralService {
             'Spanish'
           ],
           availability: 'available',
-          responseSlaHours: 24
+          responseSlaHours: 24,
+          notes:
+            'Host church with an established new-believer pathway.',
+          isActive: true
         },
         {
           id: 302,
@@ -891,6 +1326,7 @@ export class CareReferralService {
           contactRole: 'Connections director',
           contactEmail:
             'jordan@greateratlanta.example',
+          contactPhone: '(404) 555-0148',
           relationship: 'verified-partner',
           serviceArea:
             'Decatur, East Atlanta and Avondale Estates',
@@ -901,7 +1337,10 @@ export class CareReferralService {
           ],
           languages: ['English'],
           availability: 'available',
-          responseSlaHours: 48
+          responseSlaHours: 48,
+          notes:
+            'Strong fit for young adults and foundations groups.',
+          isActive: true
         },
         {
           id: 303,
@@ -914,6 +1353,7 @@ export class CareReferralService {
           contactRole: 'Care team lead',
           contactEmail:
             'leah@eastsidefellowship.example',
+          contactPhone: '(770) 555-0162',
           relationship: 'verified-partner',
           serviceArea:
             'Stone Mountain and eastern DeKalb County',
@@ -923,7 +1363,10 @@ export class CareReferralService {
           ],
           languages: ['English'],
           availability: 'limited',
-          responseSlaHours: 72
+          responseSlaHours: 72,
+          notes:
+            'Confirm capacity before sending more than one referral.',
+          isActive: true
         }
       ],
       responses: [
@@ -947,7 +1390,15 @@ export class CareReferralService {
           consentRecordedBy: 'Jasmine Lee',
           receivedUtc:
             '2026-08-30T20:42:00.000Z',
-          status: 'ready-to-refer'
+          status: 'ready-to-refer',
+          assignedCoordinator: 'Michael Davis',
+          priority: 'standard',
+          nextFollowUpUtc:
+            '2026-08-31T15:00:00.000Z',
+          lastContactUtc: null,
+          contactAttempts: [],
+          closedUtc: null,
+          closureNote: ''
         },
         {
           id: 4102,
@@ -968,7 +1419,15 @@ export class CareReferralService {
           consentRecordedBy: '',
           receivedUtc:
             '2026-08-30T20:49:00.000Z',
-          status: 'needs-review'
+          status: 'needs-review',
+          assignedCoordinator: 'Michael Davis',
+          priority: 'urgent',
+          nextFollowUpUtc:
+            '2026-08-31T13:30:00.000Z',
+          lastContactUtc: null,
+          contactAttempts: [],
+          closedUtc: null,
+          closureNote: ''
         },
         {
           id: 4103,
@@ -990,7 +1449,28 @@ export class CareReferralService {
           consentRecordedBy: 'Aisha Morgan',
           receivedUtc:
             '2026-08-30T21:03:00.000Z',
-          status: 'referred'
+          status: 'referred',
+          assignedCoordinator: 'Michael Davis',
+          priority: 'standard',
+          nextFollowUpUtc:
+            '2026-09-01T13:15:00.000Z',
+          lastContactUtc:
+            '2026-08-31T12:30:00.000Z',
+          contactAttempts: [
+            {
+              id: 7001,
+              responseId: 4103,
+              method: 'email',
+              outcome: 'reached',
+              note:
+                'Confirmed she still wants a local church connection.',
+              createdUtc:
+                '2026-08-31T12:30:00.000Z',
+              createdBy: 'Michael Davis'
+            }
+          ],
+          closedUtc: null,
+          closureNote: ''
         }
       ],
       referrals: [
@@ -1007,9 +1487,16 @@ export class CareReferralService {
           viewedUtc: null,
           respondedUtc: null,
           connectedUtc: null,
+          expiresUtc:
+            '2026-09-01T13:15:00.000Z',
+          lastReminderUtc: null,
+          reminderCount: 0,
+          reassignedFromReferralId: null,
           assignedOwner: '',
           nextStep: '',
-          declineReason: ''
+          declineReason: '',
+          connectionConfirmedBy: '',
+          connectionNote: ''
         }
       ]
     };

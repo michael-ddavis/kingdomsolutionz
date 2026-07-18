@@ -237,7 +237,9 @@
 
           <span class="recorded-icon" aria-hidden="true">
             {{
-              vm.context.referral.status === 'declined'
+              vm.context.referral.status === 'declined' ||
+              vm.context.referral.status === 'expired' ||
+              vm.context.referral.status === 'cancelled'
                 ? '×'
                 : '✓'
             }}
@@ -255,7 +257,8 @@
 
             <ng-container
               *ngIf="
-                vm.context.referral.status !== 'declined'
+                vm.context.referral.status === 'accepted' ||
+                vm.context.referral.status === 'connected'
               ">
 
               <span>
@@ -269,11 +272,51 @@
 
             <span
               *ngIf="
-                vm.context.referral.status === 'declined'
+                vm.context.referral.status === 'declined' ||
+                vm.context.referral.status === 'expired' ||
+                vm.context.referral.status === 'cancelled'
               ">
               The response has returned to CTG so another
               local care partner can be selected.
             </span>
+
+            <div
+              class="connection-actions"
+              *ngIf="vm.context.referral.status === 'accepted'">
+              <label>
+                <span>Connection note</span>
+                <textarea
+                  rows="2"
+                  maxlength="300"
+                  placeholder="Example: Introductory call completed and group leader assigned."
+                  [value]="connectionNote"
+                  (input)="connectionNote = $any($event.target).value"></textarea>
+              </label>
+
+              <button
+                type="button"
+                class="connection-button"
+                (click)="confirmConnection(vm.context)">
+                Confirm connection completed
+              </button>
+
+              <label>
+                <span>If your team can no longer complete the handoff</span>
+                <input
+                  type="text"
+                  maxlength="240"
+                  placeholder="Give CTG a reason for reassignment"
+                  [value]="releaseReason"
+                  (input)="releaseReason = $any($event.target).value" />
+              </label>
+
+              <button
+                type="button"
+                class="release-button"
+                (click)="releaseAcceptedReferral(vm.context)">
+                Return to CTG for reassignment
+              </button>
+            </div>
           </div>
 
           <button

@@ -20,6 +20,13 @@
       <div class="page-actions">
         <button
           type="button"
+          class="partner-button"
+          (click)="togglePartnerForm()">
+          {{ partnerFormVisible ? 'Close partner form' : '+ Add local partner' }}
+        </button>
+
+        <button
+          type="button"
           class="reset-button"
           (click)="resetDemo()">
           Reset demo data
@@ -42,11 +49,11 @@
       </article>
 
       <article class="metric-card">
-        <span>Ready to refer</span>
+        <span>Needs attention</span>
         <strong>
-          {{ countReadyResponses(vm.network) }}
+          {{ countNeedsAction(vm.network) }}
         </strong>
-        <small>Consent verified</small>
+        <small>Consent, referral or follow-up due</small>
       </article>
 
       <article class="metric-card">
@@ -76,6 +83,129 @@
       </article>
     </section>
 
+    <section
+      class="partner-builder"
+      *ngIf="partnerFormVisible">
+      <header>
+        <div>
+          <p class="eyebrow">Trusted partner directory</p>
+          <h3>Add a church near this assignment</h3>
+        </div>
+        <span>Available only to the ministry team</span>
+      </header>
+
+      <div class="partner-form-grid">
+        <label>
+          <span>Church or ministry *</span>
+          <input
+            type="text"
+            [value]="newPartner.name"
+            (input)="updateNewPartnerField('name', $event)" />
+        </label>
+
+        <label>
+          <span>City *</span>
+          <input
+            type="text"
+            [value]="newPartner.city"
+            (input)="updateNewPartnerField('city', $event)" />
+        </label>
+
+        <label>
+          <span>State / region</span>
+          <input
+            type="text"
+            [value]="newPartner.state"
+            (input)="updateNewPartnerField('state', $event)" />
+        </label>
+
+        <label>
+          <span>Care contact *</span>
+          <input
+            type="text"
+            [value]="newPartner.contactName"
+            (input)="updateNewPartnerField('contactName', $event)" />
+        </label>
+
+        <label>
+          <span>Contact role</span>
+          <input
+            type="text"
+            [value]="newPartner.contactRole"
+            (input)="updateNewPartnerField('contactRole', $event)" />
+        </label>
+
+        <label>
+          <span>Contact email *</span>
+          <input
+            type="email"
+            [value]="newPartner.contactEmail"
+            (input)="updateNewPartnerField('contactEmail', $event)" />
+        </label>
+
+        <label>
+          <span>Contact phone</span>
+          <input
+            type="tel"
+            [value]="newPartner.contactPhone"
+            (input)="updateNewPartnerField('contactPhone', $event)" />
+        </label>
+
+        <label>
+          <span>Response window</span>
+          <select
+            [value]="newPartner.responseSlaHours"
+            (change)="updateNewPartnerField('responseSlaHours', $event)">
+            <option [value]="24">24 hours</option>
+            <option [value]="48">48 hours</option>
+            <option [value]="72">72 hours</option>
+          </select>
+        </label>
+
+        <label class="partner-field--wide">
+          <span>Ministries (comma separated)</span>
+          <input
+            type="text"
+            [value]="newPartner.ministries"
+            (input)="updateNewPartnerField('ministries', $event)" />
+        </label>
+
+        <label>
+          <span>Languages</span>
+          <input
+            type="text"
+            [value]="newPartner.languages"
+            (input)="updateNewPartnerField('languages', $event)" />
+        </label>
+
+        <label class="partner-field--wide">
+          <span>Service area</span>
+          <input
+            type="text"
+            [value]="newPartner.serviceArea"
+            (input)="updateNewPartnerField('serviceArea', $event)" />
+        </label>
+
+        <label class="partner-field--wide">
+          <span>Internal notes</span>
+          <textarea
+            rows="2"
+            [value]="newPartner.notes"
+            (input)="updateNewPartnerField('notes', $event)"></textarea>
+        </label>
+      </div>
+
+      <footer>
+        <p class="send-error" *ngIf="partnerError">{{ partnerError }}</p>
+        <button
+          type="button"
+          class="primary-button"
+          (click)="addLocalPartner()">
+          Add trusted partner
+        </button>
+      </footer>
+    </section>
+
     <section class="care-layout">
       <section class="response-panel">
         <header class="panel-heading">
@@ -87,10 +217,28 @@
           <span>{{ vm.network.responses.length }}</span>
         </header>
 
+        <nav class="queue-filters" aria-label="Filter care responses">
+          <button type="button" [class.queue-filter--active]="queueFilter === 'all'" (click)="setQueueFilter('all')">
+            All <span>{{ vm.network.responses.length }}</span>
+          </button>
+          <button type="button" [class.queue-filter--active]="queueFilter === 'action'" (click)="setQueueFilter('action')">
+            Needs action <span>{{ countNeedsAction(vm.network) }}</span>
+          </button>
+          <button type="button" [class.queue-filter--active]="queueFilter === 'awaiting'" (click)="setQueueFilter('awaiting')">
+            Awaiting church
+          </button>
+          <button type="button" [class.queue-filter--active]="queueFilter === 'accepted'" (click)="setQueueFilter('accepted')">
+            Accepted
+          </button>
+          <button type="button" [class.queue-filter--active]="queueFilter === 'closed'" (click)="setQueueFilter('closed')">
+            Closed
+          </button>
+        </nav>
+
         <div class="response-list">
           <button
             type="button"
-            *ngFor="let response of vm.network.responses"
+            *ngFor="let response of getFilteredResponses(vm.network)"
             [ngClass]="[
               'response-card',
               selectedResponseId === response.id
@@ -139,6 +287,14 @@
                 }}
               </small>
 
+              <span class="case-meta">
+                <small>{{ response.assignedCoordinator || 'Unassigned' }}</small>
+                <small [class.case-due--overdue]="isFollowUpDue(response)">
+                  {{ response.nextFollowUpUtc ? ('Follow up ' + (response.nextFollowUpUtc | date:'MMM d, h:mm a')) : 'No follow-up due' }}
+                </small>
+                <small *ngIf="response.priority === 'urgent'" class="priority-urgent">Urgent</small>
+              </span>
+
               <ng-container
                 *ngIf="
                   getReferralForResponse(
@@ -157,6 +313,10 @@
               </ng-container>
             </span>
           </button>
+
+          <div class="response-list-empty" *ngIf="getFilteredResponses(vm.network).length === 0">
+            No care responses match this view.
+          </div>
         </div>
       </section>
 
@@ -229,6 +389,123 @@
               </div>
             </dl>
           </div>
+
+          <section class="case-management">
+            <header class="section-heading">
+              <div>
+                <small>Care ownership</small>
+                <strong>Keep the next action visible</strong>
+              </div>
+              <span
+                [class.case-due--overdue]="isFollowUpDue(selectedResponse)">
+                {{
+                  selectedResponse.nextFollowUpUtc
+                    ? (isFollowUpDue(selectedResponse) ? 'Follow-up overdue' : 'Follow-up scheduled')
+                    : 'No follow-up scheduled'
+                }}
+              </span>
+            </header>
+
+            <div class="case-plan-grid">
+              <label>
+                <span>KingdomOps coordinator</span>
+                <input
+                  type="text"
+                  [value]="caseOwner"
+                  (input)="updateCaseOwner($event)" />
+              </label>
+
+              <label>
+                <span>Priority</span>
+                <select
+                  [value]="casePriority"
+                  (change)="updateCasePriority($event)">
+                  <option value="standard">Standard</option>
+                  <option value="urgent">Urgent</option>
+                </select>
+              </label>
+
+              <label>
+                <span>Next follow-up</span>
+                <input
+                  type="datetime-local"
+                  [value]="nextFollowUpLocal"
+                  (change)="updateNextFollowUp($event)" />
+              </label>
+
+              <button
+                type="button"
+                class="secondary-button"
+                (click)="saveCasePlan(selectedResponse)">
+                Save care plan
+              </button>
+            </div>
+
+            <p class="inline-notice" *ngIf="casePlanNotice">
+              ✓ {{ casePlanNotice }}
+            </p>
+
+            <div
+              class="contact-recorder"
+              *ngIf="selectedResponse.status !== 'connected' && selectedResponse.status !== 'withdrawn'">
+              <div>
+                <small>Direct follow-up</small>
+                <strong>Record a contact attempt</strong>
+              </div>
+
+              <div class="contact-recorder-grid">
+                <label>
+                  <span>Method</span>
+                  <select [value]="contactMethod" (change)="updateContactMethod($event)">
+                    <option value="text">Text</option>
+                    <option value="phone">Phone</option>
+                    <option value="email">Email</option>
+                  </select>
+                </label>
+
+                <label>
+                  <span>Outcome</span>
+                  <select [value]="contactOutcome" (change)="updateContactOutcome($event)">
+                    <option value="reached">Reached</option>
+                    <option value="left-message">Left message</option>
+                    <option value="no-answer">No answer</option>
+                    <option value="wrong-contact">Wrong contact information</option>
+                  </select>
+                </label>
+
+                <label class="contact-note">
+                  <span>Internal note</span>
+                  <textarea
+                    rows="2"
+                    maxlength="300"
+                    [value]="contactNote"
+                    (input)="updateContactNote($event)"></textarea>
+                </label>
+
+                <button
+                  type="button"
+                  class="secondary-button"
+                  (click)="recordContactAttempt(selectedResponse)">
+                  Record attempt
+                </button>
+              </div>
+
+              <p class="inline-notice" *ngIf="contactNotice">
+                ✓ {{ contactNotice }}
+              </p>
+
+              <div class="contact-history" *ngIf="selectedResponse.contactAttempts.length">
+                <article *ngFor="let attempt of selectedResponse.contactAttempts">
+                  <span aria-hidden="true">{{ attempt.method === 'email' ? '@' : attempt.method === 'phone' ? '☎' : 'T' }}</span>
+                  <div>
+                    <strong>{{ getContactOutcomeLabel(attempt.outcome) | titlecase }}</strong>
+                    <small>{{ attempt.method | titlecase }} · {{ attempt.createdUtc | date:'MMM d, h:mm a' }} · {{ attempt.createdBy }}</small>
+                    <p *ngIf="attempt.note">{{ attempt.note }}</p>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </section>
 
           <div class="referral-actions" *ngIf="selectedResponse.status !== 'connected'">
             <button type="button" class="secondary-button" (click)="markUnreachable(selectedResponse)">
@@ -368,6 +645,18 @@
               </p>
 
               <div
+                class="referral-deadline"
+                *ngIf="activeReferral.expiresUtc && (activeReferral.status === 'sent' || activeReferral.status === 'viewed')">
+                <span [class.case-due--overdue]="isReferralOverdue(activeReferral)">
+                  {{ isReferralOverdue(activeReferral) ? 'Response overdue' : 'Response due' }}
+                  {{ activeReferral.expiresUtc | date:'MMM d, h:mm a' }}
+                </span>
+                <small *ngIf="activeReferral.reminderCount">
+                  {{ activeReferral.reminderCount }} reminder{{ activeReferral.reminderCount === 1 ? '' : 's' }} sent
+                </small>
+              </div>
+
+              <div
                 class="accepted-detail"
                 *ngIf="
                   activeReferral.status === 'accepted' ||
@@ -405,6 +694,14 @@
                   type="button"
                   class="secondary-button"
                   *ngIf="activeReferral.status === 'sent' || activeReferral.status === 'viewed'"
+                  (click)="sendReminder(activeReferral)">
+                  Send reminder
+                </button>
+
+                <button
+                  type="button"
+                  class="secondary-button"
+                  *ngIf="activeReferral.status === 'sent' || activeReferral.status === 'viewed'"
                   (click)="expireReferral(activeReferral)">
                   No response · reassign
                 </button>
@@ -426,6 +723,26 @@
                   *ngIf="activeReferral.status === 'connected'">
                   ✓ CTG follow-up complete
                 </span>
+              </div>
+
+              <div
+                class="return-referral"
+                *ngIf="activeReferral.status === 'accepted'">
+                <label>
+                  <span>Return reason</span>
+                  <input
+                    type="text"
+                    maxlength="240"
+                    placeholder="Capacity changed, unable to reach, incorrect fit…"
+                    [value]="returnReason"
+                    (input)="returnReason = $any($event.target).value" />
+                </label>
+                <button
+                  type="button"
+                  class="secondary-button secondary-button--danger"
+                  (click)="returnToQueue(activeReferral)">
+                  Return for reassignment
+                </button>
               </div>
             </section>
           </ng-container>
@@ -449,8 +766,12 @@
                     'partner-card',
                     selectedPartnerId === partner.id
                       ? 'partner-card--selected'
+                      : '',
+                    partner.availability === 'unavailable' || !partner.isActive
+                      ? 'partner-card--unavailable'
                       : ''
                   ]"
+                  [disabled]="partner.availability === 'unavailable' || !partner.isActive"
                   (click)="selectPartner(partner)">
 
                   <span class="partner-card-heading">
@@ -545,6 +866,42 @@
               </section>
             </ng-container>
           </ng-template>
+
+          <section
+            class="referral-history"
+            *ngIf="getReferralHistory(selectedResponse, vm.network).length">
+            <header class="section-heading">
+              <div>
+                <small>Referral history</small>
+                <strong>Every handoff remains traceable</strong>
+              </div>
+              <span>{{ getReferralHistory(selectedResponse, vm.network).length }}</span>
+            </header>
+
+            <article
+              *ngFor="let referral of getReferralHistory(selectedResponse, vm.network)">
+              <span
+                [ngClass]="[
+                  'history-status',
+                  'history-status--' + referral.status
+                ]">
+                {{ getReferralStatusLabel(referral.status) }}
+              </span>
+
+              <div>
+                <strong>
+                  {{ getReferralPartner(referral, vm.network)?.name || 'Care partner' }}
+                </strong>
+                <small>
+                  Sent {{ referral.sentUtc | date:'MMM d, y, h:mm a' }}
+                  <ng-container *ngIf="referral.reassignedFromReferralId">
+                    · Reassigned from #{{ referral.reassignedFromReferralId }}
+                  </ng-container>
+                </small>
+                <p *ngIf="referral.declineReason">{{ referral.declineReason }}</p>
+              </div>
+            </article>
+          </section>
 
           <section
             class="email-preview"
