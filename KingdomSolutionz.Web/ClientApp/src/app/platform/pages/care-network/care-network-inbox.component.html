@@ -189,11 +189,12 @@
             <small *ngIf="item.partner">{{ item.partner.name }}</small>
           </div>
 
-          <a
+          <button
+            type="button"
             class="open-case"
-            [routerLink]="['/app/assignments', item.response.assignmentId, 'care-network']">
+            (click)="openCase(item)">
             Open case <span aria-hidden="true">→</span>
-          </a>
+          </button>
         </article>
 
         <div class="empty-state" *ngIf="getFilteredCases(vm.cases).length === 0">

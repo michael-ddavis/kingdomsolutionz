@@ -417,6 +417,7 @@ p {
   display: inline-flex;
   min-height: 38px;
   padding: 0 12px;
+  font: inherit;
   border: 1px solid var(--kos-border-strong);
   border-radius: var(--kos-radius-sm);
   align-items: center;

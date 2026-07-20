@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   Observable,
   combineLatest,
@@ -24,6 +25,10 @@ import {
 import {
   CareReferralService
 } from '../../shared/services/care-referral.service';
+
+import {
+  SEEDED_SPEAKING_REQUESTS
+} from '../../shared/demo-data/speaking-request.seed';
 
 type CareInboxFilter =
   | 'all'
@@ -89,8 +94,30 @@ export class CareNetworkInboxComponent {
       AssignmentService,
 
     private readonly careReferralService:
-      CareReferralService
+      CareReferralService,
+
+    private readonly router: Router
   ) {}
+
+  openCase(item: CareInboxCase): void {
+    if (!item.assignment && item.response.assignmentId === 2001) {
+      const demoRequest = SEEDED_SPEAKING_REQUESTS.find(
+        request => request.id === 1003
+      );
+
+      if (demoRequest) {
+        this.assignmentService.createOrGetAssignment(
+          demoRequest
+        );
+      }
+    }
+
+    void this.router.navigate([
+      '/app/assignments',
+      item.response.assignmentId,
+      'care-network'
+    ]);
+  }
 
   setQueueFilter(filter: CareInboxFilter): void {
     this.queueFilter = filter;
