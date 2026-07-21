@@ -17,6 +17,9 @@ import {
   WorkspaceService
 } from '../../shared/services/workspace.service';
 import {
+  NotificationCenterService
+} from '../../shared/services/notification-center.service';
+import {
   PlatformShellComponent
 } from './platform-shell.component';
 
@@ -42,6 +45,23 @@ describe('PlatformShellComponent', () => {
           provide: WorkspaceService,
           useValue: {
             selectedWorkspace$: of(workspace)
+          }
+        },
+        {
+          provide: NotificationCenterService,
+          useValue: {
+            notifications$: of([]),
+            unreadCount$: of(0),
+            openRequests$: of(),
+            requestOpen: jasmine.createSpy(
+              'requestOpen'
+            ),
+            markAsRead: jasmine.createSpy(
+              'markAsRead'
+            ),
+            markAllAsRead: jasmine.createSpy(
+              'markAllAsRead'
+            )
           }
         }
       ],

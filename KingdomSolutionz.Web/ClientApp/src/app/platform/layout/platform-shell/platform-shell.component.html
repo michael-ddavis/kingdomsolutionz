@@ -181,10 +181,18 @@
       </div>
 
       <div class="header-right">
-        <span
-          class="notification-status"
-          aria-label="Notifications are not enabled yet"
-          title="Notifications coming soon">
+        <ng-container *ngIf="{ value: unreadNotificationCount$ | async } as unread">
+          <button
+            type="button"
+            class="notification-status"
+            [class.notification-status--unread]="(unread.value || 0) > 0"
+            [attr.aria-label]="
+              (unread.value || 0) > 0
+                ? 'Open notifications. ' + unread.value + ' unread'
+                : 'Open notifications'
+            "
+            [attr.aria-expanded]="notificationCenterOpen"
+            (click)="openNotificationCenter()">
 
           <svg viewBox="0 0 24 24" aria-hidden="true">
 
@@ -195,7 +203,13 @@
             </path>
           </svg>
 
-        </span>
+            <span
+              class="notification-badge"
+              *ngIf="(unread.value || 0) > 0">
+              {{ (unread.value || 0) > 9 ? '9+' : unread.value }}
+            </span>
+          </button>
+        </ng-container>
 
         <div class="user-avatar">
           CT
@@ -212,4 +226,131 @@
       <router-outlet></router-outlet>
     </main>
   </div>
+
+  <app-kos-drawer
+    [open]="notificationCenterOpen"
+    eyebrow="KingdomOps"
+    title="Notifications"
+    width="md"
+    (closed)="closeNotificationCenter()">
+
+    <ng-container *ngIf="notifications$ | async as notifications">
+      <section class="notification-center">
+        <div class="notification-summary">
+          <div>
+            <strong>
+              {{ (unreadNotificationCount$ | async) || 0 }} unread
+            </strong>
+            <span>Updates requiring your attention</span>
+          </div>
+
+          <button
+            type="button"
+            [disabled]="((unreadNotificationCount$ | async) || 0) === 0"
+            (click)="markAllNotificationsAsRead(notifications)">
+            Mark all read
+          </button>
+        </div>
+
+        <div class="notification-filters" role="tablist" aria-label="Notification filters">
+          <button
+            type="button"
+            role="tab"
+            [attr.aria-selected]="notificationFilter === 'all'"
+            [class.notification-filter--active]="notificationFilter === 'all'"
+            (click)="setNotificationFilter('all')">
+            All
+            <span>{{ notifications.length }}</span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            [attr.aria-selected]="notificationFilter === 'unread'"
+            [class.notification-filter--active]="notificationFilter === 'unread'"
+            (click)="setNotificationFilter('unread')">
+            Unread
+            <span>{{ (unreadNotificationCount$ | async) || 0 }}</span>
+          </button>
+        </div>
+
+        <div
+          class="notification-list"
+          *ngIf="
+            getVisibleNotifications(notifications) as visibleNotifications
+          ">
+          <button
+            type="button"
+            *ngFor="let notification of visibleNotifications"
+            [ngClass]="[
+              'notification-item',
+              notification.read ? 'notification-item--read' : '',
+              'notification-item--' + notification.tone
+            ]"
+            (click)="openNotification(notification)">
+
+            <span class="notification-icon" [ngSwitch]="notification.category">
+              <svg *ngSwitchCase="'travel'" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 11.5 21 4l-6.5 16-3.1-6.8L3 11.5Z"></path>
+              </svg>
+              <svg *ngSwitchCase="'documents'" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 3h8l4 4v14H6z"></path>
+                <path d="M14 3v5h4M9 12h6M9 16h6"></path>
+              </svg>
+              <svg *ngSwitchCase="'care'" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 20s-7.5-4.2-7.5-10.3A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.7C19.5 15.8 12 20 12 20z"></path>
+              </svg>
+              <svg *ngSwitchCase="'message'" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 5h16v11H9l-5 4z"></path>
+                <path d="M8 9h8M8 12h5"></path>
+              </svg>
+              <svg *ngSwitchCase="'host'" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="8" r="4"></circle>
+                <path d="M5 20a7 7 0 0 1 14 0"></path>
+              </svg>
+              <svg *ngSwitchCase="'review'" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 4h14v16H5z"></path>
+                <path d="m8 12 2.2 2.2L16 8.5"></path>
+              </svg>
+              <svg *ngSwitchDefault viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="4" y="6" width="16" height="14" rx="2"></rect>
+                <path d="M9 6V4h6v2M4 11h16"></path>
+              </svg>
+            </span>
+
+            <span class="notification-copy">
+              <span class="notification-title-row">
+                <strong>{{ notification.title }}</strong>
+                <time>{{ getNotificationTime(notification.createdUtc) }}</time>
+              </span>
+              <span>{{ notification.description }}</span>
+              <small>{{ notification.context }}</small>
+              <em>{{ notification.actionLabel }} <span aria-hidden="true">→</span></em>
+            </span>
+
+            <span
+              class="unread-dot"
+              *ngIf="!notification.read"
+              aria-label="Unread">
+            </span>
+          </button>
+
+          <div
+            class="notification-empty"
+            *ngIf="visibleNotifications.length === 0">
+            <span aria-hidden="true">✓</span>
+            <strong>
+              {{ notificationFilter === 'unread'
+                ? 'You’re all caught up'
+                : 'No notifications yet' }}
+            </strong>
+            <p>
+              {{ notificationFilter === 'unread'
+                ? 'New host, travel, document and care updates will appear here.'
+                : 'KingdomOps will keep ministry updates organized here.' }}
+            </p>
+          </div>
+        </div>
+      </section>
+    </ng-container>
+  </app-kos-drawer>
 </div>

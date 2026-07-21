@@ -1,5 +1,5 @@
 <ng-container *ngIf="viewModel$ | async as vm">
-  <section class="dashboard">
+  <section class="executive-dashboard">
     <header class="dashboard-heading">
       <div>
         <p class="eyebrow">{{ vm.eyebrow }}</p>
@@ -9,193 +9,215 @@
         </p>
       </div>
 
-      <!-- <button type="button" class="primary-action">
-        <span>+</span>
-        New ministry item
-      </button> -->
+      <div class="today-card">
+        <span>Today</span>
+        <strong>{{ vm.todayLabel }}</strong>
+        <small>{{ vm.workspace.shortName }} command center</small>
+      </div>
     </header>
 
-    <section class="metric-grid" aria-label="Ministry summary">
-      <article *ngFor="let metric of vm.metrics" [ngClass]="[
-          'metric-card',
-          'metric-card--' + metric.tone
-        ]">
+    <section class="metric-grid" aria-label="Executive ministry summary">
+      <button
+        type="button"
+        *ngFor="let metric of vm.metrics"
+        [ngClass]="['metric-card', 'metric-card--' + metric.tone]"
+        (click)="openRoute(metric.route)">
 
         <span class="metric-accent"></span>
-
-        <p class="metric-value">{{ metric.value }}</p>
-        <h2>{{ metric.label }}</h2>
-        <p>{{ metric.detail }}</p>
-      </article>
+        <span class="metric-arrow" aria-hidden="true">↗</span>
+        <strong class="metric-value">{{ metric.value }}</strong>
+        <span class="metric-label">{{ metric.label }}</span>
+        <small>{{ metric.detail }}</small>
+      </button>
     </section>
 
-    <section class="workspace-overview" *ngIf="vm.workspaceOverviews?.length">
-<!-- 
-      <div class="section-heading">
-        <div>
-          <p class="section-eyebrow">Connected workspaces</p>
-          <h2>Your ministry network</h2>
-        </div>
-
-        <button type="button" class="text-button">
-          View network
-        </button>
-      </div> -->
-
-      <div class="workspace-card-grid">
-        <article *ngFor="let workspace of vm.workspaceOverviews" [ngClass]="[
-            'workspace-card',
-            'workspace-card--' + workspace.tone
-          ]">
-
-          <div class="workspace-card-heading">
-            <span class="workspace-card-mark">
-              {{ workspace.name.charAt(0) }}
-            </span>
-
-            <div>
-              <h3>{{ workspace.name }}</h3>
-              <p>{{ workspace.description }}</p>
-            </div>
-          </div>
-
-          <div class="workspace-card-metrics">
-            <div>
-              <strong>{{ workspace.primaryMetric }}</strong>
-              <span>{{ workspace.primaryLabel }}</span>
-            </div>
-
-            <div>
-              <strong>{{ workspace.secondaryMetric }}</strong>
-              <span>{{ workspace.secondaryLabel }}</span>
-            </div>
-          </div>
-        </article>
+    <section class="next-event-banner" *ngIf="vm.nextEvent as nextEvent">
+      <div class="event-date">
+        <span>{{ nextEvent.startDate | date:'MMM':'UTC' }}</span>
+        <strong>{{ nextEvent.startDate | date:'d':'UTC' }}</strong>
       </div>
+
+      <div class="event-copy">
+        <p class="section-eyebrow">Next ministry assignment</p>
+        <h2>{{ nextEvent.eventName }}</h2>
+        <p>
+          {{ nextEvent.organizationName }} · {{ nextEvent.city }},
+          {{ nextEvent.state }}
+        </p>
+      </div>
+
+      <div class="event-readiness">
+        <span>Readiness</span>
+        <strong>{{ nextEvent.readinessPercentage }}%</strong>
+        <div class="readiness-track" aria-label="Assignment readiness">
+          <span [style.width.%]="nextEvent.readinessPercentage"></span>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="event-action"
+        (click)="openRoute('/app/assignments/' + nextEvent.id + '/overview')">
+        Open assignment <span aria-hidden="true">→</span>
+      </button>
     </section>
 
-    <section class="dashboard-columns">
-      <article class="content-panel priority-panel">
-        <div class="section-heading">
+    <section class="dashboard-grid">
+      <article class="dashboard-panel schedule-panel">
+        <header class="panel-heading">
           <div>
-            <p class="section-eyebrow">Action required</p>
-            <h2>Today’s priorities</h2>
+            <p class="section-eyebrow">Your day</p>
+            <h2>Today’s schedule</h2>
           </div>
+          <span class="panel-count">{{ vm.schedule.length }}</span>
+        </header>
 
-          <button type="button" class="text-button" routerLink="/app/assignments">
-            View all
+        <div class="schedule-list" *ngIf="vm.schedule.length; else emptySchedule">
+          <button
+            type="button"
+            *ngFor="let item of vm.schedule"
+            class="schedule-item"
+            (click)="openRoute(item.route)">
+            <span class="schedule-time">{{ item.time }}</span>
+            <span [ngClass]="['schedule-dot', 'schedule-dot--' + item.tone]"></span>
+            <span class="schedule-copy">
+              <strong>{{ item.title }}</strong>
+              <small>{{ item.description }}</small>
+            </span>
+            <span class="item-arrow" aria-hidden="true">›</span>
           </button>
         </div>
 
-        <div class="priority-list">
-          <button type="button" *ngFor="let priority of vm.priorities" [ngClass]="[
-    'priority-item',
-    priority.route
-      ? 'priority-item--clickable'
-      : ''
-  ]" (click)="openPriority(priority)">
-
-            <span [ngClass]="[
-                'priority-indicator',
-                'priority-indicator--' + priority.tone
-              ]">
-            </span>
-
-            <span class="priority-copy">
-              <strong>{{ priority.title }}</strong>
-              <span>{{ priority.description }}</span>
-
-              <span class="priority-meta">
-                {{ priority.workspace }} · {{ priority.due }}
-              </span>
-            </span>
-
-            <span [ngClass]="[
-                'status',
-                'status--' + priority.tone
-              ]">
-
-              {{ priority.status }}
-            </span>
-          </button>
-        </div>
+        <ng-template #emptySchedule>
+          <div class="empty-state compact-empty">
+            <span aria-hidden="true">✓</span>
+            <strong>No scheduled priorities today</strong>
+            <p>Your action queue is clear.</p>
+          </div>
+        </ng-template>
       </article>
 
-      <article class="content-panel activity-panel">
-        <div class="section-heading">
+      <article class="dashboard-panel activity-panel">
+        <header class="panel-heading">
           <div>
             <p class="section-eyebrow">Ministry memory</p>
             <h2>Recent activity</h2>
           </div>
+        </header>
+
+        <div class="activity-list" *ngIf="vm.activities.length; else emptyActivity">
+          <button
+            type="button"
+            *ngFor="let activity of vm.activities; trackBy: trackById"
+            class="activity-item"
+            (click)="openRoute(activity.route)">
+            <span [ngClass]="['activity-mark', 'activity-mark--' + activity.tone]"></span>
+            <span class="activity-copy">
+              <span class="activity-title-row">
+                <strong>{{ activity.title }}</strong>
+                <time>{{ activity.createdUtc | date:'MMM d, h:mm a' }}</time>
+              </span>
+              <span>{{ activity.description }}</span>
+              <small>{{ activity.context }}</small>
+            </span>
+          </button>
         </div>
 
-        <div class="activity-list">
-          <div class="activity-item" *ngFor="let activity of vm.activities">
-
-            <span class="activity-avatar">
-              {{ activity.initials }}
-            </span>
-
-            <div class="activity-copy">
-              <strong>{{ activity.title }}</strong>
-              <p>{{ activity.description }}</p>
-              <span>{{ activity.time }}</span>
-            </div>
+        <ng-template #emptyActivity>
+          <div class="empty-state">
+            <strong>No recent activity</strong>
+            <p>Assignment and host updates will appear here.</p>
           </div>
+        </ng-template>
+      </article>
+
+      <article class="dashboard-panel flights-panel">
+        <header class="panel-heading">
+          <div>
+            <p class="section-eyebrow">Travel desk</p>
+            <h2>Upcoming flights</h2>
+          </div>
+          <button
+            type="button"
+            class="text-action"
+            (click)="openRoute('/app/assignments')">
+            All travel
+          </button>
+        </header>
+
+        <div class="flight-list" *ngIf="vm.flights.length; else emptyFlights">
+          <button
+            type="button"
+            *ngFor="let flight of vm.flights; trackBy: trackById"
+            class="flight-item"
+            (click)="openRoute(flight.route)">
+            <span class="flight-date">
+              <strong>{{ flight.departureDate | date:'d':'UTC' }}</strong>
+              <small>{{ flight.departureDate | date:'MMM':'UTC' }}</small>
+            </span>
+            <span class="flight-copy">
+              <small>{{ flight.direction }} · {{ flight.eventName }}</small>
+              <strong>{{ flight.airports }}</strong>
+              <span>
+                {{ flight.airline }} {{ flight.flightNumber }}
+                <ng-container *ngIf="flight.departureTime">
+                  · {{ flight.departureTime }}
+                </ng-container>
+              </span>
+            </span>
+            <span class="flight-status">Confirmed</span>
+          </button>
+        </div>
+
+        <ng-template #emptyFlights>
+          <div class="empty-state flight-empty">
+            <span class="empty-icon" aria-hidden="true">✈</span>
+            <strong>No upcoming flights confirmed</strong>
+            <p>Approved host travel details will appear here automatically.</p>
+          </div>
+        </ng-template>
+      </article>
+
+      <article class="dashboard-panel quick-actions-panel">
+        <header class="panel-heading">
+          <div>
+            <p class="section-eyebrow">Shortcuts</p>
+            <h2>Quick actions</h2>
+          </div>
+        </header>
+
+        <div class="quick-action-grid">
+          <button
+            type="button"
+            *ngFor="let action of vm.quickActions"
+            [class.quick-action--emphasis]="action.emphasis"
+            class="quick-action"
+            (click)="openRoute(action.route)">
+            <span class="quick-action-icon" [ngSwitch]="action.icon">
+              <svg *ngSwitchCase="'review'" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 4h14v16H5z"></path>
+                <path d="M8 8h8M8 12h8M8 16h5"></path>
+              </svg>
+              <svg *ngSwitchCase="'assignment'" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="4" y="6" width="16" height="14" rx="2"></rect>
+                <path d="M9 6V4h6v2M4 11h16"></path>
+              </svg>
+              <svg *ngSwitchCase="'care'" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 20s-7.5-4.2-7.5-10.3A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.7C19.5 15.8 12 20 12 20z"></path>
+              </svg>
+              <svg *ngSwitchCase="'profile'" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="8" r="4"></circle>
+                <path d="M4.5 20a7.5 7.5 0 0 1 15 0"></path>
+              </svg>
+            </span>
+            <span>
+              <strong>{{ action.label }}</strong>
+              <small>{{ action.description }}</small>
+            </span>
+            <span class="item-arrow" aria-hidden="true">›</span>
+          </button>
         </div>
       </article>
-    </section>
-
-    <section class="assignment-flow-panel">
-      <div>
-        <p class="section-eyebrow">Connected assignment workflow</p>
-        <h2>From ministry moment to meaningful discipleship</h2>
-
-        <p class="assignment-flow-description">
-          KingdomOps keeps responsibility visible as a person moves
-          from an event response into sustained care.
-        </p>
-      </div>
-
-      <div class="assignment-flow-steps">
-        <div class="assignment-flow-step assignment-flow-step--complete">
-          <span>1</span>
-          <strong>Response</strong>
-          <small>Received</small>
-        </div>
-
-        <div class="assignment-flow-line assignment-flow-line--complete"></div>
-
-        <div class="assignment-flow-step assignment-flow-step--complete">
-          <span>2</span>
-          <strong>Handoff</strong>
-          <small>Accepted</small>
-        </div>
-
-        <div class="assignment-flow-line assignment-flow-line--complete"></div>
-
-        <div class="assignment-flow-step assignment-flow-step--current">
-          <span>3</span>
-          <strong>Group</strong>
-          <small>Assigned</small>
-        </div>
-
-        <div class="assignment-flow-line"></div>
-
-        <div class="assignment-flow-step">
-          <span>4</span>
-          <strong>Curriculum</strong>
-          <small>In progress</small>
-        </div>
-
-        <div class="assignment-flow-line"></div>
-
-        <div class="assignment-flow-step">
-          <span>5</span>
-          <strong>Care</strong>
-          <small>Ongoing</small>
-        </div>
-      </div>
     </section>
   </section>
 </ng-container>

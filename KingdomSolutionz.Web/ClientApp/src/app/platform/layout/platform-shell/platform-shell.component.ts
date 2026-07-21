@@ -5,8 +5,13 @@ import {
   OnDestroy,
   ViewChild
 } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+
+import {
+  KingdomNotification
+} from '../../shared/models/notification.model';
 
 import {
   Workspace
@@ -15,6 +20,10 @@ import {
 import {
   WorkspaceService
 } from '../../shared/services/workspace.service';
+
+import {
+  NotificationCenterService
+} from '../../shared/services/notification-center.service';
 
 export interface PlatformNavigationItem {
   label: string;
@@ -44,6 +53,8 @@ export class PlatformShellComponent
   sidebar?: ElementRef<HTMLElement>;
 
   sidebarOpen = false;
+  notificationCenterOpen = false;
+  notificationFilter: 'all' | 'unread' = 'all';
   compactNavigation = this.isCompactNavigation();
 
   readonly selectedWorkspace$:
@@ -58,15 +69,128 @@ export class PlatformShellComponent
       )
     );
 
+  readonly notifications$ =
+    this.notificationCenterService.notifications$;
+
+  readonly unreadNotificationCount$ =
+    this.notificationCenterService.unreadCount$;
+
+  private readonly notificationOpenSubscription =
+    this.notificationCenterService.openRequests$.subscribe(
+      () => this.openNotificationCenter()
+    );
+
   constructor(
     private readonly workspaceService:
-      WorkspaceService
+      WorkspaceService,
+
+    private readonly notificationCenterService:
+      NotificationCenterService,
+
+    private readonly router: Router
   ) { }
 
   ngOnDestroy(): void {
+    this.notificationOpenSubscription.unsubscribe();
+
     document.body.classList.remove(
       'kos-sidebar-open'
     );
+  }
+
+  openNotificationCenter(): void {
+    if (this.sidebarOpen) {
+      this.closeSidebar(false);
+    }
+
+    this.notificationCenterOpen = true;
+  }
+
+  closeNotificationCenter(): void {
+    this.notificationCenterOpen = false;
+  }
+
+  setNotificationFilter(
+    filter: 'all' | 'unread'
+  ): void {
+    this.notificationFilter = filter;
+  }
+
+  getVisibleNotifications(
+    notifications: readonly KingdomNotification[]
+  ): readonly KingdomNotification[] {
+    if (this.notificationFilter === 'unread') {
+      return notifications.filter(
+        notification => !notification.read
+      );
+    }
+
+    return notifications;
+  }
+
+  openNotification(
+    notification: KingdomNotification
+  ): void {
+    this.notificationCenterService.markAsRead(
+      notification.id
+    );
+    this.closeNotificationCenter();
+    this.router.navigateByUrl(notification.route);
+  }
+
+  markAllNotificationsAsRead(
+    notifications: readonly KingdomNotification[]
+  ): void {
+    this.notificationCenterService.markAllAsRead(
+      notifications
+    );
+  }
+
+  getNotificationTime(createdUtc: string): string {
+    const timestamp = new Date(createdUtc).getTime();
+
+    if (!Number.isFinite(timestamp)) {
+      return '';
+    }
+
+    const elapsedMinutes = Math.max(
+      0,
+      Math.floor(
+        (Date.now() - timestamp) / 60_000
+      )
+    );
+
+    if (elapsedMinutes < 1) {
+      return 'Just now';
+    }
+
+    if (elapsedMinutes < 60) {
+      return `${elapsedMinutes}m ago`;
+    }
+
+    const elapsedHours = Math.floor(
+      elapsedMinutes / 60
+    );
+
+    if (elapsedHours < 24) {
+      return `${elapsedHours}h ago`;
+    }
+
+    const elapsedDays = Math.floor(
+      elapsedHours / 24
+    );
+
+    if (elapsedDays < 7) {
+      return `${elapsedDays}d ago`;
+    }
+
+    return new Intl.DateTimeFormat(
+      'en-US',
+      {
+        month: 'short',
+        day: 'numeric'
+      }
+    ).format(new Date(createdUtc));
   }
 
   toggleSidebar(): void {
