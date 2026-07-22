@@ -9,12 +9,12 @@
   --kos-navy-900: var(--kos-obsidian-900);
   --kos-navy-800: var(--kos-obsidian-800);
 
-  --kos-champagne-700: #765820;
-  --kos-champagne-600: #9a7532;
-  --kos-champagne-500: #c5a15a;
-  --kos-champagne-300: #ddc98f;
-  --kos-champagne-200: #eadcad;
-  --kos-champagne-100: #f7f0df;
+  --kos-champagne-700: #806934;
+  --kos-champagne-600: #9d814b;
+  --kos-champagne-500: #b89a62;
+  --kos-champagne-300: #d8c59f;
+  --kos-champagne-200: #eadfc9;
+  --kos-champagne-100: #f6f1e8;
   --kos-gold-500: var(--kos-champagne-500);
   --kos-gold-100: var(--kos-champagne-100);
 
@@ -55,24 +55,24 @@
   --kos-red-100: #f8eae9;
 
   // Surfaces
-  --kos-page: #f2efe8;
-  --kos-surface: #fffdf9;
+  --kos-page: #f5f5f7;
+  --kos-surface: #ffffff;
   --kos-surface-elevated: #ffffff;
-  --kos-surface-soft: #f8f4ec;
-  --kos-surface-muted: #eee9df;
+  --kos-surface-soft: #fafafa;
+  --kos-surface-muted: #f0f1f3;
   --kos-surface-dark: var(--kos-obsidian-900);
 
   // Text
-  --kos-text: #1c2635;
-  --kos-text-secondary: #4e5968;
-  --kos-text-muted: #68717e;
-  --kos-text-faint: #68717e;
+  --kos-text: #1d1d1f;
+  --kos-text-secondary: #5f6065;
+  --kos-text-muted: #73747a;
+  --kos-text-faint: #85868b;
   --kos-text-on-dark: #f8f5ee;
   --kos-text-on-dark-muted: #b9c2cf;
 
   // Borders
-  --kos-border: #ded8cc;
-  --kos-border-strong: #cbc1b0;
+  --kos-border: rgb(16 24 39 / 9%);
+  --kos-border-strong: rgb(16 24 39 / 16%);
   --kos-border-dark: rgb(255 255 255 / 13%);
 
   // Typography
@@ -94,10 +94,10 @@
   --kos-space-7: 32px;
 
   // Shape
-  --kos-radius-sm: 7px;
-  --kos-radius-md: 10px;
-  --kos-radius-lg: 13px;
-  --kos-radius-xl: 16px;
+  --kos-radius-sm: 10px;
+  --kos-radius-md: 14px;
+  --kos-radius-lg: 18px;
+  --kos-radius-xl: 24px;
 
   // Controls and focus
   --kos-control-height: 44px;
@@ -107,8 +107,8 @@
   // Shadows
   --kos-shadow-xs: 0 1px 2px rgb(17 26 41 / 5%);
   --kos-shadow-sm:
-    0 2px 8px rgb(17 26 41 / 5%),
-    0 1px 2px rgb(118 88 32 / 4%);
+    0 1px 2px rgb(16 24 39 / 4%),
+    0 7px 20px rgb(16 24 39 / 4%);
   --kos-shadow-md:
     0 16px 36px rgb(17 26 41 / 10%),
     0 2px 5px rgb(118 88 32 / 5%);
@@ -126,7 +126,7 @@
   --kos-ease-exit: cubic-bezier(0.4, 0, 1, 1);
 
   // Layout
-  --kos-sidebar-width: 272px;
-  --kos-header-height: 74px;
-  --kos-content-max: 1420px;
+  --kos-sidebar-width: 252px;
+  --kos-header-height: 72px;
+  --kos-content-max: 1260px;
 }
