@@ -172,6 +172,7 @@ export interface AssignmentHostCoordination {
   prayerFocus: string;
   promotionalRequirements: string;
   hostNotes: string;
+  changedFields: string;
 }
 
 export interface AssignmentHostCoordinationInput {
@@ -297,6 +298,7 @@ export type AssignmentActivityType =
   | 'host-coordination-requested'
   | 'host-coordination-submitted'
   | 'host-coordination-reviewed'
+  | 'host-coordination-changes-requested'
   | 'assignment-closed'
   | 'note-added';
 

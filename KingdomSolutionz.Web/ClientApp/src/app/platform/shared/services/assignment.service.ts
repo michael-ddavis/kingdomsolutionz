@@ -1131,7 +1131,8 @@ export class AssignmentService {
         eventSchedule: '',
         prayerFocus: '',
         promotionalRequirements: '',
-        hostNotes: ''
+        hostNotes: '',
+        changedFields: ''
       },
       documentLibrary:
         this.createEmptyDocumentLibrary(),
