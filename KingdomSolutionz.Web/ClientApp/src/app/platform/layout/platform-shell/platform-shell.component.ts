@@ -24,6 +24,10 @@ import {
 import {
   NotificationCenterService
 } from '../../shared/services/notification-center.service';
+import {
+  BrandPalette,
+  BrandPaletteService
+} from '../../shared/services/brand-palette.service';
 
 export interface PlatformNavigationItem {
   label: string;
@@ -54,6 +58,11 @@ export class PlatformShellComponent
 
   sidebarOpen = false;
   notificationCenterOpen = false;
+  appearanceOpen = false;
+  paletteSaved = false;
+  savedPalette!: BrandPalette;
+  draftPalette!: BrandPalette;
+  readonly palettePresets = this.brandPaletteService.presets;
   notificationFilter: 'all' | 'unread' = 'all';
   compactNavigation = this.isCompactNavigation();
 
@@ -80,6 +89,12 @@ export class PlatformShellComponent
       () => this.openNotificationCenter()
     );
 
+  private readonly workspacePaletteSubscription =
+    this.workspaceService.selectedWorkspace$.subscribe(workspace => {
+      this.savedPalette = this.brandPaletteService.activate(workspace.id);
+      this.draftPalette = { ...this.savedPalette };
+    });
+
   constructor(
     private readonly workspaceService:
       WorkspaceService,
@@ -87,15 +102,57 @@ export class PlatformShellComponent
     private readonly notificationCenterService:
       NotificationCenterService,
 
+    private readonly brandPaletteService:
+      BrandPaletteService,
+
     private readonly router: Router
   ) { }
 
   ngOnDestroy(): void {
     this.notificationOpenSubscription.unsubscribe();
+    this.workspacePaletteSubscription.unsubscribe();
 
     document.body.classList.remove(
       'kos-sidebar-open'
     );
+  }
+
+  openAppearance(): void {
+    this.closeNotificationCenter();
+    this.paletteSaved = false;
+    this.draftPalette = { ...this.savedPalette };
+    this.appearanceOpen = true;
+  }
+
+  closeAppearance(): void {
+    this.appearanceOpen = false;
+    this.brandPaletteService.preview(this.savedPalette);
+  }
+
+  selectPalettePreset(palette: BrandPalette): void {
+    this.paletteSaved = false;
+    this.draftPalette = { ...palette };
+    this.brandPaletteService.preview(this.draftPalette);
+  }
+
+  updatePaletteColor(field: 'primary' | 'secondary' | 'accent' | 'sidebar' | 'page', value: string): void {
+    this.paletteSaved = false;
+    this.draftPalette = { ...this.draftPalette, id: 'custom', name: 'Custom palette', [field]: value };
+    this.brandPaletteService.preview(this.draftPalette);
+  }
+
+  savePalette(): void {
+    this.savedPalette = this.draftPalette.id === 'custom'
+      ? this.brandPaletteService.save(this.draftPalette)
+      : this.brandPaletteService.savePreset(this.draftPalette);
+    this.draftPalette = { ...this.savedPalette };
+    this.paletteSaved = true;
+  }
+
+  restoreDefaultPalette(): void {
+    this.savedPalette = this.brandPaletteService.reset();
+    this.draftPalette = { ...this.savedPalette };
+    this.paletteSaved = false;
   }
 
   openNotificationCenter(): void {

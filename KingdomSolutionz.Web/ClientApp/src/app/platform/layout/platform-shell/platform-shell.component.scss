@@ -838,3 +838,54 @@ app-workspace-switcher {
     padding: 24px 14px 38px;
   }
 }
+.appearance-button {
+  display: grid;
+  width: var(--kos-control-height);
+  height: var(--kos-control-height);
+  padding: 0;
+  border: 1px solid var(--kos-border);
+  border-radius: var(--kos-radius-md);
+  place-items: center;
+  color: var(--kos-text-muted);
+  cursor: pointer;
+  background: var(--kos-surface);
+}
+
+.appearance-button svg { width: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+.appearance-button circle { fill: currentColor; stroke: none; }
+.appearance-button:hover { color: var(--kos-blue-600); border-color: var(--kos-champagne-300); background: var(--kos-blue-100); }
+
+.palette-editor { display: grid; gap: 20px; padding: 2px 0 24px; }
+.palette-intro { padding: 16px; border: 1px solid var(--kos-border); border-radius: var(--kos-radius-md); background: var(--kos-surface-soft); }
+.palette-intro p { margin: 6px 0 0; color: var(--kos-text-muted); font-size: var(--kos-text-sm); line-height: 1.55; }
+.palette-presets { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.palette-preset { appearance: none; }
+.palette-presets button { display: grid; gap: 8px; min-height: 92px; padding: 12px; border: 1px solid var(--kos-border); border-radius: var(--kos-radius-md); text-align: left; color: var(--kos-text); cursor: pointer; background: var(--kos-surface); }
+.palette-presets button:hover, .palette-presets .palette-preset--selected { border-color: var(--kos-blue-600); box-shadow: 0 0 0 2px var(--kos-blue-100); }
+.palette-presets small { color: var(--kos-blue-600); font-size: 11px; font-weight: 800; }
+.preset-swatches { display: grid; grid-template-columns: repeat(4, 1fr); height: 24px; overflow: hidden; border-radius: 7px; }
+.preset-swatches i { display: block; }
+.custom-colors { display: grid; gap: 4px; }
+.custom-colors label { display: flex; min-height: 52px; padding: 0 4px; border-bottom: 1px solid var(--kos-border); align-items: center; justify-content: space-between; gap: 16px; font-size: var(--kos-text-sm); font-weight: 700; }
+.palette-section-heading { display: flex; margin-bottom: 4px; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.palette-section-heading div { display: grid; gap: 3px; }
+.palette-section-heading span { color: var(--kos-text-muted); font-size: 11px; }
+.palette-section-heading button { border: 0; color: var(--kos-blue-600); font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; background: transparent; }
+.color-control { display: flex; align-items: center; gap: 9px; }
+.color-control input { width: 34px; height: 34px; padding: 2px; border: 1px solid var(--kos-border); border-radius: 9px; cursor: pointer; background: white; }
+.color-control code { min-width: 66px; color: var(--kos-text-muted); font-size: 11px; text-transform: uppercase; }
+.palette-preview { display: grid; grid-template-columns: 76px 1fr; min-height: 112px; overflow: hidden; border: 1px solid var(--kos-border); border-radius: var(--kos-radius-lg); box-shadow: var(--kos-shadow-sm); }
+.palette-preview > span { display: block; }
+.palette-preview > div { display: grid; grid-template-columns: 34px 34px 1fr; grid-template-rows: 34px auto; padding: 18px; align-content: center; gap: 8px; }
+.palette-preview i { display: block; border-radius: 10px; }
+.palette-preview b { align-self: center; font-size: var(--kos-text-sm); }
+.palette-preview small { grid-column: 1 / -1; color: var(--kos-text-muted); }
+.palette-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.palette-actions > span { color: var(--kos-green-600); font-size: var(--kos-text-xs); font-weight: 800; opacity: 0; transition: opacity 180ms; }
+.palette-actions .palette-saved--visible { opacity: 1; }
+.palette-save { min-height: var(--kos-control-height); padding: 0 20px; border: 0; border-radius: var(--kos-radius-sm); color: white; font: inherit; font-weight: 800; cursor: pointer; background: var(--kos-blue-600); }
+
+@media (max-width: 520px) {
+  .palette-presets { grid-template-columns: 1fr; }
+  .user-copy { display: none; }
+}

@@ -181,6 +181,17 @@
       </div>
 
       <div class="header-right">
+        <button
+          type="button"
+          class="appearance-button"
+          aria-label="Customize ministry appearance"
+          [attr.aria-expanded]="appearanceOpen"
+          (click)="openAppearance()">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3a9 9 0 1 0 0 18h1.3a1.7 1.7 0 0 0 0-3.4h-.8a1.4 1.4 0 0 1 0-2.8H15a6 6 0 0 0 0-12H12Z"></path>
+            <circle cx="7.5" cy="10" r=".8"></circle><circle cx="10" cy="6.8" r=".8"></circle><circle cx="14" cy="6.8" r=".8"></circle>
+          </svg>
+        </button>
         <ng-container *ngIf="{ value: unreadNotificationCount$ | async } as unread">
           <button
             type="button"
@@ -352,5 +363,68 @@
         </div>
       </section>
     </ng-container>
+  </app-kos-drawer>
+
+  <app-kos-drawer
+    [open]="appearanceOpen"
+    eyebrow="Workspace settings"
+    title="Brand palette"
+    width="md"
+    (closed)="closeAppearance()">
+    <section class="palette-editor" *ngIf="draftPalette">
+      <div class="palette-intro">
+        <strong>Make this workspace feel like your ministry.</strong>
+        <p>Choose a polished preset or adjust the colors below. Your layout and readability stay protected.</p>
+      </div>
+
+      <div class="palette-presets">
+        <button type="button" *ngFor="let preset of palettePresets"
+          [class.palette-preset--selected]="draftPalette.id === preset.id"
+          (click)="selectPalettePreset(preset)">
+          <span class="preset-swatches">
+            <i [style.background]="preset.sidebar"></i><i [style.background]="preset.primary"></i>
+            <i [style.background]="preset.secondary"></i><i [style.background]="preset.page"></i>
+          </span>
+          <strong>{{ preset.name }}</strong>
+          <small *ngIf="draftPalette.id === preset.id">Selected</small>
+        </button>
+      </div>
+
+      <div class="custom-colors">
+        <div class="palette-section-heading">
+          <div><strong>Custom colors</strong><span>Changes preview instantly</span></div>
+          <button type="button" (click)="restoreDefaultPalette()">Restore default</button>
+        </div>
+        <label *ngFor="let color of [
+          { key: 'primary', label: 'Primary action' },
+          { key: 'secondary', label: 'Secondary accent' },
+          { key: 'accent', label: 'Highlight' },
+          { key: 'sidebar', label: 'Sidebar' },
+          { key: 'page', label: 'Page background' }
+        ]">
+          <span>{{ color.label }}</span>
+          <span class="color-control">
+            <input type="color" [value]="$any(draftPalette)[color.key]"
+              (input)="updatePaletteColor($any(color.key), $any($event.target).value)">
+            <code>{{ $any(draftPalette)[color.key] }}</code>
+          </span>
+        </label>
+      </div>
+
+      <div class="palette-preview">
+        <span [style.background]="draftPalette.sidebar"></span>
+        <div [style.background]="draftPalette.page">
+          <i [style.background]="draftPalette.primary"></i>
+          <i [style.background]="draftPalette.secondary"></i>
+          <b>Ministry workspace preview</b>
+          <small>Clean surfaces, your chosen accents.</small>
+        </div>
+      </div>
+
+      <footer class="palette-actions">
+        <span [class.palette-saved--visible]="paletteSaved">✓ Palette saved</span>
+        <button type="button" class="palette-save" (click)="savePalette()">Save palette</button>
+      </footer>
+    </section>
   </app-kos-drawer>
 </div>
