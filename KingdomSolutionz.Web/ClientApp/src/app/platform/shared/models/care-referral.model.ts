@@ -24,7 +24,8 @@ export type MinistryResponseStatus =
   | 'referred'
   | 'connected'
   | 'unreachable'
-  | 'withdrawn';
+  | 'withdrawn'
+  | 'closed';
 
 export type MinistryResponseConsentSource =
   | 'qr-form'

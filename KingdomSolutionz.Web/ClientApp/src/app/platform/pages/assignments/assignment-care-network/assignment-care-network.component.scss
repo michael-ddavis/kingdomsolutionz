@@ -1142,6 +1142,60 @@ p {
   margin: 5px 0 0;
 }
 
+.case-closure,
+.closed-case-summary {
+  border: 1px solid var(--kos-border);
+  border-radius: var(--kos-radius-lg);
+  margin-top: 16px;
+  padding: 18px;
+}
+
+.case-closure {
+  background: var(--kos-surface-subtle);
+  display: grid;
+  gap: 14px;
+}
+
+.case-closure h4,
+.case-closure p {
+  margin: 0;
+}
+
+.case-closure label,
+.case-closure label span,
+.closed-case-summary small,
+.closed-case-summary strong {
+  display: block;
+}
+
+.case-closure label span {
+  color: var(--kos-text-muted);
+  font-size: var(--kos-text-xs);
+  font-weight: 800;
+  margin-bottom: 7px;
+}
+
+.case-closure textarea {
+  width: 100%;
+}
+
+.closed-case-summary {
+  align-items: center;
+  background: var(--kos-surface-subtle);
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.closed-case-summary small {
+  color: var(--kos-text-muted);
+  margin-bottom: 5px;
+}
+
+.closed-case-summary strong {
+  color: var(--kos-text);
+}
+
 @keyframes kos-care-expand {
   from {
     opacity: 0;

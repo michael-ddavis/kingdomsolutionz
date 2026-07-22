@@ -21,7 +21,8 @@ import {
   CreateCarePartnerInput,
   CreateMinistryResponseInput,
   MinistryResponse,
-  MinistryResponseConsentSource
+  MinistryResponseConsentSource,
+  MinistryResponseStatus
 } from '../models/care-referral.model';
 
 import {
@@ -611,6 +612,113 @@ export class CareReferralService {
     );
   }
 
+  closeCase(
+    responseId: number,
+    closureNote: string,
+    actor = 'Michael Davis'
+  ): boolean {
+    const state = this.stateSubject.value;
+    const response = state.responses.find(
+      item => item.id === responseId
+    );
+    const note = closureNote.trim();
+
+    if (!response || !note || response.closedUtc) {
+      return false;
+    }
+
+    const closedUtc = new Date().toISOString();
+
+    this.publish({
+      ...state,
+      responses: state.responses.map(item =>
+        item.id === responseId
+          ? {
+              ...item,
+              status: 'closed' as const,
+              nextFollowUpUtc: null,
+              closedUtc,
+              closureNote: note
+            }
+          : item
+      ),
+      referrals: state.referrals.map(referral =>
+        referral.responseId === responseId &&
+        !['declined', 'expired', 'cancelled', 'connected']
+          .includes(referral.status)
+          ? {
+              ...referral,
+              status: 'cancelled' as const,
+              respondedUtc: closedUtc,
+              declineReason: `Care case closed: ${note}`
+            }
+          : referral
+      )
+    });
+
+    this.assignmentService.addCareReferralActivity(
+      response.assignmentId,
+      {
+        type: 'note-added',
+        tone: 'neutral',
+        title: 'Care case closed',
+        description: `${response.personName}'s care case was closed. ${note}`,
+        actor,
+        section: 'follow-up'
+      }
+    );
+
+    return true;
+  }
+
+  reopenCase(
+    responseId: number,
+    actor = 'Michael Davis'
+  ): boolean {
+    const state = this.stateSubject.value;
+    const response = state.responses.find(
+      item => item.id === responseId
+    );
+
+    if (!response || response.status !== 'closed') {
+      return false;
+    }
+
+    const status: MinistryResponseStatus =
+      response.consentToShare
+        ? 'ready-to-refer'
+        : 'needs-review';
+
+    this.publish({
+      ...state,
+      responses: state.responses.map(item =>
+        item.id === responseId
+          ? {
+              ...item,
+              status,
+              closedUtc: null,
+              closureNote: '',
+              nextFollowUpUtc: new Date().toISOString()
+            }
+          : item
+      )
+    });
+
+    this.assignmentService.addCareReferralActivity(
+      response.assignmentId,
+      {
+        type: 'note-added',
+        tone: 'attention',
+        title: 'Care case reopened',
+        description: `${response.personName}'s care case returned to the active follow-up queue.`,
+        actor,
+        section: 'follow-up'
+      }
+    );
+
+    return true;
+  }
+
   verifyConsent(
     responseId: number,
     source: Extract<
@@ -624,7 +732,7 @@ export class CareReferralService {
       item => item.id === responseId
     );
 
-    if (!response || response.status === 'connected') {
+    if (!response || response.closedUtc) {
       return;
     }
 
@@ -860,7 +968,7 @@ export class CareReferralService {
 
     if (
       !response ||
-      ['connected', 'withdrawn'].includes(response.status)
+      ['connected', 'withdrawn', 'closed'].includes(response.status)
     ) {
       return undefined;
     }

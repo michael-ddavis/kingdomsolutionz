@@ -507,7 +507,7 @@
             </div>
           </section>
 
-          <div class="referral-actions" *ngIf="selectedResponse.status !== 'connected'">
+          <div class="referral-actions" *ngIf="!selectedResponse.closedUtc">
             <button type="button" class="secondary-button" (click)="markUnreachable(selectedResponse)">
               Mark unreachable
             </button>
@@ -527,7 +527,45 @@
               (click)="requestConsentAction(selectedResponse, 'withdraw')">
               Withdraw consent
             </button>
+
+            <button
+              type="button"
+              class="secondary-button secondary-button--danger"
+              (click)="requestCloseCase()">
+              Close case
+            </button>
           </div>
+
+          <section class="case-closure" *ngIf="closeCaseVisible && !selectedResponse.closedUtc" aria-live="polite">
+            <div>
+              <p class="eyebrow">Close care case</p>
+              <h4>Confirm why active follow-up is ending</h4>
+              <p>Closing removes the case from active work, cancels any open referral, and preserves the full history.</p>
+            </div>
+            <label>
+              <span>Closure reason *</span>
+              <textarea rows="3" maxlength="500" [value]="closeCaseReason" (input)="updateCloseCaseReason($event)" placeholder="For example: Care completed outside the network, duplicate request, or no further follow-up requested."></textarea>
+            </label>
+            <p class="form-error" *ngIf="closeCaseError">{{ closeCaseError }}</p>
+            <div class="confirmation-actions">
+              <button type="button" class="secondary-button" (click)="cancelCloseCase()">Cancel</button>
+              <button type="button" class="danger-button" (click)="confirmCloseCase(selectedResponse)">Close case</button>
+            </div>
+          </section>
+
+          <section class="closed-case-summary" *ngIf="selectedResponse.closedUtc">
+            <div>
+              <small>Case closed {{ selectedResponse.closedUtc | date:'MMM d, y, h:mm a' }}</small>
+              <strong>{{ selectedResponse.closureNote }}</strong>
+            </div>
+            <button
+              *ngIf="selectedResponse.status === 'closed'"
+              type="button"
+              class="secondary-button"
+              (click)="reopenCase(selectedResponse)">
+              Reopen case
+            </button>
+          </section>
 
           <section
             class="consent-confirmation"

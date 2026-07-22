@@ -330,4 +330,44 @@ describe('CareReferralService', () => {
       )
     ).toBeTrue();
   });
+
+  it('closes a care case with a reason and can reopen it', async () => {
+    const referral = service.sendReferral(
+      4101,
+      302,
+      'Please accept this care referral.'
+    );
+
+    expect(service.closeCase(
+      4101,
+      'The person completed care through their home church.'
+    )).toBeTrue();
+
+    let network = await firstValueFrom(
+      service.getAssignmentNetwork(2001).pipe(take(1))
+    );
+    let response = network.responses.find(
+      item => item.id === 4101
+    );
+
+    expect(response?.status).toBe('closed');
+    expect(response?.closedUtc).not.toBeNull();
+    expect(response?.closureNote).toContain('home church');
+    expect(network.referrals.find(
+      item => item.id === referral?.id
+    )?.status).toBe('cancelled');
+
+    expect(service.reopenCase(4101)).toBeTrue();
+
+    network = await firstValueFrom(
+      service.getAssignmentNetwork(2001).pipe(take(1))
+    );
+    response = network.responses.find(
+      item => item.id === 4101
+    );
+
+    expect(response?.status).toBe('ready-to-refer');
+    expect(response?.closedUtc).toBeNull();
+    expect(response?.nextFollowUpUtc).not.toBeNull();
+  });
 });

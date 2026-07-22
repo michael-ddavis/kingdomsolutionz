@@ -229,6 +229,8 @@ export class CareNetworkInboxComponent {
         return 'Closed · unreachable';
       case 'withdrawn':
         return 'Closed · consent withdrawn';
+      case 'closed':
+        return 'Closed';
     }
   }
 
@@ -426,7 +428,8 @@ export class CareNetworkInboxComponent {
     return [
       'connected',
       'unreachable',
-      'withdrawn'
+      'withdrawn',
+      'closed'
     ].includes(response.status);
   }
 

@@ -86,6 +86,10 @@ export class AssignmentCareNetworkComponent {
   contactNote = '';
   contactNotice = '';
 
+  closeCaseVisible = false;
+  closeCaseReason = '';
+  closeCaseError = '';
+
   returnReason = '';
   partnerFormVisible = false;
   partnerError = '';
@@ -381,6 +385,46 @@ export class AssignmentCareNetworkComponent {
     );
   }
 
+  requestCloseCase(): void {
+    this.closeCaseVisible = true;
+    this.closeCaseReason = '';
+    this.closeCaseError = '';
+  }
+
+  cancelCloseCase(): void {
+    this.closeCaseVisible = false;
+    this.closeCaseReason = '';
+    this.closeCaseError = '';
+  }
+
+  updateCloseCaseReason(event: Event): void {
+    this.closeCaseReason =
+      (event.target as HTMLTextAreaElement).value;
+    this.closeCaseError = '';
+  }
+
+  confirmCloseCase(response: MinistryResponse): void {
+    if (!this.closeCaseReason.trim()) {
+      this.closeCaseError =
+        'Enter a closure reason before closing this case.';
+      return;
+    }
+
+    if (this.careReferralService.closeCase(
+      response.id,
+      this.closeCaseReason
+    )) {
+      this.cancelCloseCase();
+      this.queueFilter = 'closed';
+    }
+  }
+
+  reopenCase(response: MinistryResponse): void {
+    if (this.careReferralService.reopenCase(response.id)) {
+      this.queueFilter = 'action';
+    }
+  }
+
   updateCaseOwner(event: Event): void {
     this.caseOwner =
       (event.target as HTMLInputElement).value;
@@ -644,7 +688,8 @@ export class AssignmentCareNetworkComponent {
           return [
             'connected',
             'unreachable',
-            'withdrawn'
+            'withdrawn',
+            'closed'
           ].includes(response.status);
 
         case 'all':
@@ -677,7 +722,8 @@ export class AssignmentCareNetworkComponent {
       [
         'connected',
         'unreachable',
-        'withdrawn'
+        'withdrawn',
+        'closed'
       ].includes(response.status)
     ) {
       return false;
@@ -725,6 +771,9 @@ export class AssignmentCareNetworkComponent {
 
       case 'withdrawn':
         return 'Consent withdrawn';
+
+      case 'closed':
+        return 'Closed';
     }
   }
 
