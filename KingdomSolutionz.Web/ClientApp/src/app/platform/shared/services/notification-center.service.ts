@@ -493,6 +493,11 @@ export class NotificationCenterService {
     assignment: Assignment
   ): NotificationDraft[] {
     const coordination = assignment.hostCoordination;
+
+    if (!coordination) {
+      return [];
+    }
+
     const createdUtc =
       coordination.lastSavedUtc ??
       coordination.submittedUtc;
@@ -507,8 +512,17 @@ export class NotificationCenterService {
       ''
     );
 
+    const changedFields =
+      coordination.changedFields ?? [];
+
+    const prayerFocus =
+      coordination.prayerFocus?.trim() ?? '';
+
+    const hostNotes =
+      coordination.hostNotes?.trim() ?? '';
+
     if (
-      coordination.changedFields.includes(
+      changedFields.includes(
         'Hotel accommodations'
       )
     ) {
@@ -528,15 +542,14 @@ export class NotificationCenterService {
       });
     }
 
-    if (coordination.prayerFocus.trim()) {
+    if (prayerFocus) {
       notifications.push({
         id:
           `assignment-${assignment.id}-prayer-focus-${cycleId}`,
         category: 'host',
         tone: 'info',
         title: 'Prayer focus added',
-        description:
-          coordination.prayerFocus.trim(),
+        description: prayerFocus,
         context: assignment.eventName,
         createdUtc,
         route:
@@ -545,14 +558,14 @@ export class NotificationCenterService {
       });
     }
 
-    if (coordination.hostNotes.trim()) {
+    if (hostNotes) {
       notifications.push({
         id:
           `assignment-${assignment.id}-host-message-${cycleId}`,
         category: 'message',
         tone: 'info',
         title: 'Host sent a message',
-        description: coordination.hostNotes.trim(),
+        description: hostNotes,
         context: assignment.eventName,
         createdUtc,
         route:

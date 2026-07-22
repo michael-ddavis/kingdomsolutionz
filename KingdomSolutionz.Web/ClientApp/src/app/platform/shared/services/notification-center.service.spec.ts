@@ -58,9 +58,38 @@ describe('NotificationCenterService', () => {
     ).toContain(initialNotifications[0].id);
   });
 
-  function createService(): NotificationCenterService {
+  it('supports legacy assignments without newer host coordination fields', async () => {
+    const legacyAssignment = {
+      id: 2001,
+      eventName: 'Legacy ministry assignment',
+      createdUtc: '2026-07-01T12:00:00.000Z',
+      hostCoordination: {
+        submittedUtc: '2026-07-02T12:00:00.000Z',
+        lastSavedUtc: null
+      },
+      invitation: {
+        agreementStatus: 'not-started'
+      }
+    } as unknown as Assignment;
+
+    const service = createService([
+      legacyAssignment
+    ]);
+
+    const notifications = await firstValueFrom(
+      service.notifications$
+    );
+
+    expect(notifications).toEqual([]);
+  });
+
+  function createService(
+    assignments: readonly Assignment[] = []
+  ): NotificationCenterService {
     const assignmentsSubject =
-      new BehaviorSubject<readonly Assignment[]>([]);
+      new BehaviorSubject<readonly Assignment[]>(
+        assignments
+      );
 
     const requestsSubject = new BehaviorSubject(
       SEEDED_SPEAKING_REQUESTS
