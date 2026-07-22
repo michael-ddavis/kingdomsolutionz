@@ -191,18 +191,18 @@ export class PlatformDashboardComponent {
 
     const pendingCoordinationReviews = activeAssignments.filter(
       assignment =>
-        assignment.hostCoordination.status === 'submitted'
+        assignment.hostCoordination?.status === 'submitted'
     );
 
     const outstandingTasks = activeAssignments.flatMap(
-      assignment => assignment.stages.flatMap(
+      assignment => (assignment.stages ?? []).flatMap(
         stage => stage.tasks.filter(
           task => task.status !== 'complete'
         )
       )
     );
 
-    const careCasesWaiting = careNetwork.responses.filter(
+    const careCasesWaiting = (careNetwork.responses ?? []).filter(
       response => this.isCareCaseWaiting(response)
     );
 
@@ -443,7 +443,7 @@ export class PlatformDashboardComponent {
     requests: readonly SpeakingRequest[]
   ): DashboardActivity[] {
     const assignmentActivities = assignments.flatMap(
-      assignment => assignment.activityLog.items.map(
+      assignment => (assignment.activityLog?.items ?? []).map(
         activity => this.fromAssignmentActivity(
           assignment,
           activity
@@ -452,7 +452,7 @@ export class PlatformDashboardComponent {
     );
 
     const requestActivities = requests.flatMap(
-      request => request.communications.map(
+      request => (request.communications ?? []).map(
         communication => this.fromRequestActivity(
           request,
           communication
@@ -545,18 +545,24 @@ export class PlatformDashboardComponent {
   private buildFlights(
     assignments: readonly Assignment[]
   ): DashboardFlight[] {
-    return assignments.flatMap(assignment => [
-      this.fromFlight(
-        assignment,
-        assignment.travelItinerary.outboundFlight,
-        'Outbound'
-      ),
-      this.fromFlight(
-        assignment,
-        assignment.travelItinerary.returnFlight,
-        'Return'
-      )
-    ])
+    return assignments.flatMap(assignment => {
+      if (!assignment.travelItinerary) {
+        return [];
+      }
+
+      return [
+        this.fromFlight(
+          assignment,
+          assignment.travelItinerary.outboundFlight,
+          'Outbound'
+        ),
+        this.fromFlight(
+          assignment,
+          assignment.travelItinerary.returnFlight,
+          'Return'
+        )
+      ];
+    })
       .filter(
         (flight): flight is DashboardFlight =>
           flight !== null &&
@@ -650,7 +656,7 @@ export class PlatformDashboardComponent {
     assignments: readonly Assignment[]
   ): AssignmentTaskContext | null {
     const contexts = assignments.flatMap(
-      assignment => assignment.stages.flatMap(
+      assignment => (assignment.stages ?? []).flatMap(
         stage => stage.tasks
           .filter(task => task.status !== 'complete')
           .map(task => ({

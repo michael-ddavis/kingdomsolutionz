@@ -150,7 +150,7 @@ export class NotificationCenterService {
   ): NotificationDraft[] {
     return [
       ...assignments.flatMap(assignment => [
-        ...assignment.activityLog.items.map(activity =>
+        ...(assignment.activityLog?.items ?? []).map(activity =>
           this.fromAssignmentActivity(
             assignment,
             activity
@@ -160,17 +160,17 @@ export class NotificationCenterService {
         ...this.buildAgreementNotifications(assignment)
       ]),
       ...requests.flatMap(request =>
-        request.communications.map(communication =>
+        (request.communications ?? []).map(communication =>
           this.fromRequestCommunication(
             request,
             communication
           )
         )
       ),
-      ...careNetwork.responses.map(response =>
+      ...(careNetwork.responses ?? []).map(response =>
         this.fromCareResponse(response, assignments)
       ),
-      ...careNetwork.referrals
+      ...(careNetwork.referrals ?? [])
         .filter(referral =>
           [
             'accepted',
