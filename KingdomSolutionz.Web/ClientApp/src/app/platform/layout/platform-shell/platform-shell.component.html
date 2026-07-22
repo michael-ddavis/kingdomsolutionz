@@ -186,7 +186,7 @@
           class="appearance-button"
           aria-label="Customize ministry appearance"
           [attr.aria-expanded]="appearanceOpen"
-          (click)="openAppearance()">
+          (click)="toggleAppearance()">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M12 3a9 9 0 1 0 0 18h1.3a1.7 1.7 0 0 0 0-3.4h-.8a1.4 1.4 0 0 1 0-2.8H15a6 6 0 0 0 0-12H12Z"></path>
             <circle cx="7.5" cy="10" r=".8"></circle><circle cx="10" cy="6.8" r=".8"></circle><circle cx="14" cy="6.8" r=".8"></circle>
@@ -203,7 +203,7 @@
                 : 'Open notifications'
             "
             [attr.aria-expanded]="notificationCenterOpen"
-            (click)="openNotificationCenter()">
+            (click)="toggleNotificationCenter()">
 
           <svg viewBox="0 0 24 24" aria-hidden="true">
 

@@ -119,9 +119,19 @@ export class PlatformShellComponent
 
   openAppearance(): void {
     this.closeNotificationCenter();
+    this.closeSidebar(false);
     this.paletteSaved = false;
     this.draftPalette = { ...this.savedPalette };
     this.appearanceOpen = true;
+  }
+
+  toggleAppearance(): void {
+    if (this.appearanceOpen) {
+      this.closeAppearance();
+      return;
+    }
+
+    this.openAppearance();
   }
 
   closeAppearance(): void {
@@ -156,11 +166,22 @@ export class PlatformShellComponent
   }
 
   openNotificationCenter(): void {
+    this.closeAppearance();
+
     if (this.sidebarOpen) {
       this.closeSidebar(false);
     }
 
     this.notificationCenterOpen = true;
+  }
+
+  toggleNotificationCenter(): void {
+    if (this.notificationCenterOpen) {
+      this.closeNotificationCenter();
+      return;
+    }
+
+    this.openNotificationCenter();
   }
 
   closeNotificationCenter(): void {

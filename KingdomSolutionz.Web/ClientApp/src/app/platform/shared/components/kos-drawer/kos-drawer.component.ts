@@ -60,10 +60,6 @@ export class KosDrawerComponent
           ? document.activeElement
           : null;
 
-      document.body.classList.add(
-        'kos-overlay-open'
-      );
-
       window.setTimeout(() => {
         this.closeButton
           ?.nativeElement
@@ -75,10 +71,6 @@ export class KosDrawerComponent
       openChange.previousValue === true &&
       openChange.currentValue === false
     ) {
-      document.body.classList.remove(
-        'kos-overlay-open'
-      );
-
       window.setTimeout(() => {
         this.previouslyFocusedElement
           ?.focus();
@@ -87,10 +79,6 @@ export class KosDrawerComponent
   }
 
   ngOnDestroy(): void {
-    document.body.classList.remove(
-      'kos-overlay-open'
-    );
-
     if (this.open) {
       this.previouslyFocusedElement
         ?.focus();

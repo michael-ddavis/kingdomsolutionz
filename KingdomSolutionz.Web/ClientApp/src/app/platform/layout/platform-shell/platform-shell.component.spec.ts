@@ -117,4 +117,23 @@ describe('PlatformShellComponent', () => {
       )
     ).toBeFalse();
   });
+
+  it('keeps the right-side drawers mutually exclusive', () => {
+    component.openAppearance();
+
+    expect(component.appearanceOpen).toBeTrue();
+    expect(component.notificationCenterOpen).toBeFalse();
+
+    component.openNotificationCenter();
+
+    expect(component.appearanceOpen).toBeFalse();
+    expect(component.notificationCenterOpen).toBeTrue();
+  });
+
+  it('toggles an open right-side drawer closed', () => {
+    component.toggleNotificationCenter();
+    component.toggleNotificationCenter();
+
+    expect(component.notificationCenterOpen).toBeFalse();
+  });
 });

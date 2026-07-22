@@ -51,12 +51,6 @@ describe('KosDrawerComponent', () => {
       .componentInstance as KosDrawerComponent;
   });
 
-  afterEach(() => {
-    document.body.classList.remove(
-      'kos-overlay-open'
-    );
-  });
-
   it('exposes an accessible modal dialog', () => {
     const dialog =
       fixture.nativeElement.querySelector(
@@ -80,5 +74,13 @@ describe('KosDrawerComponent', () => {
     fixture.detectChanges();
 
     expect(host.open).toBeFalse();
+  });
+
+  it('does not change body overflow when opened', () => {
+    expect(
+      document.body.classList.contains(
+        'kos-overlay-open'
+      )
+    ).toBeFalse();
   });
 });
