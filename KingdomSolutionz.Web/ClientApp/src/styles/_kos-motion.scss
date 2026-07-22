@@ -29,7 +29,7 @@ router-outlet + * {
     kos-page-enter
     var(--kos-motion-base)
     var(--kos-ease-enter)
-    both;
+    backwards;
 }
 
 .kos-clickable {
