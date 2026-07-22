@@ -9,24 +9,19 @@
   --kos-navy-900: var(--kos-obsidian-900);
   --kos-navy-800: var(--kos-obsidian-800);
 
-  --kos-champagne-700: #806934;
-  --kos-champagne-600: #9d814b;
-  --kos-champagne-500: #b89a62;
-  --kos-champagne-300: #d8c59f;
-  --kos-champagne-200: #eadfc9;
-  --kos-champagne-100: #f6f1e8;
+  // Legacy aliases retained for component compatibility. These now resolve to
+  // the cool Academy palette so no warm tint leaks into the ministry product.
+  --kos-champagne-700: #355b9f;
+  --kos-champagne-600: #4667aa;
+  --kos-champagne-500: #5d76b7;
+  --kos-champagne-300: #aebfe4;
+  --kos-champagne-200: #d7e1f5;
+  --kos-champagne-100: #edf2fb;
   --kos-gold-500: var(--kos-champagne-500);
   --kos-gold-100: var(--kos-champagne-100);
 
   --kos-champagne-metal:
-    linear-gradient(
-      120deg,
-      #76551f 0%,
-      #b98d3f 24%,
-      #ead58e 48%,
-      #c39a4d 70%,
-      #806027 100%
-    );
+    linear-gradient(135deg, #355b9f 0%, #526fba 52%, #685478 100%);
   --kos-shell-gradient:
     linear-gradient(
       155deg,
@@ -38,9 +33,9 @@
     linear-gradient(
       90deg,
       transparent,
-      #9a7532 18%,
-      #ead58e 50%,
-      #9a7532 82%,
+      #355b9f 18%,
+      #8ea5d7 50%,
+      #685478 82%,
       transparent
     );
 
@@ -101,8 +96,8 @@
 
   // Controls and focus
   --kos-control-height: 44px;
-  --kos-focus-color: #765820;
-  --kos-focus-ring: 0 0 0 3px rgb(197 161 90 / 30%);
+  --kos-focus-color: #355b9f;
+  --kos-focus-ring: 0 0 0 3px rgb(53 91 159 / 24%);
 
   // Shadows
   --kos-shadow-xs: 0 1px 2px rgb(17 26 41 / 5%);
@@ -111,7 +106,7 @@
     0 7px 20px rgb(16 24 39 / 4%);
   --kos-shadow-md:
     0 16px 36px rgb(17 26 41 / 10%),
-    0 2px 5px rgb(118 88 32 / 5%);
+    0 2px 5px rgb(17 26 41 / 5%);
   --kos-shadow-luxury:
     0 18px 44px rgb(17 26 41 / 11%),
     0 1px 0 rgb(255 255 255 / 80%) inset;

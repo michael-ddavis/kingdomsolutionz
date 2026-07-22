@@ -35,7 +35,7 @@
   background:
     radial-gradient(
       circle at 12% 4%,
-      rgb(197 161 90 / 13%),
+      rgb(53 91 159 / 13%),
       transparent 22rem
     ),
     #101827;
@@ -251,7 +251,7 @@ app-workspace-switcher {
   width: 100%;
   min-height: 64px;
   padding: 10px;
-  border: 1px solid rgb(234 220 173 / 18%);
+  border: 1px solid rgb(142 165 215 / 18%);
   border-radius: var(--kos-radius-md);
   align-items: center;
   gap: 10px;
@@ -261,7 +261,7 @@ app-workspace-switcher {
   background:
     linear-gradient(
       135deg,
-      rgb(197 161 90 / 9%),
+      rgb(53 91 159 / 9%),
       rgb(255 255 255 / 4%)
     );
   transition:
@@ -270,8 +270,8 @@ app-workspace-switcher {
 }
 
 .support-card:hover {
-  border-color: rgb(234 220 173 / 34%);
-  background: rgb(247 240 223 / 9%);
+  border-color: rgb(142 165 215 / 34%);
+  background: rgb(234 240 248 / 9%);
 }
 
 .support-icon {
@@ -319,8 +319,8 @@ app-workspace-switcher {
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  background: rgb(255 253 249 / 94%);
-  box-shadow: 0 1px 0 rgb(118 88 32 / 4%);
+  background: rgb(250 251 253 / 94%);
+  box-shadow: 0 1px 0 rgb(17 26 41 / 4%);
   backdrop-filter: blur(16px) saturate(115%);
 }
 
@@ -477,7 +477,7 @@ app-workspace-switcher {
   background:
     radial-gradient(
       circle at 92% 0%,
-      rgb(197 161 90 / 7%),
+      rgb(53 91 159 / 7%),
       transparent 30rem
     ),
     var(--kos-page);

@@ -24,7 +24,7 @@
   width: 100%;
   min-height: 58px;
   padding: 6px 8px;
-  border: 1px solid rgb(221 201 143 / 22%);
+  border: 1px solid rgb(142 165 215 / 22%);
   border-radius: 14px;
   grid-template-columns: 38px minmax(0, 1fr) 34px;
   align-items: center;
@@ -34,7 +34,7 @@
   text-align: left;
   cursor: pointer;
   background:
-    linear-gradient(135deg, rgb(255 255 255 / 9%), rgb(197 161 90 / 5%));
+    linear-gradient(135deg, rgb(255 255 255 / 9%), rgb(53 91 159 / 6%));
   transition:
     border-color 180ms var(--kos-ease-standard),
     background 180ms var(--kos-ease-standard),
@@ -43,15 +43,15 @@
 
 .workspace-trigger:hover,
 .workspace-trigger--open {
-  border-color: rgb(221 201 143 / 48%);
+  border-color: rgb(142 165 215 / 48%);
   background:
-    linear-gradient(135deg, rgb(255 255 255 / 13%), rgb(197 161 90 / 10%));
+    linear-gradient(135deg, rgb(255 255 255 / 13%), rgb(53 91 159 / 12%));
 }
 
 .workspace-trigger:focus-visible {
   outline: none;
   border-color: var(--kos-champagne-300);
-  box-shadow: 0 0 0 3px rgb(197 161 90 / 24%);
+  box-shadow: 0 0 0 3px rgb(53 91 159 / 24%);
 }
 
 .workspace-mark,
@@ -123,7 +123,7 @@
   left: 0;
   display: grid;
   padding: 7px;
-  border: 1px solid rgb(221 201 143 / 28%);
+  border: 1px solid rgb(142 165 215 / 28%);
   border-radius: 14px;
   gap: 4px;
   opacity: 0;
@@ -168,7 +168,7 @@
 
 .workspace-option:hover,
 .workspace-option--active {
-  border-color: rgb(221 201 143 / 18%);
+  border-color: rgb(142 165 215 / 18%);
   background: rgb(255 255 255 / 7%);
 }
 

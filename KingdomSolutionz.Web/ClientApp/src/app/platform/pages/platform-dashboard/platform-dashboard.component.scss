@@ -186,7 +186,7 @@ h1 {
     58px minmax(0, 1fr) minmax(160px, 0.35fr) auto;
   min-height: 164px;
   padding: 28px 30px;
-  border: 1px solid rgb(234 220 173 / 18%);
+  border: 1px solid rgb(142 165 215 / 18%);
   border-radius: var(--kos-radius-xl);
   align-items: center;
   gap: 20px;
@@ -195,7 +195,7 @@ h1 {
   background:
     radial-gradient(
       circle at 12% 0%,
-      rgb(197 161 90 / 18%),
+      rgb(53 91 159 / 20%),
       transparent 24rem
     ),
     #101827;
@@ -214,7 +214,7 @@ h1 {
   display: grid;
   width: 58px;
   height: 66px;
-  border: 1px solid rgb(234 220 173 / 28%);
+  border: 1px solid rgb(142 165 215 / 28%);
   border-radius: var(--kos-radius-md);
   place-content: center;
   text-align: center;
@@ -286,7 +286,7 @@ h1 {
 .event-action {
   min-height: var(--kos-control-height);
   padding: 0 15px;
-  border: 1px solid rgb(234 220 173 / 26%);
+  border: 1px solid rgb(142 165 215 / 26%);
   border-radius: var(--kos-radius-md);
   color: var(--kos-text-on-dark);
   font-size: var(--kos-text-xs);
@@ -300,7 +300,7 @@ h1 {
 
 .event-action:hover {
   border-color: var(--kos-champagne-300);
-  background: rgb(197 161 90 / 14%);
+  background: rgb(53 91 159 / 16%);
 }
 
 .dashboard-grid {
