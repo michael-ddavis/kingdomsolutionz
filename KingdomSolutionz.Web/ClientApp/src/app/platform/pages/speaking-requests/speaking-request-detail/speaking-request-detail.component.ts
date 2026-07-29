@@ -17,6 +17,7 @@ import {
   SpeakingRequestService
 } from '../../../shared/services/speaking-request.service';
 import { Router } from '@angular/router';
+import { KingdomIntegrationService } from '../../../shared/services/kingdom-integration.service';
 
 import {
   AssignmentService
@@ -94,7 +95,10 @@ export class SpeakingRequestDetailComponent {
       SpeakingRequestService,
 
     private readonly assignmentService:
-      AssignmentService
+      AssignmentService,
+
+    private readonly kingdomIntegration:
+      KingdomIntegrationService
   ) { }
 
   updateStatus(
@@ -117,6 +121,22 @@ export class SpeakingRequestDetailComponent {
           status: 'approved'
         }
       );
+
+    this.kingdomIntegration.publish(
+      'AssignmentApproved',
+      `operations:assignment:${assignment.id}`,
+      'Internal',
+      {
+        assignmentId: assignment.id,
+        requestId: request.id,
+        organizationName: request.organizationName,
+        eventName: request.eventName,
+        city: request.city,
+        state: request.state,
+        startDate: request.startDate,
+        endDate: request.endDate
+      }
+    );
 
     this.router.navigate([
       '/app/assignments',

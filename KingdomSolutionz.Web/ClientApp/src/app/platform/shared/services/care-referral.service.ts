@@ -28,6 +28,7 @@ import {
 import {
   AssignmentService
 } from './assignment.service';
+import { KingdomIntegrationService } from './kingdom-integration.service';
 
 @Injectable({
   providedIn: 'root'
@@ -46,7 +47,10 @@ export class CareReferralService {
 
   constructor(
     private readonly assignmentService:
-      AssignmentService
+      AssignmentService,
+
+    private readonly kingdomIntegration:
+      KingdomIntegrationService
   ) {}
 
   getAssignmentNetwork(
@@ -233,6 +237,21 @@ export class CareReferralService {
         section: 'responses'
       }
     );
+
+    if (response.consentToShare) {
+      this.kingdomIntegration.publish(
+        'ResponseHandoffCreated',
+        `operations:response:${response.id}`,
+        'Sensitive',
+        {
+          subjectId: `operations-response:${response.id}`,
+          assignmentId: response.assignmentId,
+          responseType: response.responseType,
+          consentSource: response.consentSource,
+          status: response.status
+        }
+      );
+    }
 
     return response;
   }
