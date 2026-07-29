@@ -1,0 +1,19 @@
+name: Container
+
+on:
+  pull_request:
+    branches:
+      - develop/kingdomos
+  push:
+    branches:
+      - feature/local-ecosystem-runtime
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build --tag kingdom-operations:ci .

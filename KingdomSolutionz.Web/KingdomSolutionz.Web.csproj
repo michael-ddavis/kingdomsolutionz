@@ -15,7 +15,7 @@
     <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.2" />
   </ItemGroup>
 
-<Target Name="BuildAngularForPublish" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
+<Target Name="BuildAngularForPublish" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release' and '$(BuildAngular)' != 'false'">
   <Message Importance="high" Text="Building Angular app before .NET publish..." />
 
   <Exec WorkingDirectory="$(SpaRoot)" Command="npm ci" />
