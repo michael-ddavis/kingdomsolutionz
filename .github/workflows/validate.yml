@@ -1,0 +1,49 @@
+name: Validate
+
+on:
+  pull_request:
+    branches:
+      - develop/kingdomos
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+          cache: npm
+          cache-dependency-path: KingdomSolutionz.Web/ClientApp/package-lock.json
+
+      - name: Restore .NET dependencies
+        run: dotnet restore KingdomSolutionz.Web/KingdomSolutionz.Web.csproj
+
+      - name: Compile ASP.NET Core host
+        run: dotnet build KingdomSolutionz.Web/KingdomSolutionz.Web.csproj --configuration Debug --no-restore
+
+      - name: Restore Angular dependencies
+        working-directory: KingdomSolutionz.Web/ClientApp
+        run: npm ci
+
+      - name: Run Angular tests
+        working-directory: KingdomSolutionz.Web/ClientApp
+        run: npm run test:ci
+
+      - name: Build Angular production bundle
+        working-directory: KingdomSolutionz.Web/ClientApp
+        run: npm run build:production

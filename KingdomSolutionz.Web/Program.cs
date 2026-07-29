@@ -22,6 +22,12 @@ app.UseHttpsRedirection();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
+app.MapGet("/health", () => Results.Ok(new
+{
+    status = "Healthy",
+    service = "KingdomOperations"
+}));
+
 app.MapControllers();
 
 // This lets Angular handle routes like /pricing, /portfolio, /admin, etc.

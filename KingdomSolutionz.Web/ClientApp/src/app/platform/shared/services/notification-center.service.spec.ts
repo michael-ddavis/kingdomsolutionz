@@ -74,7 +74,7 @@ describe('NotificationCenterService', () => {
 
     const service = createService([
       legacyAssignment
-    ]);
+    ], []);
 
     const notifications = await firstValueFrom(
       service.notifications$
@@ -84,7 +84,8 @@ describe('NotificationCenterService', () => {
   });
 
   function createService(
-    assignments: readonly Assignment[] = []
+    assignments: readonly Assignment[] = [],
+    speakingRequests = SEEDED_SPEAKING_REQUESTS
   ): NotificationCenterService {
     const assignmentsSubject =
       new BehaviorSubject<readonly Assignment[]>(
@@ -92,7 +93,7 @@ describe('NotificationCenterService', () => {
       );
 
     const requestsSubject = new BehaviorSubject(
-      SEEDED_SPEAKING_REQUESTS
+      speakingRequests
     );
 
     const careSubject =
