@@ -1,10 +1,13 @@
 using KingdomSolutionz.Web.Middleware;
 using KingdomSolutionz.Web.Services.Leads;
+using KingdomSolutionz.Web.Security;
 using KingdomSolutionz.Web.Tables;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddKingdomIdentity(builder.Configuration);
+builder.Services.AddHttpClient();
 builder.Services.AddScoped<LeadTable>();
 builder.Services.AddScoped<ILeadService, LeadService>();
 
@@ -21,6 +24,8 @@ app.UseHttpsRedirection();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapGet("/health", () => Results.Ok(new
 {
