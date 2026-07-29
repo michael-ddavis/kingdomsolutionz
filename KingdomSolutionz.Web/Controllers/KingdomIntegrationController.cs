@@ -32,7 +32,7 @@ public sealed class KingdomIntegrationController(
             !AllowedEvents.Contains(request.EventName) ||
             string.IsNullOrWhiteSpace(request.CorrelationId))
         {
-            return ValidationProblem("A valid Operations integration event is required.");
+            return BadRequest(new { message = "A valid Operations integration event is required." });
         }
 
         var tenantId = Guid.TryParse(configuration["KingdomOS:TenantId"], out var configuredTenant)
