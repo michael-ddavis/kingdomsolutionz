@@ -6,7 +6,10 @@ import {
   ViewChild
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import {
+  Observable,
+  combineLatest
+} from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import {
@@ -28,6 +31,9 @@ import {
   BrandPalette,
   BrandPaletteService
 } from '../../shared/services/brand-palette.service';
+import {
+  ModuleEntitlementService
+} from '../../shared/services/module-entitlement.service';
 
 export interface PlatformNavigationItem {
   label: string;
@@ -72,9 +78,15 @@ export class PlatformShellComponent
 
   readonly navigationSections$:
     Observable<PlatformNavigationSection[]> =
-    this.selectedWorkspace$.pipe(
-      map(workspace =>
-        this.buildNavigationSections(workspace)
+    combineLatest([
+      this.selectedWorkspace$,
+      this.moduleEntitlements.isEnabled('care')
+    ]).pipe(
+      map(([workspace, careEnabled]) =>
+        this.buildNavigationSections(
+          workspace,
+          careEnabled
+        )
       )
     );
 
@@ -104,6 +116,9 @@ export class PlatformShellComponent
 
     private readonly brandPaletteService:
       BrandPaletteService,
+
+    private readonly moduleEntitlements:
+      ModuleEntitlementService,
 
     private readonly router: Router
   ) { }
@@ -420,24 +435,32 @@ export class PlatformShellComponent
   }
 
   private buildNavigationSections(
-    workspace: Workspace
+    workspace: Workspace,
+    careEnabled: boolean
   ): PlatformNavigationSection[] {
     switch (workspace.id) {
       case 'apostle-cynthia':
-        return this.buildApostleCynthiaNavigation();
+        return this.buildApostleCynthiaNavigation(
+          careEnabled
+        );
 
       case 'jpp':
-        return this.buildJppNavigation();
+        return this.buildJppNavigation(
+          careEnabled
+        );
 
       case 'all':
       default:
-        return this.buildAllMinistriesNavigation();
+        return this.buildAllMinistriesNavigation(
+          careEnabled
+        );
     }
   }
 
-  private buildAllMinistriesNavigation():
-    PlatformNavigationSection[] {
-    return [
+  private buildAllMinistriesNavigation(
+    careEnabled: boolean
+  ): PlatformNavigationSection[] {
+    const sections: PlatformNavigationSection[] = [
       {
         label: 'Overview',
         items: [
@@ -476,8 +499,11 @@ export class PlatformShellComponent
             icon: 'requests'
           }
         ]
-      },
-      {
+      }
+    ];
+
+    if (careEnabled) {
+      sections.push({
         label: 'KingdomOps Care Network',
         items: [
           {
@@ -488,12 +514,50 @@ export class PlatformShellComponent
             icon: 'care'
           }
         ]
-      }
-    ];
+      });
+    }
+
+    return sections;
   }
 
-  private buildApostleCynthiaNavigation():
-    PlatformNavigationSection[] {
+  private buildApostleCynthiaNavigation(
+    careEnabled: boolean
+  ): PlatformNavigationSection[] {
+    const speakingItems: PlatformNavigationItem[] = [
+      {
+        label: 'Speaking Requests',
+        description:
+          'Review incoming invitations',
+        route: '/app/speaking-requests',
+        icon: 'requests'
+      },
+      {
+        label: 'Assignments',
+        description:
+          'Preparation, coordination and follow-up',
+        route: '/app/assignments',
+        icon: 'assignments'
+      }
+    ];
+
+    if (careEnabled) {
+      speakingItems.push({
+        label: 'Care Network',
+        description:
+          'Cross-assignment follow-up inbox',
+        route: '/app/care-network',
+        icon: 'care'
+      });
+    }
+
+    speakingItems.push({
+      label: 'Speaker Profile',
+      description:
+        'Approved bio, assets and preferences',
+      route: '/app/speaker-profile',
+      icon: 'requests'
+    });
+
     return [
       {
         label: 'Overview',
@@ -510,57 +574,34 @@ export class PlatformShellComponent
       },
       {
         label: 'Speaking Ministry',
-        items: [
-          {
-            label: 'Speaking Requests',
-            description:
-              'Review incoming invitations',
-            route: '/app/speaking-requests',
-            icon: 'requests'
-          },
-          {
-            label: 'Assignments',
-            description:
-              'Travel, preparation and follow-up',
-            route: '/app/assignments',
-            icon: 'assignments'
-          },
-          {
-            label: 'Care Network',
-            description:
-              'Cross-assignment follow-up inbox',
-            route: '/app/care-network',
-            icon: 'care'
-          },
-          {
-            label: 'Speaker Profile',
-            description:
-              'Approved bio, assets and preferences',
-            route: '/app/speaker-profile',
-            icon: 'requests'
-          }
-        ]
+        items: speakingItems
       }
     ];
   }
 
-  private buildJppNavigation():
-    PlatformNavigationSection[] {
-    return [
+  private buildJppNavigation(
+    careEnabled: boolean
+  ): PlatformNavigationSection[] {
+    const sections: PlatformNavigationSection[] = [
       {
         label: 'Overview',
         items: [
           {
             label: 'Dashboard',
             description:
-              'Discipleship and care overview',
+              careEnabled
+                ? 'Discipleship and care overview'
+                : 'Discipleship ministry overview',
             route: '/app/dashboard',
             icon: 'dashboard',
             exact: true
           }
         ]
-      },
-      {
+      }
+    ];
+
+    if (careEnabled) {
+      sections.push({
         label: 'Care Ministry',
         items: [
           {
@@ -571,7 +612,9 @@ export class PlatformShellComponent
             icon: 'care'
           }
         ]
-      }
-    ];
+      });
+    }
+
+    return sections;
   }
 }
