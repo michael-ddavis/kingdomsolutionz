@@ -9,7 +9,6 @@ import {
 import {
   Assignment,
   AssignmentActivityItem,
-  AssignmentFlight,
   AssignmentStage,
   AssignmentTask
 } from '../../shared/models/assignment.model';
@@ -27,6 +26,7 @@ import {
 import { Workspace } from '../../shared/models/workspace.model';
 import { AssignmentService } from '../../shared/services/assignment.service';
 import { CareReferralService } from '../../shared/services/care-referral.service';
+import { ModuleEntitlementService } from '../../shared/services/module-entitlement.service';
 import { NotificationCenterService } from '../../shared/services/notification-center.service';
 import { SpeakingRequestService } from '../../shared/services/speaking-request.service';
 import { WorkspaceService } from '../../shared/services/workspace.service';
@@ -64,19 +64,6 @@ interface DashboardActivity {
   route: string;
 }
 
-interface DashboardFlight {
-  id: string;
-  assignmentId: number;
-  direction: string;
-  airline: string;
-  flightNumber: string;
-  airports: string;
-  departureDate: string;
-  departureTime: string;
-  eventName: string;
-  route: string;
-}
-
 interface DashboardQuickAction {
   label: string;
   description: string;
@@ -94,7 +81,6 @@ interface DashboardViewModel {
   metrics: DashboardMetric[];
   schedule: DashboardScheduleItem[];
   activities: DashboardActivity[];
-  flights: DashboardFlight[];
   quickActions: DashboardQuickAction[];
   nextEvent: Assignment | null;
 }
@@ -118,20 +104,23 @@ export class PlatformDashboardComponent {
       this.speakingRequestService.speakingRequests$,
       this.assignmentService.assignments$,
       this.careReferralService.state$,
-      this.notificationCenterService.notifications$
+      this.notificationCenterService.notifications$,
+      this.moduleEntitlements.isEnabled('care')
     ]).pipe(
       map(([
         workspace,
         requests,
         assignments,
         careNetwork,
-        notifications
+        notifications,
+        careEnabled
       ]) => this.buildDashboard(
         workspace,
         requests,
         assignments,
         careNetwork,
-        notifications
+        notifications,
+        careEnabled
       ))
     );
 
@@ -141,6 +130,7 @@ export class PlatformDashboardComponent {
     private readonly assignmentService: AssignmentService,
     private readonly careReferralService: CareReferralService,
     private readonly notificationCenterService: NotificationCenterService,
+    private readonly moduleEntitlements: ModuleEntitlementService,
     private readonly router: Router
   ) {}
 
@@ -165,12 +155,12 @@ export class PlatformDashboardComponent {
     requests: readonly SpeakingRequest[],
     assignments: readonly Assignment[],
     careNetwork: CareNetworkState,
-    notifications: readonly KingdomNotification[]
+    notifications: readonly KingdomNotification[],
+    careEnabled: boolean
   ): DashboardViewModel {
     const activeAssignments = assignments.filter(
       assignment => assignment.status === 'active'
     );
-
     const upcomingAssignments = activeAssignments
       .filter(assignment =>
         this.getDaysUntilDate(assignment.startDate) >= 0
@@ -179,21 +169,12 @@ export class PlatformDashboardComponent {
         this.parseDateOnly(left.startDate).getTime() -
         this.parseDateOnly(right.startDate).getTime()
       );
-
     const assignmentsThisMonth = activeAssignments.filter(
-      assignment =>
-        this.isInCurrentMonth(assignment.startDate)
+      assignment => this.isInCurrentMonth(assignment.startDate)
     );
-
     const pendingInvitationReviews = requests.filter(
       request => request.status === 'awaiting-review'
     );
-
-    const pendingCoordinationReviews = activeAssignments.filter(
-      assignment =>
-        assignment.hostCoordination?.status === 'submitted'
-    );
-
     const outstandingTasks = activeAssignments.flatMap(
       assignment => (assignment.stages ?? []).flatMap(
         stage => stage.tasks.filter(
@@ -201,45 +182,110 @@ export class PlatformDashboardComponent {
         )
       )
     );
-
-    const careCasesWaiting = (careNetwork.responses ?? []).filter(
-      response => this.isCareCaseWaiting(response)
-    );
-
+    const careCasesWaiting = careEnabled
+      ? (careNetwork.responses ?? []).filter(
+          response => this.isCareCaseWaiting(response)
+        )
+      : [];
     const peopleWaitingOnMe =
       pendingInvitationReviews.length +
-      pendingCoordinationReviews.length +
       careCasesWaiting.length;
-
     const unreadMessages = notifications.filter(
       notification =>
         !notification.read &&
-        [
-          'host',
-          'message'
-        ].includes(notification.category)
+        ['host', 'message'].includes(notification.category)
     ).length;
-
-    const flights = this.buildFlights(activeAssignments);
-    const upcomingTripCount = new Set(
-      flights.map(flight => flight.assignmentId)
-    ).size;
-
     const averageReadiness = this.getAverageReadiness(
       activeAssignments
     );
 
+    const metrics: DashboardMetric[] = [
+      {
+        value: assignmentsThisMonth.length.toString(),
+        label: 'Assignments this month',
+        detail: 'Scheduled ministry assignments',
+        tone: 'navy',
+        route: '/app/assignments'
+      },
+      {
+        value: pendingInvitationReviews.length.toString(),
+        label: 'Invitations to review',
+        detail: 'Host invitations awaiting a decision',
+        tone: 'violet',
+        route: '/app/speaking-requests'
+      },
+      {
+        value: unreadMessages.toString(),
+        label: 'Unread messages',
+        detail: 'Host replies and assignment updates',
+        tone: 'amber',
+        route: '#notifications'
+      },
+      {
+        value: outstandingTasks.length.toString(),
+        label: 'Outstanding checklist items',
+        detail: 'Across active assignments',
+        tone: outstandingTasks.some(
+          task => task.status === 'blocked'
+        )
+          ? 'amber'
+          : 'blue',
+        route: '/app/assignments'
+      },
+      {
+        value: peopleWaitingOnMe.toString(),
+        label: 'People waiting on me',
+        detail: 'A response or decision is needed',
+        tone: peopleWaitingOnMe > 0
+          ? 'amber'
+          : 'green',
+        route: careCasesWaiting.length > 0
+          ? '/app/care-network'
+          : '/app/speaking-requests'
+      },
+      {
+        value: `${averageReadiness}%`,
+        label: 'Preparation score',
+        detail: 'Average across active assignments',
+        tone: averageReadiness >= 75
+          ? 'green'
+          : averageReadiness >= 45
+            ? 'blue'
+            : 'amber',
+        route: '/app/assignments'
+      },
+      {
+        value: upcomingAssignments.length.toString(),
+        label: 'Upcoming events',
+        detail: upcomingAssignments[0]
+          ? `Next: ${this.formatShortDate(upcomingAssignments[0].startDate)}`
+          : 'No upcoming events',
+        tone: 'navy',
+        route: '/app/assignments'
+      }
+    ];
+
+    if (careEnabled) {
+      metrics.splice(5, 0, {
+        value: careCasesWaiting.length.toString(),
+        label: 'Care follow-ups',
+        detail: 'Responses needing a next step',
+        tone: careCasesWaiting.length > 0
+          ? 'amber'
+          : 'green',
+        route: '/app/care-network'
+      });
+    }
+
     return {
       workspace,
-      eyebrow:
-        workspace.id === 'all'
-          ? 'Executive ministry workspace'
-          : 'Executive assignment workspace',
+      eyebrow: workspace.id === 'all'
+        ? 'Executive ministry workspace'
+        : 'Executive assignment workspace',
       title: this.getGreeting(),
-      description:
-        workspace.id === 'all'
-          ? 'A clear view of what is scheduled, what is ready and what needs a decision across your ministries.'
-          : 'Everything requiring your attention across speaking invitations, assignments, travel and ministry follow-up.',
+      description: workspace.id === 'all'
+        ? 'A clear view of what is scheduled, what is prepared and what needs a decision across your ministries.'
+        : 'Everything requiring your attention across speaking invitations, assignments, preparation and ministry follow-up.',
       todayLabel: new Intl.DateTimeFormat(
         'en-US',
         {
@@ -248,97 +294,8 @@ export class PlatformDashboardComponent {
           day: 'numeric'
         }
       ).format(new Date()),
-      metrics: [
-        {
-          value: assignmentsThisMonth.length.toString(),
-          label: 'Assignments this month',
-          detail: 'Scheduled ministry assignments',
-          tone: 'navy',
-          route: '/app/assignments'
-        },
-        {
-          value: upcomingTripCount.toString(),
-          label: 'Upcoming trips',
-          detail:
-            flights.length > 0
-              ? `${flights.length} confirmed flight segments`
-              : 'No flights confirmed yet',
-          tone: 'blue',
-          route: '/app/assignments'
-        },
-        {
-          value: (
-            pendingInvitationReviews.length +
-            pendingCoordinationReviews.length
-          ).toString(),
-          label: 'Pending reviews',
-          detail:
-            pendingCoordinationReviews.length > 0
-              ? `${pendingCoordinationReviews.length} host submissions included`
-              : 'Invitations and host updates',
-          tone: 'violet',
-          route:
-            pendingCoordinationReviews[0]
-              ? `/app/assignments/${pendingCoordinationReviews[0].id}/coordination-review`
-              : '/app/speaking-requests'
-        },
-        {
-          value: unreadMessages.toString(),
-          label: 'Unread messages',
-          detail: 'Host replies and coordination updates',
-          tone: 'amber',
-          route: '#notifications'
-        },
-        {
-          value: outstandingTasks.length.toString(),
-          label: 'Outstanding checklist items',
-          detail: 'Across active assignments',
-          tone:
-            outstandingTasks.some(
-              task => task.status === 'blocked'
-            )
-              ? 'amber'
-              : 'blue',
-          route: '/app/assignments'
-        },
-        {
-          value: peopleWaitingOnMe.toString(),
-          label: 'People waiting on me',
-          detail: 'A response or decision is needed',
-          tone:
-            peopleWaitingOnMe > 0
-              ? 'amber'
-              : 'green',
-          route:
-            careCasesWaiting.length > 0
-              ? '/app/care-network'
-              : '/app/speaking-requests'
-        },
-        {
-          value: `${averageReadiness}%`,
-          label: 'Readiness score',
-          detail: 'Average across active assignments',
-          tone:
-            averageReadiness >= 75
-              ? 'green'
-              : averageReadiness >= 45
-                ? 'blue'
-                : 'amber',
-          route: '/app/assignments'
-        },
-        {
-          value: upcomingAssignments.length.toString(),
-          label: 'Upcoming events',
-          detail:
-            upcomingAssignments[0]
-              ? `Next: ${this.formatShortDate(upcomingAssignments[0].startDate)}`
-              : 'No upcoming events',
-          tone: 'navy',
-          route: '/app/assignments'
-        }
-      ],
+      metrics,
       schedule: this.buildSchedule(
-        pendingCoordinationReviews,
         pendingInvitationReviews,
         careCasesWaiting,
         activeAssignments,
@@ -346,18 +303,15 @@ export class PlatformDashboardComponent {
       ),
       activities: this.buildActivities(
         assignments,
-        requests
+        requests,
+        careEnabled
       ),
-      flights,
-      quickActions: this.buildQuickActions(
-        pendingCoordinationReviews
-      ),
+      quickActions: this.buildQuickActions(careEnabled),
       nextEvent: upcomingAssignments[0] ?? null
     };
   }
 
   private buildSchedule(
-    coordinationReviews: readonly Assignment[],
     invitationReviews: readonly SpeakingRequest[],
     careCases: readonly MinistryResponse[],
     activeAssignments: readonly Assignment[],
@@ -365,20 +319,9 @@ export class PlatformDashboardComponent {
   ): DashboardScheduleItem[] {
     const items: DashboardScheduleItem[] = [];
 
-    if (coordinationReviews[0]) {
-      items.push({
-        time: '9:00 AM',
-        title: 'Review host coordination update',
-        description: coordinationReviews[0].eventName,
-        tone: 'violet',
-        route:
-          `/app/assignments/${coordinationReviews[0].id}/coordination-review`
-      });
-    }
-
     if (invitationReviews[0]) {
       items.push({
-        time: items.length > 0 ? '10:30 AM' : '9:30 AM',
+        time: '9:30 AM',
         title: 'Review speaking invitation',
         description:
           `${invitationReviews[0].eventName} · ${invitationReviews[0].organizationName}`,
@@ -403,7 +346,6 @@ export class PlatformDashboardComponent {
     const dueTask = this.getMostUrgentTask(
       activeAssignments
     );
-
     if (dueTask && items.length < 4) {
       items.push({
         time: '1:30 PM',
@@ -420,15 +362,12 @@ export class PlatformDashboardComponent {
       });
     }
 
-    if (
-      items.length === 0 &&
-      upcomingAssignments[0]
-    ) {
+    if (items.length < 4 && upcomingAssignments[0]) {
       items.push({
         time: '2:00 PM',
-        title: 'Assignment readiness review',
+        title: 'Assignment preparation review',
         description:
-          `${upcomingAssignments[0].eventName} · ${upcomingAssignments[0].readinessPercentage}% ready`,
+          `${upcomingAssignments[0].eventName} · ${upcomingAssignments[0].readinessPercentage}% prepared`,
         tone: 'navy',
         route:
           `/app/assignments/${upcomingAssignments[0].id}/overview`
@@ -440,17 +379,21 @@ export class PlatformDashboardComponent {
 
   private buildActivities(
     assignments: readonly Assignment[],
-    requests: readonly SpeakingRequest[]
+    requests: readonly SpeakingRequest[],
+    careEnabled: boolean
   ): DashboardActivity[] {
     const assignmentActivities = assignments.flatMap(
-      assignment => (assignment.activityLog?.items ?? []).map(
-        activity => this.fromAssignmentActivity(
-          assignment,
-          activity
-        )
+      assignment => (assignment.activityLog?.items ?? []).flatMap(
+        activity => {
+          const mapped = this.fromAssignmentActivity(
+            assignment,
+            activity,
+            careEnabled
+          );
+          return mapped ? [mapped] : [];
+        }
       )
     );
-
     const requestActivities = requests.flatMap(
       request => (request.communications ?? []).map(
         communication => this.fromRequestActivity(
@@ -474,20 +417,35 @@ export class PlatformDashboardComponent {
 
   private fromAssignmentActivity(
     assignment: Assignment,
-    activity: AssignmentActivityItem
-  ): DashboardActivity {
-    const sectionRoutes: Record<
+    activity: AssignmentActivityItem,
+    careEnabled: boolean
+  ): DashboardActivity | null {
+    if (activity.section === 'travel') {
+      return null;
+    }
+
+    if (
+      !careEnabled &&
+      ['responses', 'follow-up'].includes(activity.section)
+    ) {
+      return null;
+    }
+
+    const sectionRoutes: Partial<Record<
       AssignmentActivityItem['section'],
       string
-    > = {
+    >> = {
       overview: 'overview',
       checklist: 'checklist',
-      travel: 'travel',
       contacts: 'contacts',
       documents: 'documents',
       responses: 'care-network',
       'follow-up': 'care-network'
     };
+    const sectionRoute = sectionRoutes[activity.section];
+    if (!sectionRoute) {
+      return null;
+    }
 
     return {
       id:
@@ -496,16 +454,13 @@ export class PlatformDashboardComponent {
       description: activity.description,
       context: assignment.eventName,
       createdUtc: activity.createdUtc,
-      tone:
-        activity.tone === 'success'
-          ? 'green'
-          : activity.tone === 'attention'
-            ? 'amber'
-            : 'blue',
+      tone: activity.tone === 'success'
+        ? 'green'
+        : activity.tone === 'attention'
+          ? 'amber'
+          : 'blue',
       route:
-        activity.type === 'host-coordination-submitted'
-          ? `/app/assignments/${assignment.id}/coordination-review`
-          : `/app/assignments/${assignment.id}/${sectionRoutes[activity.section]}`
+        `/app/assignments/${assignment.id}/${sectionRoute}`
     };
   }
 
@@ -531,188 +486,85 @@ export class PlatformDashboardComponent {
       description: communication.message,
       context: request.eventName,
       createdUtc: communication.createdUtc,
-      tone:
-        communication.type === 'approved'
-          ? 'green'
-          : communication.type === 'host-responded' ||
-              communication.type === 'submitted'
-            ? 'violet'
-            : 'blue',
+      tone: communication.type === 'approved'
+        ? 'green'
+        : communication.type === 'host-responded' ||
+            communication.type === 'submitted'
+          ? 'violet'
+          : 'blue',
       route: `/app/speaking-requests/${request.id}`
     };
   }
 
-  private buildFlights(
-    assignments: readonly Assignment[]
-  ): DashboardFlight[] {
-    return assignments.flatMap(assignment => {
-      if (!assignment.travelItinerary) {
-        return [];
-      }
-
-      return [
-        this.fromFlight(
-          assignment,
-          assignment.travelItinerary.outboundFlight,
-          'Outbound'
-        ),
-        this.fromFlight(
-          assignment,
-          assignment.travelItinerary.returnFlight,
-          'Return'
-        )
-      ];
-    })
-      .filter(
-        (flight): flight is DashboardFlight =>
-          flight !== null &&
-          this.getDaysUntilDate(flight.departureDate) >= 0
-      )
-      .sort(
-        (left, right) =>
-          this.parseDateOnly(left.departureDate).getTime() -
-          this.parseDateOnly(right.departureDate).getTime()
-      )
-      .slice(0, 4);
-  }
-
-  private fromFlight(
-    assignment: Assignment,
-    flight: AssignmentFlight,
-    direction: string
-  ): DashboardFlight | null {
-    if (
-      !flight.departureDate ||
-      !flight.departureAirport.trim() ||
-      !flight.arrivalAirport.trim()
-    ) {
-      return null;
-    }
-
-    return {
-      id:
-        `${assignment.id}-${flight.type}-${flight.departureDate}`,
-      assignmentId: assignment.id,
-      direction,
-      airline: flight.airline || 'Airline pending',
-      flightNumber: flight.flightNumber,
-      airports:
-        `${flight.departureAirport} → ${flight.arrivalAirport}`,
-      departureDate: flight.departureDate,
-      departureTime: flight.departureTime,
-      eventName: assignment.eventName,
-      route: `/app/assignments/${assignment.id}/travel`
-    };
-  }
-
   private buildQuickActions(
-    coordinationReviews: readonly Assignment[]
+    careEnabled: boolean
   ): DashboardQuickAction[] {
-    const actions: DashboardQuickAction[] = [];
-
-    if (coordinationReviews[0]) {
-      actions.push({
-        label: 'Review host update',
-        description:
-          coordinationReviews[0].eventName,
-        icon: 'review',
-        route:
-          `/app/assignments/${coordinationReviews[0].id}/coordination-review`,
-        emphasis: true
-      });
-    }
-
-    actions.push(
+    const actions: DashboardQuickAction[] = [
       {
         label: 'Review invitations',
-        description: 'Approve or request information',
+        description: 'Open the host invitation queue',
         icon: 'review',
-        route: '/app/speaking-requests'
+        route: '/app/speaking-requests',
+        emphasis: true
       },
       {
         label: 'Open assignments',
-        description: 'Travel, contacts and preparation',
+        description: 'Review preparation and ownership',
         icon: 'assignment',
         route: '/app/assignments'
-      },
-      {
-        label: 'Open Care Network',
-        description: 'Responses, referrals and follow-up',
+      }
+    ];
+
+    if (careEnabled) {
+      actions.push({
+        label: 'Open Care Inbox',
+        description: 'Review follow-ups and referrals',
         icon: 'care',
         route: '/app/care-network'
-      },
-      {
-        label: 'Speaker profile',
-        description: 'Approved bio, assets and preferences',
-        icon: 'profile',
-        route: '/app/speaker-profile'
-      }
-    );
+      });
+    }
 
-    return actions.slice(0, 4);
+    actions.push({
+      label: 'Speaker profile',
+      description: 'Review approved ministry assets',
+      icon: 'profile',
+      route: '/app/speaker-profile'
+    });
+
+    return actions;
   }
 
   private getMostUrgentTask(
     assignments: readonly Assignment[]
   ): AssignmentTaskContext | null {
-    const contexts = assignments.flatMap(
+    const tasks = assignments.flatMap(
       assignment => (assignment.stages ?? []).flatMap(
         stage => stage.tasks
           .filter(task => task.status !== 'complete')
-          .map(task => ({
-            assignment,
-            stage,
-            task
-          }))
+          .map(task => ({ assignment, stage, task }))
       )
     );
 
-    return contexts.sort((left, right) => {
-      if (
-        left.task.status === 'blocked' &&
-        right.task.status !== 'blocked'
-      ) {
+    return tasks.sort((left, right) => {
+      if (left.task.status === 'blocked' && right.task.status !== 'blocked') {
         return -1;
       }
-
-      if (
-        right.task.status === 'blocked' &&
-        left.task.status !== 'blocked'
-      ) {
+      if (right.task.status === 'blocked' && left.task.status !== 'blocked') {
         return 1;
       }
-
-      return (
-        this.parseDateOnly(left.task.dueDate).getTime() -
-        this.parseDateOnly(right.task.dueDate).getTime()
-      );
+      return this.parseDateOnly(left.task.dueDate).getTime() -
+        this.parseDateOnly(right.task.dueDate).getTime();
     })[0] ?? null;
   }
 
   private isCareCaseWaiting(
     response: MinistryResponse
   ): boolean {
-    if (
-      [
-        'connected',
-        'unreachable',
-        'withdrawn'
-      ].includes(response.status)
-    ) {
-      return false;
-    }
-
-    return (
-      [
-        'needs-review',
-        'ready-to-refer'
-      ].includes(response.status) ||
-      Boolean(
-        response.nextFollowUpUtc &&
-        new Date(response.nextFollowUpUtc).getTime() <=
-          Date.now()
-      )
-    );
+    return [
+      'needs-review',
+      'ready-to-refer',
+      'referred'
+    ].includes(response.status);
   }
 
   private getAverageReadiness(
@@ -724,38 +576,22 @@ export class PlatformDashboardComponent {
 
     return Math.round(
       assignments.reduce(
-        (sum, assignment) =>
-          sum + assignment.readinessPercentage,
+        (total, assignment) =>
+          total + assignment.readinessPercentage,
         0
       ) / assignments.length
     );
   }
 
-  private isInCurrentMonth(value: string): boolean {
-    const date = this.parseDateOnly(value);
-    const today = new Date();
-
-    return (
-      date.getFullYear() === today.getFullYear() &&
-      date.getMonth() === today.getMonth()
-    );
-  }
-
-  private getDaysUntilDate(value: string): number {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const date = this.parseDateOnly(value);
-    date.setHours(0, 0, 0, 0);
-
-    return Math.round(
-      (date.getTime() - today.getTime()) /
-      86_400_000
-    );
-  }
-
-  private parseDateOnly(value: string): Date {
-    return new Date(`${value}T12:00:00`);
+  private getGreeting(): string {
+    const hour = new Date().getHours();
+    if (hour < 12) {
+      return 'Good morning, Michael.';
+    }
+    if (hour < 18) {
+      return 'Good afternoon, Michael.';
+    }
+    return 'Good evening, Michael.';
   }
 
   private formatShortDate(value: string): string {
@@ -763,22 +599,36 @@ export class PlatformDashboardComponent {
       'en-US',
       {
         month: 'short',
-        day: 'numeric'
+        day: 'numeric',
+        timeZone: 'UTC'
       }
     ).format(this.parseDateOnly(value));
   }
 
-  private getGreeting(): string {
-    const hour = new Date().getHours();
+  private isInCurrentMonth(value: string): boolean {
+    const date = this.parseDateOnly(value);
+    const now = new Date();
+    return date.getUTCFullYear() === now.getFullYear() &&
+      date.getUTCMonth() === now.getMonth();
+  }
 
-    if (hour < 12) {
-      return 'Good morning, Apostle Cynthia';
-    }
+  private getDaysUntilDate(value: string): number {
+    const today = new Date();
+    const startOfToday = Date.UTC(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
+    const target = this.parseDateOnly(value).getTime();
+    return Math.ceil(
+      (target - startOfToday) / 86_400_000
+    );
+  }
 
-    if (hour < 18) {
-      return 'Good afternoon, Apostle Cynthia';
-    }
-
-    return 'Good evening, Apostle Cynthia';
+  private parseDateOnly(value: string): Date {
+    const parsed = new Date(`${value}T00:00:00Z`);
+    return Number.isNaN(parsed.getTime())
+      ? new Date(8_640_000_000_000_000)
+      : parsed;
   }
 }
