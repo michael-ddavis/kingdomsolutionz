@@ -36,7 +36,27 @@
             [routerLinkActiveOptions]="{ exact: item.exact === true }"
             ariaCurrentWhenActive="page"
             (click)="closeSidebar()">
-            <span class="navigation-icon" aria-hidden="true">◇</span>
+            <span class="navigation-icon" [ngSwitch]="item.icon" aria-hidden="true">
+              <svg *ngSwitchCase="'dashboard'" viewBox="0 0 24 24">
+                <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+                <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+              </svg>
+              <svg *ngSwitchCase="'requests'" viewBox="0 0 24 24">
+                <path d="M7 3.75h10a2 2 0 0 1 2 2v14.5H5V5.75a2 2 0 0 1 2-2Z"></path>
+                <path d="M8.5 8h7M8.5 12h7M8.5 16h4"></path>
+              </svg>
+              <svg *ngSwitchCase="'assignments'" viewBox="0 0 24 24">
+                <rect x="4" y="6" width="16" height="14" rx="2"></rect>
+                <path d="M9 6V4.75A1.75 1.75 0 0 1 10.75 3h2.5A1.75 1.75 0 0 1 15 4.75V6"></path>
+                <path d="M4 11.5h16M10 11.5v1.75h4V11.5"></path>
+              </svg>
+              <svg *ngSwitchCase="'care'" viewBox="0 0 24 24">
+                <path d="M12 20.25S4.5 16 4.5 9.75A4.25 4.25 0 0 1 12 7a4.25 4.25 0 0 1 7.5 2.75C19.5 16 12 20.25 12 20.25Z"></path>
+                <path d="M8.5 12h2l1-2.25L13 14l1-2h2"></path>
+              </svg>
+            </span>
             <span class="navigation-copy">
               <strong>{{ item.label }}</strong>
               <small *ngIf="item.description">{{ item.description }}</small>
