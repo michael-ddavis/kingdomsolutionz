@@ -19,6 +19,9 @@ import {
 import {
   AssignmentService
 } from '../../../shared/services/assignment.service';
+import {
+  ModuleEntitlementService
+} from '../../../shared/services/module-entitlement.service';
 
 interface AssignmentWorkspaceTab {
   label: string;
@@ -59,7 +62,7 @@ export class AssignmentWorkspaceComponent {
       )
     );
 
-  readonly tabGroups:
+  private readonly coreTabGroups:
     AssignmentWorkspaceTabGroup[] = [
       {
         id: 'assignment',
@@ -84,12 +87,6 @@ export class AssignmentWorkspaceComponent {
               'Preparation responsibilities'
           },
           {
-            label: 'Travel',
-            route: 'travel',
-            description:
-              'Flights, lodging and transportation'
-          },
-          {
             label: 'Contacts',
             route: 'contacts',
             description:
@@ -102,20 +99,31 @@ export class AssignmentWorkspaceComponent {
               'Files, schedules and resources'
           }
         ]
-      },
-      {
-        id: 'ministry',
-        label: 'Ministry',
-        tabs: [
-          {
-            label: 'Care Network',
-            route: 'care-network',
-            description:
-              'Responses, referrals and handoffs'
-          }
-        ]
       }
     ];
+
+  readonly tabGroups$:
+    Observable<AssignmentWorkspaceTabGroup[]> =
+    this.moduleEntitlements.isEnabled('care').pipe(
+      map(careEnabled => careEnabled
+        ? [
+            ...this.coreTabGroups,
+            {
+              id: 'ministry' as const,
+              label: 'Ministry',
+              tabs: [
+                {
+                  label: 'Care Network',
+                  route: 'care-network',
+                  description:
+                    'Responses, referrals and handoffs'
+                }
+              ]
+            }
+          ]
+        : this.coreTabGroups
+      )
+    );
 
   readonly recordTabs:
     AssignmentWorkspaceTab[] = [
@@ -138,7 +146,10 @@ export class AssignmentWorkspaceComponent {
       ActivatedRoute,
 
     private readonly assignmentService:
-      AssignmentService
+      AssignmentService,
+
+    private readonly moduleEntitlements:
+      ModuleEntitlementService
   ) { }
 
   getStatusLabel(
