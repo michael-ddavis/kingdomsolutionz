@@ -47,9 +47,9 @@
       </div>
 
       <div class="event-readiness">
-        <span>Readiness</span>
+        <span>Preparation</span>
         <strong>{{ nextEvent.readinessPercentage }}%</strong>
-        <div class="readiness-track" aria-label="Assignment readiness">
+        <div class="readiness-track" aria-label="Assignment preparation">
           <span [style.width.%]="nextEvent.readinessPercentage"></span>
         </div>
       </div>
@@ -126,54 +126,7 @@
         <ng-template #emptyActivity>
           <div class="empty-state">
             <strong>No recent activity</strong>
-            <p>Assignment and host updates will appear here.</p>
-          </div>
-        </ng-template>
-      </article>
-
-      <article class="dashboard-panel flights-panel">
-        <header class="panel-heading">
-          <div>
-            <p class="section-eyebrow">Travel desk</p>
-            <h2>Upcoming flights</h2>
-          </div>
-          <button
-            type="button"
-            class="text-action"
-            (click)="openRoute('/app/assignments')">
-            All travel
-          </button>
-        </header>
-
-        <div class="flight-list" *ngIf="vm.flights.length; else emptyFlights">
-          <button
-            type="button"
-            *ngFor="let flight of vm.flights; trackBy: trackById"
-            class="flight-item"
-            (click)="openRoute(flight.route)">
-            <span class="flight-date">
-              <strong>{{ flight.departureDate | date:'d':'UTC' }}</strong>
-              <small>{{ flight.departureDate | date:'MMM':'UTC' }}</small>
-            </span>
-            <span class="flight-copy">
-              <small>{{ flight.direction }} · {{ flight.eventName }}</small>
-              <strong>{{ flight.airports }}</strong>
-              <span>
-                {{ flight.airline }} {{ flight.flightNumber }}
-                <ng-container *ngIf="flight.departureTime">
-                  · {{ flight.departureTime }}
-                </ng-container>
-              </span>
-            </span>
-            <span class="flight-status">Confirmed</span>
-          </button>
-        </div>
-
-        <ng-template #emptyFlights>
-          <div class="empty-state flight-empty">
-            <span class="empty-icon" aria-hidden="true">✈</span>
-            <strong>No upcoming flights confirmed</strong>
-            <p>Approved host travel details will appear here automatically.</p>
+            <p>Assignment and invitation updates will appear here.</p>
           </div>
         </ng-template>
       </article>
