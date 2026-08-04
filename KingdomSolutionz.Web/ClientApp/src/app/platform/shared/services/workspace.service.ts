@@ -25,7 +25,15 @@ export class WorkspaceService {
       shortName: 'CTG',
       kind: 'itinerant-ministry',
       description:
-        'Speaking engagements, travel, events, ministry responses and handoffs.'
+        'Speaking invitations, assignments, preparation, ministry responses and handoffs.'
+    },
+    {
+      id: 'jpp',
+      name: 'Jesus People Proclaim International Church',
+      shortName: 'JPP',
+      kind: 'church',
+      description:
+        'Church operations, discipleship coordination and accountable ministry follow-through.'
     }
   ];
 
