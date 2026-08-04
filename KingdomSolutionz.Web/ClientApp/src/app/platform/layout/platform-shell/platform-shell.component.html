@@ -1,142 +1,76 @@
-<div class="platform-shell" [class.platform-shell--sidebar-open]="
-    sidebarOpen
-  ">
-
+<div class="platform-shell" [class.platform-shell--sidebar-open]="sidebarOpen">
   <aside
     #sidebar
     class="platform-sidebar"
     id="platform-sidebar"
-    aria-label="KingdomOps navigation"
+    aria-label="Kingdom Engagements navigation"
     [attr.role]="compactNavigation ? 'dialog' : null"
-    [attr.aria-modal]="
-      compactNavigation && sidebarOpen
-        ? true
-        : null
-    "
-    [attr.aria-hidden]="
-      compactNavigation && !sidebarOpen
-        ? true
-        : null
-    "
-    [attr.inert]="
-      compactNavigation && !sidebarOpen
-        ? ''
-        : null
-    ">
-    <div class="sidebar-brand">
-      <div class="brand-mark">
-        K
-      </div>
+    [attr.aria-modal]="compactNavigation && sidebarOpen ? true : null"
+    [attr.aria-hidden]="compactNavigation && !sidebarOpen ? true : null"
+    [attr.inert]="compactNavigation && !sidebarOpen ? '' : null">
 
+    <div class="sidebar-brand">
+      <div class="brand-mark">K</div>
       <div class="brand-copy">
-        <strong>KingdomOps</strong>
-        <span>by KingdomSolutionz</span>
+        <strong>Kingdom Engagements</strong>
+        <span>Invitations through closeout</span>
       </div>
     </div>
 
     <section class="workspace-section">
-      <app-workspace-switcher>
-      </app-workspace-switcher>
+      <app-workspace-switcher></app-workspace-switcher>
     </section>
 
-    <nav class="platform-navigation" aria-label="KingdomOps navigation" *ngIf="
-        navigationSections$ | async
-          as navigationSections
-      ">
-
-      <section class="navigation-section" *ngFor="
-          let section of navigationSections
-        ">
-
-        <p class="navigation-section-label">
-          {{ section.label }}
-        </p>
-
+    <nav
+      class="platform-navigation"
+      aria-label="Kingdom Engagements navigation"
+      *ngIf="navigationSections$ | async as navigationSections">
+      <section class="navigation-section" *ngFor="let section of navigationSections">
+        <p class="navigation-section-label">{{ section.label }}</p>
         <div class="navigation-items">
-          <a *ngFor="let item of section.items" class="navigation-link" [routerLink]="item.route"
-            routerLinkActive="navigation-link--active" [routerLinkActiveOptions]="{
-              exact: item.exact === true
-            }" ariaCurrentWhenActive="page" (click)="closeSidebar()">
-
-            <span class="navigation-icon" [ngSwitch]="item.icon">
-
-              <svg *ngSwitchCase="'dashboard'" viewBox="0 0 24 24" aria-hidden="true">
-
-                <rect x="3" y="3" width="7" height="7" rx="1.5">
-                </rect>
-
-                <rect x="14" y="3" width="7" height="7" rx="1.5">
-                </rect>
-
-                <rect x="3" y="14" width="7" height="7" rx="1.5">
-                </rect>
-
-                <rect x="14" y="14" width="7" height="7" rx="1.5">
-                </rect>
+          <a
+            *ngFor="let item of section.items"
+            class="navigation-link"
+            [routerLink]="item.route"
+            routerLinkActive="navigation-link--active"
+            [routerLinkActiveOptions]="{ exact: item.exact === true }"
+            ariaCurrentWhenActive="page"
+            (click)="closeSidebar()">
+            <span class="navigation-icon" [ngSwitch]="item.icon" aria-hidden="true">
+              <svg *ngSwitchCase="'dashboard'" viewBox="0 0 24 24">
+                <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+                <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
               </svg>
-
-              <svg *ngSwitchCase="'requests'" viewBox="0 0 24 24" aria-hidden="true">
-
-                <path d="M7 3.75h10a2 2 0 0 1 2 2v14.5H5V5.75a2 2 0 0 1 2-2Z">
-                </path>
-
-                <path d="M8.5 8h7"></path>
-                <path d="M8.5 12h7"></path>
-                <path d="M8.5 16h4"></path>
+              <svg *ngSwitchCase="'requests'" viewBox="0 0 24 24">
+                <path d="M7 3.75h10a2 2 0 0 1 2 2v14.5H5V5.75a2 2 0 0 1 2-2Z"></path>
+                <path d="M8.5 8h7M8.5 12h7M8.5 16h4"></path>
               </svg>
-
-              <svg *ngSwitchCase="'assignments'" viewBox="0 0 24 24" aria-hidden="true">
-
-                <rect x="4" y="6" width="16" height="14" rx="2">
-                </rect>
-
-                <path d="M9 6V4.75A1.75 1.75 0 0 1 10.75 3h2.5A1.75 1.75 0 0 1 15 4.75V6">
-                </path>
-
-                <path d="M4 11.5h16"></path>
-                <path d="M10 11.5v1.75h4V11.5"></path>
+              <svg *ngSwitchCase="'assignments'" viewBox="0 0 24 24">
+                <rect x="4" y="6" width="16" height="14" rx="2"></rect>
+                <path d="M9 6V4.75A1.75 1.75 0 0 1 10.75 3h2.5A1.75 1.75 0 0 1 15 4.75V6"></path>
+                <path d="M4 11.5h16M10 11.5v1.75h4V11.5"></path>
               </svg>
-
-              <svg *ngSwitchCase="'care'" viewBox="0 0 24 24" aria-hidden="true">
+              <svg *ngSwitchCase="'care'" viewBox="0 0 24 24">
                 <path d="M12 20.25S4.5 16 4.5 9.75A4.25 4.25 0 0 1 12 7a4.25 4.25 0 0 1 7.5 2.75C19.5 16 12 20.25 12 20.25Z"></path>
                 <path d="M8.5 12h2l1-2.25L13 14l1-2h2"></path>
               </svg>
-
             </span>
-
             <span class="navigation-copy">
-              <strong>
-                {{ item.label }}
-              </strong>
-
-              <small *ngIf="item.description">
-                {{ item.description }}
-              </small>
+              <strong>{{ item.label }}</strong>
+              <small *ngIf="item.description">{{ item.description }}</small>
             </span>
-
-            <span class="navigation-arrow">
-              ›
-            </span>
+            <span class="navigation-arrow">›</span>
           </a>
         </div>
       </section>
     </nav>
 
     <div class="sidebar-spacer"></div>
-
-    <a
-      class="support-card"
-      routerLink="/contact"
-      (click)="closeSidebar()">
-
-      <span class="support-icon">
-        ?
-      </span>
-
-      <span class="support-copy">
-        <strong>Need help?</strong>
-        <small>Contact KingdomSolutionz</small>
-      </span>
+    <a class="support-card" routerLink="/contact" (click)="closeSidebar()">
+      <span class="support-icon">?</span>
+      <span class="support-copy"><strong>Need help?</strong><small>Contact KingdomSolutionz</small></span>
     </a>
   </aside>
 
@@ -151,215 +85,58 @@
   </button>
 
   <div class="platform-main">
-    <header class="platform-header" *ngIf="
-        selectedWorkspace$ | async
-          as selectedWorkspace
-      ">
-
+    <header class="platform-header" *ngIf="selectedWorkspace$ | async as selectedWorkspace">
       <div class="header-left">
         <button
           #mobileMenuButton
           type="button"
           class="mobile-menu-button"
-          [attr.aria-label]="
-            sidebarOpen
-              ? 'Close navigation'
-              : 'Open navigation'
-          "
+          [attr.aria-label]="sidebarOpen ? 'Close navigation' : 'Open navigation'"
           [attr.aria-expanded]="sidebarOpen"
           aria-controls="platform-sidebar"
           (click)="toggleSidebar()">
-
-          <span></span>
-          <span></span>
-          <span></span>
+          <span></span><span></span><span></span>
         </button>
-
-        <div class="current-workspace">
-          {{ selectedWorkspace.name }}
-        </div>
+        <div class="current-workspace">{{ selectedWorkspace.name }}</div>
       </div>
 
       <div class="header-right">
-        <button
-          type="button"
-          class="appearance-button"
-          aria-label="Customize ministry appearance"
-          [attr.aria-expanded]="appearanceOpen"
-          (click)="toggleAppearance()">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 3a9 9 0 1 0 0 18h1.3a1.7 1.7 0 0 0 0-3.4h-.8a1.4 1.4 0 0 1 0-2.8H15a6 6 0 0 0 0-12H12Z"></path>
-            <circle cx="7.5" cy="10" r=".8"></circle><circle cx="10" cy="6.8" r=".8"></circle><circle cx="14" cy="6.8" r=".8"></circle>
-          </svg>
+        <button type="button" class="appearance-button" aria-label="Customize appearance" (click)="toggleAppearance()">◐</button>
+        <button type="button" class="notification-status" aria-label="Open notifications" (click)="toggleNotificationCenter()">
+          <span>Notifications</span>
+          <b *ngIf="(unreadNotificationCount$ | async) as unread">{{ unread }}</b>
         </button>
-        <ng-container *ngIf="{ value: unreadNotificationCount$ | async } as unread">
-          <button
-            type="button"
-            class="notification-status"
-            [class.notification-status--unread]="(unread.value || 0) > 0"
-            [attr.aria-label]="
-              (unread.value || 0) > 0
-                ? 'Open notifications. ' + unread.value + ' unread'
-                : 'Open notifications'
-            "
-            [attr.aria-expanded]="notificationCenterOpen"
-            (click)="toggleNotificationCenter()">
-
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-
-            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9">
-            </path>
-
-            <path d="M10 21h4">
-            </path>
-          </svg>
-
-            <span
-              class="notification-badge"
-              *ngIf="(unread.value || 0) > 0">
-              {{ (unread.value || 0) > 9 ? '9+' : unread.value }}
-            </span>
-          </button>
-        </ng-container>
-
-        <div class="user-avatar">
-          CT
-        </div>
-
-        <div class="user-copy">
-          <strong>Cynthia Thompson</strong>
-          <span>Network administrator</span>
-        </div>
+        <div class="user-avatar">CT</div>
+        <div class="user-copy"><strong>Cynthia Thompson</strong><span>Engagement administrator</span></div>
       </div>
     </header>
 
-    <main class="platform-content">
-      <router-outlet></router-outlet>
-    </main>
+    <main class="platform-content"><router-outlet></router-outlet></main>
   </div>
 
   <app-kos-drawer
     [open]="notificationCenterOpen"
-    eyebrow="KingdomOps"
+    eyebrow="Kingdom Engagements"
     title="Notifications"
     width="md"
     (closed)="closeNotificationCenter()">
-
     <ng-container *ngIf="notifications$ | async as notifications">
       <section class="notification-center">
         <div class="notification-summary">
-          <div>
-            <strong>
-              {{ (unreadNotificationCount$ | async) || 0 }} unread
-            </strong>
-            <span>Updates requiring your attention</span>
-          </div>
-
-          <button
-            type="button"
-            [disabled]="((unreadNotificationCount$ | async) || 0) === 0"
-            (click)="markAllNotificationsAsRead(notifications)">
-            Mark all read
-          </button>
+          <div><strong>{{ (unreadNotificationCount$ | async) || 0 }} unread</strong><span>Host and engagement updates</span></div>
+          <button type="button" (click)="markAllNotificationsAsRead(notifications)">Mark all read</button>
         </div>
-
-        <div class="notification-filters" role="tablist" aria-label="Notification filters">
+        <div class="notification-list">
           <button
             type="button"
-            role="tab"
-            [attr.aria-selected]="notificationFilter === 'all'"
-            [class.notification-filter--active]="notificationFilter === 'all'"
-            (click)="setNotificationFilter('all')">
-            All
-            <span>{{ notifications.length }}</span>
-          </button>
-          <button
-            type="button"
-            role="tab"
-            [attr.aria-selected]="notificationFilter === 'unread'"
-            [class.notification-filter--active]="notificationFilter === 'unread'"
-            (click)="setNotificationFilter('unread')">
-            Unread
-            <span>{{ (unreadNotificationCount$ | async) || 0 }}</span>
-          </button>
-        </div>
-
-        <div
-          class="notification-list"
-          *ngIf="
-            getVisibleNotifications(notifications) as visibleNotifications
-          ">
-          <button
-            type="button"
-            *ngFor="let notification of visibleNotifications"
-            [ngClass]="[
-              'notification-item',
-              notification.read ? 'notification-item--read' : '',
-              'notification-item--' + notification.tone
-            ]"
+            *ngFor="let notification of getVisibleNotifications(notifications)"
+            class="notification-item"
             (click)="openNotification(notification)">
-
-            <span class="notification-icon" [ngSwitch]="notification.category">
-              <svg *ngSwitchCase="'travel'" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M3 11.5 21 4l-6.5 16-3.1-6.8L3 11.5Z"></path>
-              </svg>
-              <svg *ngSwitchCase="'documents'" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M6 3h8l4 4v14H6z"></path>
-                <path d="M14 3v5h4M9 12h6M9 16h6"></path>
-              </svg>
-              <svg *ngSwitchCase="'care'" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 20s-7.5-4.2-7.5-10.3A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.7C19.5 15.8 12 20 12 20z"></path>
-              </svg>
-              <svg *ngSwitchCase="'message'" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4 5h16v11H9l-5 4z"></path>
-                <path d="M8 9h8M8 12h5"></path>
-              </svg>
-              <svg *ngSwitchCase="'host'" viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="12" cy="8" r="4"></circle>
-                <path d="M5 20a7 7 0 0 1 14 0"></path>
-              </svg>
-              <svg *ngSwitchCase="'review'" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M5 4h14v16H5z"></path>
-                <path d="m8 12 2.2 2.2L16 8.5"></path>
-              </svg>
-              <svg *ngSwitchDefault viewBox="0 0 24 24" aria-hidden="true">
-                <rect x="4" y="6" width="16" height="14" rx="2"></rect>
-                <path d="M9 6V4h6v2M4 11h16"></path>
-              </svg>
-            </span>
-
             <span class="notification-copy">
-              <span class="notification-title-row">
-                <strong>{{ notification.title }}</strong>
-                <time>{{ getNotificationTime(notification.createdUtc) }}</time>
-              </span>
-              <span>{{ notification.description }}</span>
-              <small>{{ notification.context }}</small>
-              <em>{{ notification.actionLabel }} <span aria-hidden="true">→</span></em>
-            </span>
-
-            <span
-              class="unread-dot"
-              *ngIf="!notification.read"
-              aria-label="Unread">
+              <span class="notification-title-row"><strong>{{ notification.title }}</strong><time>{{ getNotificationTime(notification.createdUtc) }}</time></span>
+              <span>{{ notification.description }}</span><small>{{ notification.context }}</small>
             </span>
           </button>
-
-          <div
-            class="notification-empty"
-            *ngIf="visibleNotifications.length === 0">
-            <span aria-hidden="true">✓</span>
-            <strong>
-              {{ notificationFilter === 'unread'
-                ? 'You’re all caught up'
-                : 'No notifications yet' }}
-            </strong>
-            <p>
-              {{ notificationFilter === 'unread'
-                ? 'New host, travel, document and care updates will appear here.'
-                : 'KingdomOps will keep ministry updates organized here.' }}
-            </p>
-          </div>
         </div>
       </section>
     </ng-container>
@@ -372,58 +149,15 @@
     width="md"
     (closed)="closeAppearance()">
     <section class="palette-editor" *ngIf="draftPalette">
-      <div class="palette-intro">
-        <strong>Make this workspace feel like your ministry.</strong>
-        <p>Choose a polished preset or adjust the colors below. Your layout and readability stay protected.</p>
-      </div>
-
+      <div class="palette-intro"><strong>Customize this Engagements workspace.</strong><p>Choose a preset without changing the product structure.</p></div>
       <div class="palette-presets">
-        <button type="button" *ngFor="let preset of palettePresets"
-          [class.palette-preset--selected]="draftPalette.id === preset.id"
-          (click)="selectPalettePreset(preset)">
-          <span class="preset-swatches">
-            <i [style.background]="preset.sidebar"></i><i [style.background]="preset.primary"></i>
-            <i [style.background]="preset.secondary"></i><i [style.background]="preset.page"></i>
-          </span>
+        <button type="button" *ngFor="let preset of palettePresets" (click)="selectPalettePreset(preset)">
           <strong>{{ preset.name }}</strong>
-          <small *ngIf="draftPalette.id === preset.id">Selected</small>
         </button>
       </div>
-
-      <div class="custom-colors">
-        <div class="palette-section-heading">
-          <div><strong>Custom colors</strong><span>Changes preview instantly</span></div>
-          <button type="button" (click)="restoreDefaultPalette()">Restore default</button>
-        </div>
-        <label *ngFor="let color of [
-          { key: 'primary', label: 'Primary action' },
-          { key: 'secondary', label: 'Secondary accent' },
-          { key: 'accent', label: 'Highlight' },
-          { key: 'sidebar', label: 'Sidebar' },
-          { key: 'page', label: 'Page background' }
-        ]">
-          <span>{{ color.label }}</span>
-          <span class="color-control">
-            <input type="color" [value]="$any(draftPalette)[color.key]"
-              (input)="updatePaletteColor($any(color.key), $any($event.target).value)">
-            <code>{{ $any(draftPalette)[color.key] }}</code>
-          </span>
-        </label>
-      </div>
-
-      <div class="palette-preview">
-        <span [style.background]="draftPalette.sidebar"></span>
-        <div [style.background]="draftPalette.page">
-          <i [style.background]="draftPalette.primary"></i>
-          <i [style.background]="draftPalette.secondary"></i>
-          <b>Ministry workspace preview</b>
-          <small>Clean surfaces, your chosen accents.</small>
-        </div>
-      </div>
-
       <footer class="palette-actions">
-        <span [class.palette-saved--visible]="paletteSaved">✓ Palette saved</span>
-        <button type="button" class="palette-save" (click)="savePalette()">Save palette</button>
+        <button type="button" (click)="restoreDefaultPalette()">Restore default</button>
+        <button type="button" (click)="savePalette()">Save palette</button>
       </footer>
     </section>
   </app-kos-drawer>

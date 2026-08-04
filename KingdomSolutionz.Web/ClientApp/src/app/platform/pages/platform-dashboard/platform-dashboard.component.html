@@ -2,50 +2,25 @@
   <section class="executive-dashboard">
     <header class="dashboard-heading">
       <div>
-        <p class="eyebrow">{{ vm.eyebrow }}</p>
+        <p class="eyebrow">Kingdom Engagements · {{ vm.eyebrow }}</p>
         <h1>{{ vm.title }}</h1>
         <p class="dashboard-description">
-          {{ vm.description }}
+          Manage every invitation from host request through preparation, travel, ministry response and closeout.
         </p>
       </div>
-
       <div class="today-card">
         <span>Today</span>
         <strong>{{ vm.todayLabel }}</strong>
-        <small>{{ vm.workspace.shortName }} command center</small>
+        <small>{{ vm.workspace.shortName }} engagement center</small>
       </div>
     </header>
 
-    <section class="metric-grid" aria-label="Operations tools">
-      <button
-        type="button"
-        class="metric-card metric-card--blue"
-        (click)="openRoute('/app/checklist-templates')">
-        <span class="metric-accent"></span>
-        <span class="metric-arrow" aria-hidden="true">↗</span>
-        <strong class="metric-value">Templates</strong>
-        <span class="metric-label">Reusable checklists</span>
-        <small>Standardize recurring ministry work by workspace.</small>
-      </button>
-      <button
-        type="button"
-        class="metric-card metric-card--amber"
-        (click)="openRoute('/app/support')">
-        <span class="metric-accent"></span>
-        <span class="metric-arrow" aria-hidden="true">↗</span>
-        <strong class="metric-value">Support</strong>
-        <span class="metric-label">Operations requests</span>
-        <small>Ask for access, workflow, data, or training help.</small>
-      </button>
-    </section>
-
-    <section class="metric-grid" aria-label="Executive ministry summary">
+    <section class="metric-grid" aria-label="Engagement summary">
       <button
         type="button"
         *ngFor="let metric of vm.metrics"
         [ngClass]="['metric-card', 'metric-card--' + metric.tone]"
         (click)="openRoute(metric.route)">
-
         <span class="metric-accent"></span>
         <span class="metric-arrow" aria-hidden="true">↗</span>
         <strong class="metric-value">{{ metric.value }}</strong>
@@ -59,138 +34,61 @@
         <span>{{ nextEvent.startDate | date:'MMM':'UTC' }}</span>
         <strong>{{ nextEvent.startDate | date:'d':'UTC' }}</strong>
       </div>
-
       <div class="event-copy">
-        <p class="section-eyebrow">Next ministry assignment</p>
+        <p class="section-eyebrow">Next engagement</p>
         <h2>{{ nextEvent.eventName }}</h2>
-        <p>
-          {{ nextEvent.organizationName }} · {{ nextEvent.city }},
-          {{ nextEvent.state }}
-        </p>
+        <p>{{ nextEvent.organizationName }} · {{ nextEvent.city }}, {{ nextEvent.state }}</p>
       </div>
-
       <div class="event-readiness">
-        <span>Preparation</span>
+        <span>Overall readiness</span>
         <strong>{{ nextEvent.readinessPercentage }}%</strong>
-        <div class="readiness-track" aria-label="Assignment preparation">
-          <span [style.width.%]="nextEvent.readinessPercentage"></span>
-        </div>
+        <div class="readiness-track"><span [style.width.%]="nextEvent.readinessPercentage"></span></div>
       </div>
-
-      <button
-        type="button"
-        class="event-action"
-        (click)="openRoute('/app/assignments/' + nextEvent.id + '/overview')">
-        Open assignment <span aria-hidden="true">→</span>
+      <button type="button" class="event-action" (click)="openRoute('/app/assignments/' + nextEvent.id + '/overview')">
+        Open engagement <span aria-hidden="true">→</span>
       </button>
     </section>
 
     <section class="dashboard-grid">
       <article class="dashboard-panel schedule-panel">
         <header class="panel-heading">
-          <div>
-            <p class="section-eyebrow">Your day</p>
-            <h2>Today’s schedule</h2>
-          </div>
+          <div><p class="section-eyebrow">Attention</p><h2>Today’s engagement work</h2></div>
           <span class="panel-count">{{ vm.schedule.length }}</span>
         </header>
-
         <div class="schedule-list" *ngIf="vm.schedule.length; else emptySchedule">
-          <button
-            type="button"
-            *ngFor="let item of vm.schedule"
-            class="schedule-item"
-            (click)="openRoute(item.route)">
+          <button type="button" *ngFor="let item of vm.schedule" class="schedule-item" (click)="openRoute(item.route)">
             <span class="schedule-time">{{ item.time }}</span>
             <span [ngClass]="['schedule-dot', 'schedule-dot--' + item.tone]"></span>
-            <span class="schedule-copy">
-              <strong>{{ item.title }}</strong>
-              <small>{{ item.description }}</small>
-            </span>
-            <span class="item-arrow" aria-hidden="true">›</span>
+            <span class="schedule-copy"><strong>{{ item.title }}</strong><small>{{ item.description }}</small></span>
+            <span class="item-arrow">›</span>
           </button>
         </div>
-
         <ng-template #emptySchedule>
-          <div class="empty-state compact-empty">
-            <span aria-hidden="true">✓</span>
-            <strong>No scheduled priorities today</strong>
-            <p>Your action queue is clear.</p>
-          </div>
+          <div class="empty-state compact-empty"><strong>No engagement priorities today</strong><p>Your action queue is clear.</p></div>
         </ng-template>
       </article>
 
       <article class="dashboard-panel activity-panel">
-        <header class="panel-heading">
-          <div>
-            <p class="section-eyebrow">Ministry memory</p>
-            <h2>Recent activity</h2>
-          </div>
-        </header>
-
+        <header class="panel-heading"><div><p class="section-eyebrow">Engagement memory</p><h2>Recent activity</h2></div></header>
         <div class="activity-list" *ngIf="vm.activities.length; else emptyActivity">
-          <button
-            type="button"
-            *ngFor="let activity of vm.activities; trackBy: trackById"
-            class="activity-item"
-            (click)="openRoute(activity.route)">
+          <button type="button" *ngFor="let activity of vm.activities; trackBy: trackById" class="activity-item" (click)="openRoute(activity.route)">
             <span [ngClass]="['activity-mark', 'activity-mark--' + activity.tone]"></span>
             <span class="activity-copy">
-              <span class="activity-title-row">
-                <strong>{{ activity.title }}</strong>
-                <time>{{ activity.createdUtc | date:'MMM d, h:mm a' }}</time>
-              </span>
-              <span>{{ activity.description }}</span>
-              <small>{{ activity.context }}</small>
+              <span class="activity-title-row"><strong>{{ activity.title }}</strong><time>{{ activity.createdUtc | date:'MMM d, h:mm a' }}</time></span>
+              <span>{{ activity.description }}</span><small>{{ activity.context }}</small>
             </span>
           </button>
         </div>
-
-        <ng-template #emptyActivity>
-          <div class="empty-state">
-            <strong>No recent activity</strong>
-            <p>Assignment and invitation updates will appear here.</p>
-          </div>
-        </ng-template>
+        <ng-template #emptyActivity><div class="empty-state"><strong>No recent activity</strong><p>Invitation and engagement updates will appear here.</p></div></ng-template>
       </article>
 
       <article class="dashboard-panel quick-actions-panel">
-        <header class="panel-heading">
-          <div>
-            <p class="section-eyebrow">Shortcuts</p>
-            <h2>Quick actions</h2>
-          </div>
-        </header>
-
+        <header class="panel-heading"><div><p class="section-eyebrow">Shortcuts</p><h2>Engagement actions</h2></div></header>
         <div class="quick-action-grid">
-          <button
-            type="button"
-            *ngFor="let action of vm.quickActions"
-            [class.quick-action--emphasis]="action.emphasis"
-            class="quick-action"
-            (click)="openRoute(action.route)">
-            <span class="quick-action-icon" [ngSwitch]="action.icon">
-              <svg *ngSwitchCase="'review'" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M5 4h14v16H5z"></path>
-                <path d="M8 8h8M8 12h8M8 16h5"></path>
-              </svg>
-              <svg *ngSwitchCase="'assignment'" viewBox="0 0 24 24" aria-hidden="true">
-                <rect x="4" y="6" width="16" height="14" rx="2"></rect>
-                <path d="M9 6V4h6v2M4 11h16"></path>
-              </svg>
-              <svg *ngSwitchCase="'care'" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 20s-7.5-4.2-7.5-10.3A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.7C19.5 15.8 12 20 12 20z"></path>
-              </svg>
-              <svg *ngSwitchCase="'profile'" viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="12" cy="8" r="4"></circle>
-                <path d="M4.5 20a7.5 7.5 0 0 1 15 0"></path>
-              </svg>
-            </span>
-            <span>
-              <strong>{{ action.label }}</strong>
-              <small>{{ action.description }}</small>
-            </span>
-            <span class="item-arrow" aria-hidden="true">›</span>
+          <button type="button" *ngFor="let action of vm.quickActions" [class.quick-action--emphasis]="action.emphasis" class="quick-action" (click)="openRoute(action.route)">
+            <span class="quick-action-icon">◇</span>
+            <span><strong>{{ action.label }}</strong><small>{{ action.description }}</small></span>
+            <span class="item-arrow">›</span>
           </button>
         </div>
       </article>

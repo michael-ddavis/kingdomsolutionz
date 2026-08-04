@@ -1,0 +1,107 @@
+<ng-container *ngIf="assignment$ | async as assignment; else assignmentNotFound">
+  <form class="travel-page" [formGroup]="form" (ngSubmit)="saveItinerary()">
+    <header class="travel-heading">
+      <div>
+        <p class="eyebrow">Engagement travel</p>
+        <h2>Travel, lodging and local transportation</h2>
+        <p>Keep every reservation and host-provided movement detail with the engagement it supports.</p>
+      </div>
+      <div class="readiness-card">
+        <span>Travel readiness</span>
+        <strong>{{ assignment.travelItinerary.readinessPercentage }}%</strong>
+        <div><i [style.width.%]="assignment.travelItinerary.readinessPercentage"></i></div>
+      </div>
+    </header>
+
+    <section class="host-card">
+      <div>
+        <p class="eyebrow">Host coordination</p>
+        <h3>{{ assignment.hostCoordination.status === 'not-requested' ? 'Final logistics have not been requested' : 'Host coordination: ' + assignment.hostCoordination.status }}</h3>
+        <p>The host link collects travel, lodging, contacts, schedule, prayer focus, promotion details and documents.</p>
+      </div>
+      <div class="host-actions">
+        <button *ngIf="assignment.hostCoordination.status === 'not-requested'" type="button" (click)="requestHostDetails()">Create host link</button>
+        <a *ngIf="assignment.hostCoordination.status !== 'not-requested'" [routerLink]="['/coordinate/assignments', assignment.id]">Open host link</a>
+        <button *ngIf="assignment.hostCoordination.status === 'submitted'" type="button" class="secondary" (click)="markHostDetailsReviewed()">Mark reviewed</button>
+      </div>
+    </section>
+
+    <section class="travel-grid">
+      <article class="travel-section" formGroupName="outboundFlight">
+        <p class="section-number">01</p><h3>Outbound flight</h3>
+        <div class="field-grid">
+          <label><span>Airline</span><input formControlName="airline"></label>
+          <label><span>Flight number</span><input formControlName="flightNumber"></label>
+          <label><span>Confirmation</span><input formControlName="confirmationNumber"></label>
+          <label><span>Seat</span><input formControlName="seat"></label>
+          <label><span>Departure airport</span><input formControlName="departureAirport"></label>
+          <label><span>Arrival airport</span><input formControlName="arrivalAirport"></label>
+          <label><span>Departure date</span><input type="date" formControlName="departureDate"></label>
+          <label><span>Departure time</span><input type="time" formControlName="departureTime"></label>
+          <label><span>Arrival date</span><input type="date" formControlName="arrivalDate"></label>
+          <label><span>Arrival time</span><input type="time" formControlName="arrivalTime"></label>
+          <label class="wide"><span>Notes</span><textarea rows="3" formControlName="notes"></textarea></label>
+        </div>
+      </article>
+
+      <article class="travel-section" formGroupName="returnFlight">
+        <p class="section-number">02</p><h3>Return flight</h3>
+        <div class="field-grid">
+          <label><span>Airline</span><input formControlName="airline"></label>
+          <label><span>Flight number</span><input formControlName="flightNumber"></label>
+          <label><span>Confirmation</span><input formControlName="confirmationNumber"></label>
+          <label><span>Seat</span><input formControlName="seat"></label>
+          <label><span>Departure airport</span><input formControlName="departureAirport"></label>
+          <label><span>Arrival airport</span><input formControlName="arrivalAirport"></label>
+          <label><span>Departure date</span><input type="date" formControlName="departureDate"></label>
+          <label><span>Departure time</span><input type="time" formControlName="departureTime"></label>
+          <label><span>Arrival date</span><input type="date" formControlName="arrivalDate"></label>
+          <label><span>Arrival time</span><input type="time" formControlName="arrivalTime"></label>
+          <label class="wide"><span>Notes</span><textarea rows="3" formControlName="notes"></textarea></label>
+        </div>
+      </article>
+
+      <article class="travel-section" formGroupName="hotel">
+        <p class="section-number">03</p><h3>Lodging</h3>
+        <div class="field-grid">
+          <label><span>Hotel</span><input formControlName="hotelName"></label>
+          <label><span>Confirmation</span><input formControlName="confirmationNumber"></label>
+          <label class="wide"><span>Address</span><input formControlName="address"></label>
+          <label><span>City</span><input formControlName="city"></label>
+          <label><span>State</span><input formControlName="state"></label>
+          <label><span>Postal code</span><input formControlName="postalCode"></label>
+          <label><span>Phone</span><input type="tel" formControlName="phone"></label>
+          <label><span>Check in</span><input type="date" formControlName="checkInDate"></label>
+          <label><span>Check-in time</span><input type="time" formControlName="checkInTime"></label>
+          <label><span>Check out</span><input type="date" formControlName="checkOutDate"></label>
+          <label><span>Check-out time</span><input type="time" formControlName="checkOutTime"></label>
+          <label class="wide"><span>Notes</span><textarea rows="3" formControlName="notes"></textarea></label>
+        </div>
+      </article>
+
+      <article class="travel-section" formGroupName="groundTransportation">
+        <p class="section-number">04</p><h3>Ground transportation</h3>
+        <div class="field-grid">
+          <label><span>Arrival contact</span><input formControlName="arrivalPickupContact"></label>
+          <label><span>Arrival phone</span><input formControlName="arrivalPickupPhone"></label>
+          <label class="wide"><span>Arrival instructions</span><textarea rows="3" formControlName="arrivalPickupInstructions"></textarea></label>
+          <label><span>Departure contact</span><input formControlName="departurePickupContact"></label>
+          <label><span>Departure phone</span><input formControlName="departurePickupPhone"></label>
+          <label class="wide"><span>Departure instructions</span><textarea rows="3" formControlName="departurePickupInstructions"></textarea></label>
+          <label class="wide"><span>Local transportation</span><textarea rows="3" formControlName="localTransportationDetails"></textarea></label>
+        </div>
+      </article>
+    </section>
+
+    <label class="general-notes"><span>Internal travel notes</span><textarea rows="4" formControlName="generalNotes"></textarea></label>
+
+    <footer class="save-panel">
+      <span *ngIf="saved" role="status">Travel itinerary saved.</span>
+      <button type="submit" [disabled]="form.pristine">Save travel itinerary</button>
+    </footer>
+  </form>
+</ng-container>
+
+<ng-template #assignmentNotFound>
+  <section class="empty-state"><h2>Engagement not found</h2><p>The travel workspace could not be loaded.</p></section>
+</ng-template>

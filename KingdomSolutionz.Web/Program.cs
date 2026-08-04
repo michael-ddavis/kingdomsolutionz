@@ -21,7 +21,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseAuthentication();
@@ -30,12 +29,10 @@ app.UseAuthorization();
 app.MapGet("/health", () => Results.Ok(new
 {
     status = "Healthy",
-    service = "KingdomOperations"
+    service = "KingdomEngagements",
+    module = "engagements"
 }));
 
 app.MapControllers();
-
-// This lets Angular handle routes like /pricing, /portfolio, /admin, etc.
 app.MapFallbackToFile("index.html");
-
 app.Run();

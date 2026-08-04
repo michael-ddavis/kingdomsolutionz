@@ -44,6 +44,8 @@ public sealed class KingdomSessionController(
             displayName = authenticated ? User.Identity?.Name : null,
             tenantId = tenantValue,
             tenantRole,
+            module = "engagements",
+            product = "Kingdom Engagements",
             roles = authenticated
                 ? User.FindAll(ClaimTypes.Role).Select(claim => claim.Value).ToArray()
                 : [],
@@ -67,19 +69,13 @@ public sealed class KingdomSessionController(
         using var request = new HttpRequestMessage(
             HttpMethod.Get,
             $"{platformUrl}/api/modules");
-        request.Headers.TryAddWithoutValidation(
-            "X-Kingdom-Tenant",
-            tenantValue);
+        request.Headers.TryAddWithoutValidation("X-Kingdom-Tenant", tenantValue);
         request.Headers.TryAddWithoutValidation(
             "X-Kingdom-Subject",
-            string.IsNullOrWhiteSpace(subject)
-                ? "operations-session"
-                : subject);
+            string.IsNullOrWhiteSpace(subject) ? "engagements-session" : subject);
         request.Headers.TryAddWithoutValidation(
             "X-Kingdom-Role",
-            string.IsNullOrWhiteSpace(tenantRole)
-                ? "viewer"
-                : tenantRole);
+            string.IsNullOrWhiteSpace(tenantRole) ? "viewer" : tenantRole);
 
         try
         {
@@ -89,7 +85,7 @@ public sealed class KingdomSessionController(
             if (!response.IsSuccessStatusCode)
             {
                 logger.LogWarning(
-                    "Platform returned {StatusCode} while Operations resolved module entitlements.",
+                    "Platform returned {StatusCode} while Engagements resolved module entitlements.",
                     response.StatusCode);
                 return [];
             }
@@ -109,7 +105,7 @@ public sealed class KingdomSessionController(
         {
             logger.LogWarning(
                 exception,
-                "Operations failed closed while resolving module entitlements.");
+                "Engagements failed closed while resolving module entitlements.");
             return [];
         }
     }
