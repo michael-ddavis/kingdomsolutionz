@@ -1,35 +1,17 @@
-import {
-  NO_ERRORS_SCHEMA
-} from '@angular/core';
-import {
-  ComponentFixture,
-  TestBed
-} from '@angular/core/testing';
-import {
-  RouterTestingModule
-} from '@angular/router/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 
-import {
-  Workspace
-} from '../../shared/models/workspace.model';
-import {
-  WorkspaceService
-} from '../../shared/services/workspace.service';
-import {
-  NotificationCenterService
-} from '../../shared/services/notification-center.service';
-import {
-  ModuleEntitlementService
-} from '../../shared/services/module-entitlement.service';
-import {
-  PlatformShellComponent
-} from './platform-shell.component';
+import { Workspace } from '../../shared/models/workspace.model';
+import { WorkspaceService } from '../../shared/services/workspace.service';
+import { NotificationCenterService } from '../../shared/services/notification-center.service';
+import { ModuleEntitlementService } from '../../shared/services/module-entitlement.service';
+import { PlatformShellComponent } from './platform-shell.component';
 
 describe('PlatformShellComponent', () => {
   let component: PlatformShellComponent;
-  let fixture:
-    ComponentFixture<PlatformShellComponent>;
+  let fixture: ComponentFixture<PlatformShellComponent>;
 
   const workspace: Workspace = {
     id: 'apostle-cynthia',
@@ -56,15 +38,9 @@ describe('PlatformShellComponent', () => {
             notifications$: of([]),
             unreadCount$: of(0),
             openRequests$: of(),
-            requestOpen: jasmine.createSpy(
-              'requestOpen'
-            ),
-            markAsRead: jasmine.createSpy(
-              'markAsRead'
-            ),
-            markAllAsRead: jasmine.createSpy(
-              'markAllAsRead'
-            )
+            requestOpen: jasmine.createSpy('requestOpen'),
+            markAsRead: jasmine.createSpy('markAsRead'),
+            markAllAsRead: jasmine.createSpy('markAllAsRead')
           }
         },
         {
@@ -77,42 +53,32 @@ describe('PlatformShellComponent', () => {
       schemas: [NO_ERRORS_SCHEMA]
     });
 
-    fixture = TestBed.createComponent(
-      PlatformShellComponent
-    );
+    fixture = TestBed.createComponent(PlatformShellComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
   afterEach(() => {
-    document.body.classList.remove(
-      'kos-sidebar-open'
-    );
+    document.body.classList.remove('kos-sidebar-open');
   });
 
-  it('renders an icon for the Assignments link', () => {
+  it('renders an icon for the Engagements link', () => {
     const links = Array.from(
-      fixture.nativeElement.querySelectorAll(
-        '.navigation-link'
-      ) as NodeListOf<HTMLElement>
+      fixture.nativeElement.querySelectorAll('.navigation-link') as NodeListOf<HTMLElement>
     );
 
-    const assignmentsLink = links.find(link =>
-      link.textContent?.includes('Assignments')
+    const engagementsLink = links.find(link =>
+      link.textContent?.includes('Engagements')
     );
 
-    expect(assignmentsLink).toBeDefined();
+    expect(engagementsLink).toBeDefined();
     expect(
-      assignmentsLink?.querySelector(
-        '.navigation-icon svg'
-      )
+      engagementsLink?.querySelector('.navigation-icon svg')
     ).not.toBeNull();
   });
 
   it('hides Care navigation when Care is not entitled', () => {
-    expect(
-      fixture.nativeElement.textContent
-    ).not.toContain('Care Network');
+    expect(fixture.nativeElement.textContent).not.toContain('Care Network');
   });
 
   it('closes the mobile navigation with Escape', () => {
@@ -126,11 +92,7 @@ describe('PlatformShellComponent', () => {
     );
 
     expect(component.sidebarOpen).toBeFalse();
-    expect(
-      document.body.classList.contains(
-        'kos-sidebar-open'
-      )
-    ).toBeFalse();
+    expect(document.body.classList.contains('kos-sidebar-open')).toBeFalse();
   });
 
   it('keeps the right-side drawers mutually exclusive', () => {
