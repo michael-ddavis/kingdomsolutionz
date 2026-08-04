@@ -1,6 +1,23 @@
-# KingdomSolutionz
+# Kingdom Engagements
 
-KingdomSolutionz is an ASP.NET Core and Angular application containing the public KingdomSolutionz website, project-intake flow, and the KingdomOps ministry-operations prototype.
+This repository contains the public KingdomSolutionz site and the complete Kingdom Engagements product for speaking and ministry invitations.
+
+## Product boundary
+
+Kingdom Engagements owns the full engagement lifecycle:
+
+- public speaking-request intake and host corrections;
+- invitation review, approval and assignment creation;
+- speaker profiles, approved biography, assets and preferences;
+- host organization, venue, event and contact information;
+- preparation checklists and responsibility tracking;
+- host coordination links and forms;
+- flights, lodging and ground transportation;
+- contracts, schedules, promotional resources and documents;
+- optional consented Kingdom Care handoffs when Care is entitled;
+- engagement activity history, closeout, expenses and outcomes.
+
+Kingdom Operations does not own these records. Operations may receive governed engagement status, risk or support-request summaries, but detailed engagement work remains here.
 
 ## Technology
 
@@ -8,83 +25,38 @@ KingdomSolutionz is an ASP.NET Core and Angular application containing the publi
 - Angular 21
 - Node.js 22.12 or another version supported by Angular 21
 - SQL Server for public lead intake
-
-The recommended Node version is recorded in `KingdomSolutionz.Web/ClientApp/.nvmrc`.
+- browser local storage for the current Engagements demonstration state
 
 ## Local development
-
-Install the web dependencies:
 
 ```bash
 cd KingdomSolutionz.Web/ClientApp
 npm ci
-```
-
-Start the Angular development server with the API proxy:
-
-```bash
 npm start
 ```
 
-Run the production web build and tests:
+Run validation:
 
 ```bash
 npm run build:production
 npm run test:ci
+cd ../../..
+dotnet build KingdomSolutionz.sln
 ```
 
-Run the ASP.NET Core application from the repository root:
+## Main routes
 
-```bash
-dotnet run --project KingdomSolutionz.Web/KingdomSolutionz.Web.csproj
-```
+- `/invite/apostle-cynthia` — public speaking request
+- `/invite/apostle-cynthia/requests/:id/update` — host correction link
+- `/coordinate/assignments/:id` — host coordination form
+- `/respond/assignments/:id` — public or QR ministry-response intake
+- `/app/login` — Kingdom Engagements demonstration entry
+- `/app/speaking-requests` — invitation queue
+- `/app/assignments` — approved engagements
+- `/app/assignments/:id/travel` — flights, lodging and transportation
+- `/app/speaker-profile` — reusable speaker profile and assets
+- `/app/care-network` — optional Care-enabled follow-through
 
-## Application areas
+## Current limitations
 
-- `/` — public KingdomSolutionz website
-- `/start-project` — public project-intake form
-- `/invite/apostle-cynthia` — public speaking-request demonstration
-- `/invite/apostle-cynthia/requests/:id/update` — host correction and resubmission link
-- `/coordinate/assignments/:id` — host logistics, contacts, schedule, prayer, promotion, and file intake
-- `/respond/assignments/:id` — public/QR ministry-response intake
-- `/app/login` — KingdomOps demonstration entry
-- `/app` — KingdomOps workspace prototype
-- `/app/care-network` — cross-assignment Care Inbox and reusable trusted-partner directory
-- `/app/assignments/2001/care-network` — consented response intake, assigned care follow-up, trusted local partners, referral SLAs, reassignment, and accountable connection tracking
-- `/app/speaker-profile` — reusable biography, assets, preferences, documents, and team contacts
-
-## KingdomOps design foundation
-
-Shared platform tokens and primitives live in:
-
-- `KingdomSolutionz.Web/ClientApp/src/styles/_kos-tokens.scss`
-- `KingdomSolutionz.Web/ClientApp/src/styles/_kos-foundation.scss`
-- `KingdomSolutionz.Web/ClientApp/src/styles/_kos-motion.scss`
-- `KingdomSolutionz.Web/ClientApp/src/styles/_kos-responsive.scss`
-
-New platform UI should use these shared values before introducing component-specific colors, type sizes, spacing, controls, or focus treatments.
-
-The authenticated KingdomOps interface uses the **Quiet Authority** direction: obsidian navigation and primary actions, warm ivory work surfaces, restrained champagne accents, and functional status colors reserved for operational meaning. The public KingdomSolutionz site and invitation intake remain visually independent.
-
-Approved speaking requests are the source record for assignment creation. Event details, dates, venue, requested ministry, attendance, coverage commitments, and the primary host contact carry into the assignment automatically. Assignment sections collect only information that was not already supplied, while preserving a link to the original invitation.
-
-KingdomOps Care Network keeps responsibility with the ministry until a receiving partner accepts the referral. The Care Inbox brings cases from every assignment into one queue, while verified partner churches remain reusable across future assignments. Each response records consent provenance, an assigned care coordinator, priority, next follow-up, contact attempts, referral deadlines and reminders. Declined, expired, cancelled, unreachable and consent-withdrawn cases retain their history so reassignment and closure remain auditable.
-
-## Prototype limitations
-
-KingdomOps is currently a product demonstration, not a production tenant application:
-
-- the KingdomOps login does not authenticate a user;
-- speaking-request, assignment, and care-network state is stored in browser local storage so host links and the full demo sequence survive a refresh;
-- invitation notifications and referral email delivery are simulated; a production provider and signed, expiring links are still required;
-- document uploads use temporary browser object URLs;
-- the Speaking Requests page includes a Reset ACT demo action that restores the single pending invitation;
-- administrative lead endpoints must be protected before production use.
-
-Authentication, authorization, durable APIs, database migrations, and document storage are required before onboarding real KingdomOps users.
-
-## Validation and deployment
-
-Pull-request validation installs dependencies, audits production packages, builds Angular, runs browser tests, and builds the .NET application. Pushes to `main` publish the application to the configured Azure Web App.
-
-The public site currently loads Manrope through Google Fonts. Self-host approved `.woff2` files before a performance-focused production release.
+This remains a product demonstration. Engagement state is stored in browser local storage, document uploads use browser object URLs, outbound messages are simulated, and the demo login is not production authentication. Durable APIs, database migrations, signed expiring host links, document storage and production authorization are required before live ministry onboarding.
