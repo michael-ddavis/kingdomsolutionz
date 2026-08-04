@@ -20,6 +20,9 @@ import {
   NotificationCenterService
 } from '../../shared/services/notification-center.service';
 import {
+  ModuleEntitlementService
+} from '../../shared/services/module-entitlement.service';
+import {
   PlatformShellComponent
 } from './platform-shell.component';
 
@@ -63,6 +66,12 @@ describe('PlatformShellComponent', () => {
               'markAllAsRead'
             )
           }
+        },
+        {
+          provide: ModuleEntitlementService,
+          useValue: {
+            isEnabled: () => of(false)
+          }
         }
       ],
       schemas: [NO_ERRORS_SCHEMA]
@@ -98,6 +107,12 @@ describe('PlatformShellComponent', () => {
         '.navigation-icon svg'
       )
     ).not.toBeNull();
+  });
+
+  it('hides Care navigation when Care is not entitled', () => {
+    expect(
+      fixture.nativeElement.textContent
+    ).not.toContain('Care Network');
   });
 
   it('closes the mobile navigation with Escape', () => {

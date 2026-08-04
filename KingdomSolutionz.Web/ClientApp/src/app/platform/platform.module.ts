@@ -30,9 +30,6 @@ import {
   AssignmentOverviewComponent
 } from './pages/assignments/assignment-overview/assignment-overview.component';
 import {
-  AssignmentTravelComponent
-} from './pages/assignments/assignment-travel/assignment-travel.component';
-import {
   AssignmentWorkspaceComponent
 } from './pages/assignments/assignment-workspace/assignment-workspace.component';
 import {
@@ -67,7 +64,6 @@ import {
     AssignmentDocumentsComponent,
     AssignmentListComponent,
     AssignmentOverviewComponent,
-    AssignmentTravelComponent,
     AssignmentWorkspaceComponent,
     CareNetworkInboxComponent,
     KosDrawerComponent,

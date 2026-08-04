@@ -105,7 +105,7 @@
     <nav class="assignment-tabs" aria-label="Assignment sections">
 
       <section
-        *ngFor="let group of tabGroups"
+        *ngFor="let group of tabGroups$ | async"
         [ngClass]="[
           'assignment-tab-group',
           'assignment-tab-group--' + group.id

@@ -32,14 +32,17 @@ import {
   AssignmentOverviewComponent
 } from './pages/assignments/assignment-overview/assignment-overview.component';
 import {
-  AssignmentTravelComponent
-} from './pages/assignments/assignment-travel/assignment-travel.component';
-import {
   AssignmentWorkspaceComponent
 } from './pages/assignments/assignment-workspace/assignment-workspace.component';
 import {
   CareNetworkInboxComponent
 } from './pages/care-network/care-network-inbox.component';
+import {
+  ChecklistTemplatesPageComponent
+} from './pages/checklist-templates/checklist-templates-page.component';
+import {
+  OperationsSupportPageComponent
+} from './pages/operations-support/operations-support-page.component';
 import {
   PlatformDashboardComponent
 } from './pages/platform-dashboard/platform-dashboard.component';
@@ -58,6 +61,9 @@ import {
 import {
   SpeakerProfileComponent
 } from './pages/speaker-profile/speaker-profile.component';
+import {
+  moduleEntitlementGuard
+} from './shared/guards/module-entitlement.guard';
 
 const routes: Routes = [
   {
@@ -66,7 +72,9 @@ const routes: Routes = [
   },
   {
     path: 'referrals/:id/respond',
-    component: PartnerReferralResponseComponent
+    component: PartnerReferralResponseComponent,
+    canActivate: [moduleEntitlementGuard],
+    data: { module: 'care' }
   },
   {
     path: '',
@@ -77,12 +85,22 @@ const routes: Routes = [
         component: PlatformDashboardComponent
       },
       {
+        path: 'checklist-templates',
+        component: ChecklistTemplatesPageComponent
+      },
+      {
+        path: 'support',
+        component: OperationsSupportPageComponent
+      },
+      {
         path: 'speaking-requests',
         component: SpeakingRequestListComponent
       },
       {
         path: 'care-network',
-        component: CareNetworkInboxComponent
+        component: CareNetworkInboxComponent,
+        canActivate: [moduleEntitlementGuard],
+        data: { module: 'care' }
       },
       {
         path: 'speaker-profile',
@@ -110,10 +128,6 @@ const routes: Routes = [
             component: AssignmentDetailComponent
           },
           {
-            path: 'travel',
-            component: AssignmentTravelComponent
-          },
-          {
             path: 'contacts',
             component: AssignmentContactsComponent
           },
@@ -123,7 +137,9 @@ const routes: Routes = [
           },
           {
             path: 'care-network',
-            component: AssignmentCareNetworkComponent
+            component: AssignmentCareNetworkComponent,
+            canActivate: [moduleEntitlementGuard],
+            data: { module: 'care' }
           },
           {
             path: 'activity',
