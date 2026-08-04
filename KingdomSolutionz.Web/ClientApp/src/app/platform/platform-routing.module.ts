@@ -66,7 +66,9 @@ const routes: Routes = [
   },
   {
     path: 'referrals/:id/respond',
-    component: PartnerReferralResponseComponent
+    component: PartnerReferralResponseComponent,
+    canActivate: [moduleEntitlementGuard],
+    data: { module: 'care' }
   },
   {
     path: '',
