@@ -38,6 +38,12 @@ import {
   CareNetworkInboxComponent
 } from './pages/care-network/care-network-inbox.component';
 import {
+  ChecklistTemplatesPageComponent
+} from './pages/checklist-templates/checklist-templates-page.component';
+import {
+  OperationsSupportPageComponent
+} from './pages/operations-support/operations-support-page.component';
+import {
   PlatformDashboardComponent
 } from './pages/platform-dashboard/platform-dashboard.component';
 import {
@@ -77,6 +83,14 @@ const routes: Routes = [
       {
         path: 'dashboard',
         component: PlatformDashboardComponent
+      },
+      {
+        path: 'checklist-templates',
+        component: ChecklistTemplatesPageComponent
+      },
+      {
+        path: 'support',
+        component: OperationsSupportPageComponent
       },
       {
         path: 'speaking-requests',
