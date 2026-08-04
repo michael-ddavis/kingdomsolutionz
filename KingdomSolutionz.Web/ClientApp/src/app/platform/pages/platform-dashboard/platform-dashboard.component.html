@@ -16,6 +16,29 @@
       </div>
     </header>
 
+    <section class="metric-grid" aria-label="Operations tools">
+      <button
+        type="button"
+        class="metric-card metric-card--blue"
+        (click)="openRoute('/app/checklist-templates')">
+        <span class="metric-accent"></span>
+        <span class="metric-arrow" aria-hidden="true">↗</span>
+        <strong class="metric-value">Templates</strong>
+        <span class="metric-label">Reusable checklists</span>
+        <small>Standardize recurring ministry work by workspace.</small>
+      </button>
+      <button
+        type="button"
+        class="metric-card metric-card--amber"
+        (click)="openRoute('/app/support')">
+        <span class="metric-accent"></span>
+        <span class="metric-arrow" aria-hidden="true">↗</span>
+        <strong class="metric-value">Support</strong>
+        <span class="metric-label">Operations requests</span>
+        <small>Ask for access, workflow, data, or training help.</small>
+      </button>
+    </section>
+
     <section class="metric-grid" aria-label="Executive ministry summary">
       <button
         type="button"
