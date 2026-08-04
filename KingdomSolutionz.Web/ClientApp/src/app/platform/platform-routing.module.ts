@@ -32,9 +32,6 @@ import {
   AssignmentOverviewComponent
 } from './pages/assignments/assignment-overview/assignment-overview.component';
 import {
-  AssignmentTravelComponent
-} from './pages/assignments/assignment-travel/assignment-travel.component';
-import {
   AssignmentWorkspaceComponent
 } from './pages/assignments/assignment-workspace/assignment-workspace.component';
 import {
@@ -58,6 +55,9 @@ import {
 import {
   SpeakerProfileComponent
 } from './pages/speaker-profile/speaker-profile.component';
+import {
+  moduleEntitlementGuard
+} from './shared/guards/module-entitlement.guard';
 
 const routes: Routes = [
   {
@@ -82,7 +82,9 @@ const routes: Routes = [
       },
       {
         path: 'care-network',
-        component: CareNetworkInboxComponent
+        component: CareNetworkInboxComponent,
+        canActivate: [moduleEntitlementGuard],
+        data: { module: 'care' }
       },
       {
         path: 'speaker-profile',
@@ -110,10 +112,6 @@ const routes: Routes = [
             component: AssignmentDetailComponent
           },
           {
-            path: 'travel',
-            component: AssignmentTravelComponent
-          },
-          {
             path: 'contacts',
             component: AssignmentContactsComponent
           },
@@ -123,7 +121,9 @@ const routes: Routes = [
           },
           {
             path: 'care-network',
-            component: AssignmentCareNetworkComponent
+            component: AssignmentCareNetworkComponent,
+            canActivate: [moduleEntitlementGuard],
+            data: { module: 'care' }
           },
           {
             path: 'activity',
