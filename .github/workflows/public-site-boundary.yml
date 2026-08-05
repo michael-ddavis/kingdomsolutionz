@@ -1,0 +1,17 @@
+name: Public website boundary
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  public-site:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Verify the repository contains only public-site concerns
+        run: node scripts/verify-public-site.mjs
